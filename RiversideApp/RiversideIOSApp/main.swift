@@ -1,0 +1,3 @@
+import IOSApp
+
+IOSApp.main()
