@@ -12,7 +12,14 @@ let package = Package(
     targets: [
         .target(
             name: "IOSApp",
+            dependencies: [
+                "NavigationState",
+            ],
             path: "Sources/App/IOSApp"
+        ),
+        .target(
+            name: "NavigationState",
+            path: "Sources/State/NavigationState"
         ),
     ]
 )
