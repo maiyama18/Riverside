@@ -3,10 +3,12 @@ import Foundation
 public struct StubResponse: Sendable {
     public let statusCode: Int
     public let data: Data
+    public let headerFields: [String: String]
     
-    public init(statusCode: Int, data: Data) {
+    public init(statusCode: Int, data: Data, headerFields: [String: String] = [:]) {
         self.statusCode = statusCode
         self.data = data
+        self.headerFields = headerFields
     }
 }
 
@@ -40,7 +42,7 @@ public final class URLProtocolStub: URLProtocol {
                 url: url,
                 statusCode: stubResponse.statusCode,
                 httpVersion: nil,
-                headerFields: nil
+                headerFields: stubResponse.headerFields
             )!
             client?.urlProtocol(self, didReceive: urlResponse, cacheStoragePolicy: .notAllowed)
             client?.urlProtocol(self, didLoad: stubResponse.data)

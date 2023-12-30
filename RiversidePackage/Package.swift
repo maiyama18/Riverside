@@ -12,6 +12,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/nmdias/FeedKit", exact: "9.1.2"),
+        .package(url: "https://github.com/scinfu/SwiftSoup", exact: "2.6.1"),
     ],
     targets: [
         .target(
@@ -29,6 +30,7 @@ let package = Package(
             name: "FeedClient",
             dependencies: [
                 .product(name: "FeedKit", package: "FeedKit"),
+                .product(name: "SwiftSoup", package: "SwiftSoup"),
             ],
             path: "Sources/Client/FeedClient"
         ),

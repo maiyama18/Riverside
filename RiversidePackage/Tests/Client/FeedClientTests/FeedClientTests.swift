@@ -5,8 +5,11 @@ import TestHelpers
 import XCTest
 
 final class FeedClientTests: XCTestCase {
+    // HTML
+    private static let maiyama4HTMLURL = URL(string: "https://maiyama4.hatenablog.com")!
+    
     // RSS
-    private static let maiyama4URL = URL(string: "https://maiyama4.hatenablog.com/rss")!
+    private static let maiyama4RSSURL = URL(string: "https://maiyama4.hatenablog.com/rss")!
     private static let iOSDevWeeklyURL = URL(string: "https://iosdevweekly.com/issues.rss")!
     private static let iOSCodeReviewURL = URL(string: "https://ioscodereview.com/feed.xml/")!
     private static let r7kamuraURL = URL(string: "https://r7kamura.com/feed.xml")!
@@ -18,6 +21,7 @@ final class FeedClientTests: XCTestCase {
     private static let naoyaSizumeURL = URL(string: "https://sizu.me/naoya/rss")!
 
     // Atom
+    private static let maiyama4AtomURL = URL(string: "https://maiyama4.hatenablog.com/feed")!
     private static let jessesquiresAtomURL = URL(string: "https://www.jessesquires.com/feed.xml")!
     private static let andanteURL = URL(string: "https://ofni.necocen.info/atom")!
     private static let jxckURL = URL(string: "https://blog.jxck.io/feeds/atom.xml")!
@@ -28,10 +32,49 @@ final class FeedClientTests: XCTestCase {
     private var client: FeedClient!
 
     override func setUp() async throws {
-        func setFeedData(to responses: inout [URL: Result<StubResponse, Error>], url: URL, resource: String, ext: String) throws {
-            let data = try Data(contentsOf: XCTUnwrap(Bundle.module.url(forResource: resource, withExtension: ext)))
-            responses[url] = .success(.init(statusCode: 200, data: data))
+        enum ResponseType {
+            case rssFeed
+            case atomFeed
+            case jsonFeed
+            case html
+            
+            var contentType: String {
+                switch self {
+                case .rssFeed, .atomFeed:
+                    "application/rss+xml"
+                case .jsonFeed:
+                    "application/json"
+                case .html:
+                    "text/html"
+                }
+            }
+            
+            var resourceExtension: String {
+                switch self {
+                case .rssFeed, .atomFeed:
+                    "xml"
+                case .jsonFeed:
+                    "json"
+                case .html:
+                    "html"
+                }
+            }
         }
+        
+        func setFeedData(to responses: inout [URL: Result<StubResponse, Error>], url: URL, responseType: ResponseType, resourceName: String) throws {
+            let resourceURL = try XCTUnwrap(Bundle.module.url(forResource: resourceName, withExtension: responseType.resourceExtension))
+            let data = try Data(contentsOf: resourceURL)
+            
+            responses[url] = .success(
+                .init(
+                    statusCode: 200,
+                    data: data,
+                    headerFields: ["Content-Type": responseType.contentType]
+                )
+            )
+        }
+        
+        try await super.setUp()
 
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [URLProtocolStub.self]
@@ -39,35 +82,56 @@ final class FeedClientTests: XCTestCase {
 
         var responses: [URL: Result<StubResponse, Error>] = [:]
 
+        // HTML
+        try setFeedData(to: &responses, url: Self.maiyama4HTMLURL, responseType: .html, resourceName: "maiyama4")
+        
         // RSS
-        try setFeedData(to: &responses, url: Self.maiyama4URL, resource: "maiyama4", ext: "xml")
-        try setFeedData(to: &responses, url: Self.iOSDevWeeklyURL, resource: "iOSDevWeekly", ext: "xml")
-        try setFeedData(to: &responses, url: Self.iOSCodeReviewURL, resource: "iOSCodeReview", ext: "xml")
-        try setFeedData(to: &responses, url: Self.r7kamuraURL, resource: "r7kamura", ext: "xml")
-        try setFeedData(to: &responses, url: Self.swiftUILabURL, resource: "swiftUILab", ext: "xml")
-        try setFeedData(to: &responses, url: Self.zennSwiftURL, resource: "zennSwift", ext: "xml")
-        try setFeedData(to: &responses, url: Self.qiitaSwiftURL, resource: "qiitaSwift", ext: "xml")
-        try setFeedData(to: &responses, url: Self.stackoverflowSwiftURL, resource: "stackoverflowSwift", ext: "xml")
-        try setFeedData(to: &responses, url: Self.phaNoteURL, resource: "phaNote", ext: "xml")
-        try setFeedData(to: &responses, url: Self.naoyaSizumeURL, resource: "naoyaSizume", ext: "xml")
+        try setFeedData(to: &responses, url: Self.maiyama4RSSURL, responseType: .rssFeed, resourceName: "maiyama4_rss")
+        try setFeedData(to: &responses, url: Self.iOSDevWeeklyURL, responseType: .rssFeed, resourceName: "iOSDevWeekly")
+        try setFeedData(to: &responses, url: Self.iOSCodeReviewURL, responseType: .rssFeed, resourceName: "iOSCodeReview")
+        try setFeedData(to: &responses, url: Self.r7kamuraURL, responseType: .rssFeed, resourceName: "r7kamura")
+        try setFeedData(to: &responses, url: Self.swiftUILabURL, responseType: .rssFeed, resourceName: "swiftUILab")
+        try setFeedData(to: &responses, url: Self.zennSwiftURL, responseType: .rssFeed, resourceName: "zennSwift")
+        try setFeedData(to: &responses, url: Self.qiitaSwiftURL, responseType: .rssFeed, resourceName: "qiitaSwift")
+        try setFeedData(to: &responses, url: Self.stackoverflowSwiftURL, responseType: .rssFeed, resourceName: "stackoverflowSwift")
+        try setFeedData(to: &responses, url: Self.phaNoteURL, responseType: .rssFeed, resourceName: "phaNote")
+        try setFeedData(to: &responses, url: Self.naoyaSizumeURL, responseType: .rssFeed, resourceName: "naoyaSizume")
 
         // Atom
-        try setFeedData(to: &responses, url: Self.jessesquiresAtomURL, resource: "jessesquires", ext: "xml")
-        try setFeedData(to: &responses, url: Self.andanteURL, resource: "andante", ext: "xml")
-        try setFeedData(to: &responses, url: Self.jxckURL, resource: "jxck", ext: "xml")
+        try setFeedData(to: &responses, url: Self.maiyama4AtomURL, responseType: .atomFeed, resourceName: "maiyama4_atom")
+        try setFeedData(to: &responses, url: Self.jessesquiresAtomURL, responseType: .atomFeed, resourceName: "jessesquires")
+        try setFeedData(to: &responses, url: Self.andanteURL, responseType: .atomFeed, resourceName: "andante")
+        try setFeedData(to: &responses, url: Self.jxckURL, responseType: .atomFeed, resourceName: "jxck")
 
         // JSON
-        try setFeedData(to: &responses, url: Self.jessesquiresJSONURL, resource: "jessesquires", ext: "json")
+        try setFeedData(to: &responses, url: Self.jessesquiresJSONURL, responseType: .jsonFeed, resourceName: "jessesquires")
 
         URLProtocolStub.setResponses(responses)
         client = .live(urlSession: urlSession)
     }
+    
+    // MARK: - HTML -> Atom
+
+    func test_maiyama4_html() async throws {
+        let feed = try await client.fetch(Self.maiyama4HTMLURL)
+        XCTAssertEqual(feed.url, Self.maiyama4HTMLURL)
+        XCTAssertEqual(feed.title, "maiyama log")
+        XCTAssertEqual(feed.overview, "")
+
+        XCTAssertEqual(feed.entries.count, 4)
+        let entry = try XCTUnwrap(feed.entries.first)
+        XCTAssertEqual(entry.url, URL(string: "https://maiyama4.hatenablog.com/entry/2023/12/27/142625"))
+        XCTAssertEqual(entry.title, "個人開発の SwiftUI アプリのアーキテクチャを MVVM から MV にした")
+        XCTAssertEqual(entry.content?.count, 500)
+        XCTAssertEqual(entry.content?.prefix(50), "概要 SwiftUI Advent Calendar 2023 の 21 日目です。 最近趣味で i")
+        try XCTAssertEqual(entry.publishedAt, Date("2023-12-27T14:26:25+09:00", strategy: .iso8601))
+    }
 
     // MARK: - RSS
 
-    func test_maiyama4() async throws {
-        let feed = try await client.fetch(Self.maiyama4URL)
-        XCTAssertEqual(feed.url, Self.maiyama4URL)
+    func test_maiyama4_rss() async throws {
+        let feed = try await client.fetch(Self.maiyama4RSSURL)
+        XCTAssertEqual(feed.url, Self.maiyama4RSSURL)
         XCTAssertEqual(feed.title, "maiyama log")
         XCTAssertEqual(feed.overview, "")
 
@@ -216,6 +280,21 @@ final class FeedClientTests: XCTestCase {
     }
 
     // MARK: - Atom
+    
+    func test_maiyama4_atom() async throws {
+        let feed = try await client.fetch(Self.maiyama4AtomURL)
+        XCTAssertEqual(feed.url, Self.maiyama4AtomURL)
+        XCTAssertEqual(feed.title, "maiyama log")
+        XCTAssertEqual(feed.overview, "")
+
+        XCTAssertEqual(feed.entries.count, 4)
+        let entry = try XCTUnwrap(feed.entries.first)
+        XCTAssertEqual(entry.url, URL(string: "https://maiyama4.hatenablog.com/entry/2023/12/27/142625"))
+        XCTAssertEqual(entry.title, "個人開発の SwiftUI アプリのアーキテクチャを MVVM から MV にした")
+        XCTAssertEqual(entry.content?.count, 500)
+        XCTAssertEqual(entry.content?.prefix(50), "概要 SwiftUI Advent Calendar 2023 の 21 日目です。 最近趣味で i")
+        try XCTAssertEqual(entry.publishedAt, Date("2023-12-27T14:26:25+09:00", strategy: .iso8601))
+    }
 
     func test_jessesquires_atom() async throws {
         let feed = try await client.fetch(Self.jessesquiresAtomURL)
