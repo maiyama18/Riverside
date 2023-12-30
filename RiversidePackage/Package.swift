@@ -8,6 +8,7 @@ let package = Package(
     platforms: [.iOS(.v17), .macOS(.v14)],
     products: [
         .library(name: "IOSApp", targets: ["IOSApp"]),
+        .library(name: "AddFeedFeature", targets: ["AddFeedFeature"]),
         .library(name: "FeedClient", targets: ["FeedClient"]),
     ],
     dependencies: [
@@ -21,6 +22,10 @@ let package = Package(
                 "NavigationState",
             ],
             path: "Sources/App/IOSApp"
+        ),
+        .target(
+            name: "AddFeedFeature",
+            path: "Sources/Feature/AddFeedFeature"
         ),
         .target(
             name: "NavigationState",
