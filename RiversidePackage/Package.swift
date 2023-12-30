@@ -26,6 +26,10 @@ let package = Package(
         ),
         .target(
             name: "AddFeedFeature",
+            dependencies: [
+                "FeedClient",
+                "Utilities",
+            ],
             path: "Sources/Feature/AddFeedFeature"
         ),
         .target(
