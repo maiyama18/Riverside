@@ -54,6 +54,9 @@ let targets: [PackageDescription.Target] = [
     ),
     .target(
         name: "TestHelpers",
+        dependencies: [
+            .dependencies,
+        ],
         path: "Sources/Core/TestHelpers"
     ),
     .testTarget(

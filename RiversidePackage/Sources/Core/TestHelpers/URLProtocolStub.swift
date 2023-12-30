@@ -1,3 +1,4 @@
+import Dependencies
 import Foundation
 
 public struct StubResponse: Sendable {
@@ -13,10 +14,10 @@ public struct StubResponse: Sendable {
 }
 
 public final class URLProtocolStub: URLProtocol {
-    private static var responses: [URL: Result<StubResponse, Error>] = [:]
+    private static let responses: LockIsolated<[URL: Result<StubResponse, Error>]> = .init([:])
 
     public static func setResponses(_ responses: [URL: Result<StubResponse, Error>]) {
-        self.responses = responses
+        self.responses.withValue { $0 = responses }
     }
 
     override public class func canInit(with request: URLRequest) -> Bool {

@@ -1,7 +1,7 @@
 import Foundation
 
-public struct Feed {
-    public struct Entry {
+public struct Feed: Sendable {
+    public struct Entry: Sendable {
         public let url: URL
         public let title: String
         public let publishedAt: Date
