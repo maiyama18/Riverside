@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>naoya - しずかなインターネット</title>
+        <link>https://sizu.me/naoya</link>
+        <description>naoya さんの記事一覧のRSSフィードです</description>
+        <lastBuildDate>Sat, 30 Dec 2023 05:08:42 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>しずかなインターネット</generator>
+        <image>
+            <title>naoya - しずかなインターネット</title>
+            <url>https://r2.sizu.me/users/15658/avatar.jpeg?v=1701072017204</url>
+            <link>https://sizu.me/naoya</link>
+        </image>
+        <copyright>© @naoya</copyright>
+        <item>
+            <title><![CDATA[自分を救うプログラミング]]></title>
+            <link>https://sizu.me/naoya/posts/7vxkuwvowo0z</link>
+            <guid>https://sizu.me/naoya/posts/7vxkuwvowo0z</guid>
+            <pubDate>Wed, 27 Dec 2023 22:39:45 GMT</pubDate>
+            <description><![CDATA[子どものころは絵を描くのが好きだった。
+学校の休み時間は、クラスメートはみな外にサッカーをしにいっていたが一人教室にのこってノートに漫画を描いている、そんな小学生だった。
+自宅に戻っても、自室にこもってよく漫画を描いていた。
+漫画と書くいっても、別に人を楽しませるために描いているわけではなかった。もちろん褒められると嬉しかったが、それが目的だったわけではなく、いま思えば、それは自分で自分を癒すかの…]]></description>
+            <enclosure length="0" type="image/png" url="https://static.sizu.me/api/og-image/08dc9b23b4cb?avatarUrl=https%3A%2F%2Fr2.sizu.me%2Fusers%2F15658%2Favatar.jpeg%3Fv%3D1701072017204&amp;theme=user&amp;username=naoya"/>
+        </item>
+        <item>
+            <title><![CDATA[ビジネス、開発、四方山]]></title>
+            <link>https://sizu.me/naoya/posts/7ibi31uch77d</link>
+            <guid>https://sizu.me/naoya/posts/7ibi31uch77d</guid>
+            <pubDate>Sat, 23 Dec 2023 04:00:34 GMT</pubDate>
+            <description><![CDATA[今度のカンファレンスで以下のようなことを聞かれそうなので、最近の出来事とともに、記憶に刻むためにも書いてみる。あんまり推敲はしてない、だらだらと。
+ソフトウェア開発において、ビジネスの人と開発の人とでなんか意識が合わないみたいなことの根源はどこにあるのか? みたいなのが最近少しわかったことがある。(ビジネス / 開発と区分けすること自体がそもそもなんだけど、それ言い出すと考察が進まないので、あえて…]]></description>
+            <enclosure length="0" type="image/png" url="https://static.sizu.me/api/og-image/08dc9b23b4cb?avatarUrl=https%3A%2F%2Fr2.sizu.me%2Fusers%2F15658%2Favatar.jpeg%3Fv%3D1701072017204&amp;theme=user&amp;username=naoya"/>
+        </item>
+        <item>
+            <title><![CDATA[ここは静かなインターネッツ]]></title>
+            <link>https://sizu.me/naoya/posts/i5i30de218r9</link>
+            <guid>https://sizu.me/naoya/posts/i5i30de218r9</guid>
+            <pubDate>Mon, 27 Nov 2023 07:59:44 GMT</pubDate>
+            <description><![CDATA[ここは静かなインターネット]]></description>
+            <enclosure length="0" type="image/png" url="https://static.sizu.me/api/og-image/08dc9b23b4cb?avatarUrl=https%3A%2F%2Fr2.sizu.me%2Fusers%2F15658%2Favatar.jpeg%3Fv%3D1701072017204&amp;theme=user&amp;username=naoya"/>
+        </item>
+    </channel>
+</rss>

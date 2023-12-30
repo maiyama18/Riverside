@@ -8,6 +8,10 @@ let package = Package(
     platforms: [.iOS(.v17), .macOS(.v14)],
     products: [
         .library(name: "IOSApp", targets: ["IOSApp"]),
+        .library(name: "FeedClient", targets: ["FeedClient"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/nmdias/FeedKit", exact: "9.1.2"),
     ],
     targets: [
         .target(
@@ -21,5 +25,25 @@ let package = Package(
             name: "NavigationState",
             path: "Sources/State/NavigationState"
         ),
+        .target(
+            name: "FeedClient",
+            dependencies: [
+                .product(name: "FeedKit", package: "FeedKit"),
+            ],
+            path: "Sources/Client/FeedClient"
+        ),
+        .target(
+            name: "TestHelpers",
+            path: "Sources/Core/TestHelpers"
+        ),
+        .testTarget(
+            name: "FeedClientTests",
+            dependencies: [
+                "FeedClient",
+                "TestHelpers",
+            ],
+            path: "Tests/Client/FeedClientTests",
+            resources: [.process("Resources")]
+        )
     ]
 )
