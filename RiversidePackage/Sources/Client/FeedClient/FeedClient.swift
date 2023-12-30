@@ -25,7 +25,7 @@ extension FeedClient {
             
             let contentType: ContentType = if contentTypeString.contains("text/html") {
                 .html
-            } else if contentTypeString.contains("application/rss+xml") || contentTypeString.contains("application/json") {
+            } else if contentTypeString.contains("application") && contentTypeString.contains(#/(xml|json)/#) {
                 .feed
             } else {
                 throw NSError(domain: "FeedClient", code: -2)
