@@ -1,3 +1,4 @@
+import Dependencies
 import FeedKit
 import Foundation
 import SwiftSoup
@@ -60,4 +61,14 @@ extension FeedClient {
             }
         )
     }
+}
+
+public extension DependencyValues {
+    var feedClient: FeedClient {
+        get { self[FeedClientKey.self] }
+        set { self[FeedClientKey.self] = newValue }
+    }
+}
+private enum FeedClientKey: DependencyKey {
+    static let liveValue: FeedClient = .live(urlSession: .shared)
 }
