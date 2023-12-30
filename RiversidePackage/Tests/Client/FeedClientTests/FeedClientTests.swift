@@ -28,16 +28,16 @@ final class FeedClientTests: XCTestCase {
     private var client: FeedClient!
 
     override func setUp() async throws {
-        func setFeedData(to responses: inout [URL: StubResponse], url: URL, resource: String, ext: String) throws {
+        func setFeedData(to responses: inout [URL: Result<StubResponse, Error>], url: URL, resource: String, ext: String) throws {
             let data = try Data(contentsOf: XCTUnwrap(Bundle.module.url(forResource: resource, withExtension: ext)))
-            responses[url] = .init(result: .success((200, data)))
+            responses[url] = .success(.init(statusCode: 200, data: data))
         }
 
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [URLProtocolStub.self]
         let urlSession = URLSession(configuration: config)
 
-        var responses: [URL: StubResponse] = [:]
+        var responses: [URL: Result<StubResponse, Error>] = [:]
 
         // RSS
         try setFeedData(to: &responses, url: Self.maiyama4URL, resource: "maiyama4", ext: "xml")

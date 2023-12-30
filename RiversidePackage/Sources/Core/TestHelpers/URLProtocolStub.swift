@@ -1,17 +1,19 @@
 import Foundation
 
 public struct StubResponse: Sendable {
-    public let result: Result<(Int, Data), Error>
-
-    public init(result: Result<(Int, Data), Error>) {
-        self.result = result
+    public let statusCode: Int
+    public let data: Data
+    
+    public init(statusCode: Int, data: Data) {
+        self.statusCode = statusCode
+        self.data = data
     }
 }
 
 public final class URLProtocolStub: URLProtocol {
-    private static var responses: [URL: StubResponse] = [:]
+    private static var responses: [URL: Result<StubResponse, Error>] = [:]
 
-    public static func setResponses(_ responses: [URL: StubResponse]) {
+    public static func setResponses(_ responses: [URL: Result<StubResponse, Error>]) {
         self.responses = responses
     }
 
@@ -32,16 +34,16 @@ public final class URLProtocolStub: URLProtocol {
             return
         }
 
-        switch response.result {
-        case .success((let statusCode, let data)):
-            let response = HTTPURLResponse(
+        switch response {
+        case .success(let stubResponse):
+            let urlResponse = HTTPURLResponse(
                 url: url,
-                statusCode: statusCode,
+                statusCode: stubResponse.statusCode,
                 httpVersion: nil,
                 headerFields: nil
             )!
-            client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            client?.urlProtocol(self, didLoad: data)
+            client?.urlProtocol(self, didReceive: urlResponse, cacheStoragePolicy: .notAllowed)
+            client?.urlProtocol(self, didLoad: stubResponse.data)
         case .failure(let error):
             client?.urlProtocol(self, didFailWithError: error)
         }
