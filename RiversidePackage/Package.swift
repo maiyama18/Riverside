@@ -42,6 +42,10 @@ let package = Package(
             path: "Sources/Client/FeedClient"
         ),
         .target(
+            name: "Utilities",
+            path: "Sources/Core/Utilities"
+        ),
+        .target(
             name: "TestHelpers",
             path: "Sources/Core/TestHelpers"
         ),
