@@ -31,7 +31,7 @@ public final class NavigationState {
         mainTab = .feeds
         feedsPath = []
         
-        try? await Task.sleep(for: .milliseconds(200))
+        try? await Task.sleep(for: .milliseconds(300))
         feedsPath.append(.feedDetail(feed: feed))
     }
 }
