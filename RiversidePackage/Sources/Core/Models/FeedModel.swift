@@ -8,7 +8,7 @@ public final class FeedModel {
     public let overview: String? = nil
     
     @Relationship
-    public var entries: [EntryModel] = []
+    public var entries: [EntryModel]?
     
     public init(url: String, title: String, overview: String?) {
         self.url = url

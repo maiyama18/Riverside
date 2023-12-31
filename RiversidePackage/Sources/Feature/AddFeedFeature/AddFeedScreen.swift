@@ -5,10 +5,12 @@ import SwiftData
 import SwiftUI
 import Utilities
 
+@MainActor
 public struct AddFeedScreen: View {
     @State private var text: String = ""
     @State private var feedState: FetchState<Feed?> = .fetched(nil)
-    @State private var localFeed: FeedModel? = nil
+    
+    @Query(FeedModel.all) private var feeds: [FeedModel]
     
     @Dependency(\.feedClient) private var feedClient
     @Environment(\.modelContext) private var context
@@ -52,16 +54,16 @@ public struct AddFeedScreen: View {
                                 Button {
                                     addFeed()
                                 } label: {
-                                    if localFeed == nil {
+                                    if currentFeedAlreadyAdded {
+                                        Text("Already added")
+                                            .font(.caption)
+                                    } else {
                                         Image(systemName: "plus")
                                             .padding(.vertical, 8)
                                             .padding(.leading, 8)
-                                    } else {
-                                        Text("Already added")
-                                            .font(.caption)
                                     }
                                 }
-                                .disabled(localFeed != nil)
+                                .disabled(currentFeedAlreadyAdded)
                             }
                         }
                     case .failed(let error):
@@ -111,6 +113,13 @@ public struct AddFeedScreen: View {
         }
     }
     
+    private var currentFeedAlreadyAdded: Bool {
+        guard case .fetched(let feed) = feedState, let feed else {
+            return false
+        }
+        return feeds.contains(where: { $0.url == feed.url.absoluteString })
+    }
+    
     private func fetchFeed() async  {
         guard let url = URL(string: text), url.isValid() else { return }
         
@@ -122,8 +131,6 @@ public struct AddFeedScreen: View {
             withAnimation {
                 feedState = .fetched(feed)
             }
-            
-            localFeed = try fetchFeedFromLocal(urlString: url.absoluteString)
         } catch {
             if !Task.isCancelled {
                 withAnimation {
@@ -138,7 +145,7 @@ public struct AddFeedScreen: View {
         let (feedModel, entryModels) = feed.toModel()
         
         do {
-            guard try fetchFeedFromLocal(urlString: feedModel.url) == nil else {
+            guard !currentFeedAlreadyAdded else {
                 print("Already added")
                 return
             }
@@ -146,9 +153,7 @@ public struct AddFeedScreen: View {
             context.insert(feedModel)
             try context.save()
             for entryModel in entryModels {
-                if try fetchEntryFromLocal(urlString: entryModel.url) == nil {
-                    feedModel.entries.append(entryModel)
-                }
+                entryModel.feed = feedModel
             }
             
             text = ""
@@ -158,21 +163,9 @@ public struct AddFeedScreen: View {
             print(error)
         }
     }
-    
-    private func fetchFeedFromLocal(urlString: String) throws -> FeedModel? {
-        try context.fetch(
-            FetchDescriptor<FeedModel>(predicate: #Predicate { $0.url == urlString })
-        ).first
-    }
-    
-    private func fetchEntryFromLocal(urlString: String) throws -> EntryModel? {
-        try context.fetch(
-            FetchDescriptor<EntryModel>(predicate: #Predicate { $0.url == urlString })
-        ).first
-    }
 }
 
 #Preview { @MainActor in
     AddFeedScreen()
-        .modelContainer(previewContainer)
+        .modelContainer(previewContainer())
 }

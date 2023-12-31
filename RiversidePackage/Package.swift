@@ -41,12 +41,16 @@ let targets: [PackageDescription.Target] = [
         name: "FeedsFeature",
         dependencies: [
             "AddFeedFeature",
+            "Models",
             "NavigationState",
         ],
         path: "Sources/Feature/FeedsFeature"
     ),
     .target(
         name: "NavigationState",
+        dependencies: [
+            "Models",
+        ],
         path: "Sources/State/NavigationState"
     ),
     .target(
@@ -110,7 +114,7 @@ let package = Package(
     platforms: [.iOS(.v17), .macOS(.v14)],
     products: [
         .library(name: "IOSApp", targets: ["IOSApp"]),
-        .library(name: "AddFeedFeature", targets: ["AddFeedFeature"]),
+        .library(name: "Features", targets: ["AddFeedFeature", "FeedsFeature"]),
         .library(name: "FeedClient", targets: ["FeedClient"]),
     ],
     dependencies: dependencies,

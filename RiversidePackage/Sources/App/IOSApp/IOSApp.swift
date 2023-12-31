@@ -12,8 +12,8 @@ public struct IOSApp: App {
     public var body: some Scene {
         WindowGroup {
             MainTabScreen()
+                .environment(navigationState)
+                .modelContainer(for: FeedModel.self)
         }
-        .environment(navigationState)
-        .modelContainer(for: FeedModel.self)
     }
 }
