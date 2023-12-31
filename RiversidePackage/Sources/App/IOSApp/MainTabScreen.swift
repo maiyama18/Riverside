@@ -6,7 +6,9 @@ struct MainTabScreen: View {
     @Environment(NavigationState.self) private var navigationState
 
     var body: some View {
-        TabView(selection: navigationState.mainTab) {
+        @Bindable var navigationState = navigationState
+        
+        TabView(selection: $navigationState.mainTab) {
             Group {
                 Text("Stream")
                     .tabItem {
