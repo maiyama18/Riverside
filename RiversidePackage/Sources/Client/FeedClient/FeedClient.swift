@@ -53,7 +53,7 @@ extension FeedClient {
                     let (data, contentType) = try await fetchDataAndContentType(url: feedURL)
                     guard contentType == .feed else { throw NSError(domain: "FeedClient", code: -4) }
                     let feed = try await FeedParser(data: data).parseFeed()
-                    return feed.convert(url: url)
+                    return feed.convert(url: feedURL)
                 case .feed:
                     let feed = try await FeedParser(data: data).parseFeed()
                     return feed.convert(url: url)

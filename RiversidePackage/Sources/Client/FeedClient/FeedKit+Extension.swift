@@ -91,3 +91,18 @@ extension FeedKit.Feed {
         return String(replaced.prefix(500))
     }
 }
+
+func normalizeURL(_ url: URL) -> URL? {
+     var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+
+     components?.query = nil
+
+     guard let newURL = components?.url else { return nil }
+
+     var urlString = newURL.absoluteString
+     if urlString.hasSuffix("/") {
+         urlString.removeLast()
+     }
+
+     return URL(string: urlString)
+}
