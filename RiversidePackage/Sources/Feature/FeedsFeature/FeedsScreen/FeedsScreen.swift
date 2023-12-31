@@ -5,6 +5,7 @@ import SwiftData
 import SwiftUI
 import Utilities
 
+@MainActor
 public struct FeedsScreen: View {
     @Environment(NavigationState.self) private var navigationState
     @Environment(\.modelContext) private var context

@@ -4,6 +4,7 @@ import SwiftData
 import SwiftUI
 import Utilities
 
+@MainActor
 public struct StreamScreen: View {
     @Environment(NavigationState.self) private var navigationState
     

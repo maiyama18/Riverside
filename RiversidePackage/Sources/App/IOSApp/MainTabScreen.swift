@@ -3,6 +3,7 @@ import NavigationState
 import StreamFeature
 import SwiftUI
 
+@MainActor
 struct MainTabScreen: View {
     @Environment(NavigationState.self) private var navigationState
 

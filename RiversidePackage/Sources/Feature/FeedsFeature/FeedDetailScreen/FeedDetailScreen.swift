@@ -4,6 +4,7 @@ import SwiftData
 import SwiftUI
 import Utilities
 
+@MainActor
 struct FeedDetailScreen: View {
     private let feed: FeedModel
     

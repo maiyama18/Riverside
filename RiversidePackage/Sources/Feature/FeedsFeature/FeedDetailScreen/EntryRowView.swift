@@ -1,6 +1,7 @@
 import Models
 import SwiftUI
 
+@MainActor
 struct EntryRowView: View {
     let entry: EntryModel
     

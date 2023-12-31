@@ -1,6 +1,7 @@
 import Models
 import SwiftUI
 
+@MainActor
 struct FeedRowView: View {
     let feed: FeedModel
     
