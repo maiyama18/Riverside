@@ -87,8 +87,10 @@ public struct AddFeedScreen: View {
                         self.feed = .fetched(feed)
                     }
                 } catch {
-                    withAnimation {
-                        feed = .failed(error)
+                    if !Task.isCancelled {
+                        withAnimation {
+                            feed = .failed(error)
+                        }
                     }
                 }
             }
