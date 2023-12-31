@@ -1,5 +1,6 @@
 import FeedsFeature
 import NavigationState
+import StreamFeature
 import SwiftUI
 
 struct MainTabScreen: View {
@@ -10,7 +11,7 @@ struct MainTabScreen: View {
         
         TabView(selection: $navigationState.mainTab) {
             Group {
-                Text("Stream")
+                StreamScreen()
                     .tabItem {
                         Label("Stream", systemImage: "dot.radiowaves.up.forward")
                     }

@@ -1,3 +1,4 @@
+import Models
 import Observation
 import SwiftUI
 
@@ -12,7 +13,25 @@ public final class NavigationState {
     
     public init() {}
     
+    // MARK: - Properties
+    
     public var mainTab: MainTab = .stream
     
+    public var feedsPath: [FeedsRoute] = []
     public var feedsPresentation: FeedsPresentation? = nil
+    
+    // MARK: - Methods
+    
+    public func routeToAddFeed() {
+        mainTab = .feeds
+        feedsPresentation = .addFeed
+    }
+    
+    public func routeToFeedDetail(feed: FeedModel) async {
+        mainTab = .feeds
+        feedsPath = []
+        
+        try? await Task.sleep(for: .milliseconds(200))
+        feedsPath.append(.feedDetail(feed: feed))
+    }
 }

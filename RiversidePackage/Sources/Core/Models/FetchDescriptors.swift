@@ -8,6 +8,10 @@ public extension FeedModel {
 }
 
 public extension EntryModel {
+    static var all: FetchDescriptor<EntryModel> {
+        FetchDescriptor(sortBy: [SortDescriptor(\.publishedAt, order: .reverse)])
+    }
+    
     static func all(for feed: FeedModel) -> FetchDescriptor<EntryModel> {
         let feedURL = feed.url
         return FetchDescriptor(

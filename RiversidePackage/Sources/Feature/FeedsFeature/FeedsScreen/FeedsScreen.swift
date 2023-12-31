@@ -15,7 +15,7 @@ public struct FeedsScreen: View {
     public var body: some View {
         @Bindable var navigationState = navigationState
         
-        NavigationStack {
+        NavigationStack(path: $navigationState.feedsPath) {
             Group {
                 if feeds.isEmpty {
                     ContentUnavailableView(
