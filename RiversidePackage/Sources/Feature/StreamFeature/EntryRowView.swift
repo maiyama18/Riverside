@@ -20,7 +20,7 @@ struct EntryRowView: View {
                         .font(.footnote)
                         .underline(true)
                 }
-                .tint(.secondary)
+                .buttonStyle(.plain)
             }
             
             if let content = entry.content {
