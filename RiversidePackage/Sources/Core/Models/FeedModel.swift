@@ -23,6 +23,7 @@ public final class EntryModel {
     public let title: String = ""
     public let publishedAt: Date = Date.now
     public let content: String? = nil
+    public var read: Bool = false
     
     @Relationship
     public var feed: FeedModel?

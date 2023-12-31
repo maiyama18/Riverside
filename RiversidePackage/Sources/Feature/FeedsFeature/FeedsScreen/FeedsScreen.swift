@@ -3,6 +3,7 @@ import Models
 import NavigationState
 import SwiftData
 import SwiftUI
+import Utilities
 
 public struct FeedsScreen: View {
     @Environment(NavigationState.self) private var navigationState

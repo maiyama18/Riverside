@@ -2,6 +2,7 @@ import Models
 import NavigationState
 import SwiftData
 import SwiftUI
+import Utilities
 
 public struct StreamScreen: View {
     @Environment(NavigationState.self) private var navigationState
@@ -56,6 +57,10 @@ public struct StreamScreen: View {
                                             }
                                         }
                                     )
+                                    .onTapGesture {
+                                        guard let url = URL(string: entry.url) else { return }
+                                        showSafari(url: url)
+                                    }
                                 }
                             } header: {
                                 Text(section.publishedDate.formatted(date: .numeric, time: .omitted))
