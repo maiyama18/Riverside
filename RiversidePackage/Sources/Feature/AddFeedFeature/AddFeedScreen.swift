@@ -1,13 +1,17 @@
 import Dependencies
 import FeedClient
+import Models
+import SwiftData
 import SwiftUI
 import Utilities
 
 public struct AddFeedScreen: View {
     @State private var text: String = ""
-    @State private var feed: FetchState<Feed?> = .fetched(nil)
+    @State private var feedState: FetchState<Feed?> = .fetched(nil)
+    @State private var localFeed: FeedModel? = nil
     
     @Dependency(\.feedClient) private var feedClient
+    @Environment(\.modelContext) private var context
     
     public init() {}
     
@@ -22,7 +26,7 @@ public struct AddFeedScreen: View {
                     Text("Blog/Feed URL")
                         .textCase(nil)
                 } footer: {
-                    if case .fetching = feed {
+                    if case .fetching = feedState {
                         ProgressView()
                             .progressViewStyle(.circular)
                             .frame(maxWidth: .infinity)
@@ -31,7 +35,7 @@ public struct AddFeedScreen: View {
                 }
                 
                 Section {
-                    switch feed {
+                    switch feedState {
                     case .fetching:
                         EmptyView()
                     case .fetched(let feed):
@@ -46,12 +50,18 @@ public struct AddFeedScreen: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 
                                 Button {
-                                    print("Add")
+                                    addFeed()
                                 } label: {
-                                    Image(systemName: "plus")
-                                        .padding(.vertical, 8)
-                                        .padding(.leading, 8)
+                                    if localFeed == nil {
+                                        Image(systemName: "plus")
+                                            .padding(.vertical, 8)
+                                            .padding(.leading, 8)
+                                    } else {
+                                        Text("Already added")
+                                            .font(.caption)
+                                    }
                                 }
+                                .disabled(localFeed != nil)
                             }
                         }
                     case .failed(let error):
@@ -76,23 +86,7 @@ public struct AddFeedScreen: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(Material.ultraThin, for: .navigationBar)
             .task(id: text) {
-                guard let url = URL(string: text), url.isValid() else { return }
-                
-                try? await Task.sleep(for: .milliseconds(300))
-                
-                feed = .fetching
-                do {
-                    let feed = try await feedClient.fetch(url)
-                    withAnimation {
-                        self.feed = .fetched(feed)
-                    }
-                } catch {
-                    if !Task.isCancelled {
-                        withAnimation {
-                            feed = .failed(error)
-                        }
-                    }
-                }
+                await fetchFeed()
             }
             .ifDebug {
                 $0.toolbar {
@@ -116,8 +110,69 @@ public struct AddFeedScreen: View {
             }
         }
     }
+    
+    private func fetchFeed() async  {
+        guard let url = URL(string: text), url.isValid() else { return }
+        
+        try? await Task.sleep(for: .milliseconds(300))
+        
+        feedState = .fetching
+        do {
+            let feed = try await feedClient.fetch(url)
+            withAnimation {
+                feedState = .fetched(feed)
+            }
+            
+            localFeed = try fetchFeedFromLocal(urlString: url.absoluteString)
+        } catch {
+            if !Task.isCancelled {
+                withAnimation {
+                    feedState = .failed(error)
+                }
+            }
+        }
+    }
+    
+    private func addFeed() {
+        guard case .fetched(let feed) = feedState, let feed else { return }
+        let (feedModel, entryModels) = feed.toModel()
+        
+        do {
+            guard try fetchFeedFromLocal(urlString: feedModel.url) == nil else {
+                print("Already added")
+                return
+            }
+            
+            context.insert(feedModel)
+            try context.save()
+            for entryModel in entryModels {
+                if try fetchEntryFromLocal(urlString: entryModel.url) == nil {
+                    feedModel.entries.append(entryModel)
+                }
+            }
+            
+            text = ""
+            feedState = .fetched(nil)
+        } catch {
+            context.rollback()
+            print(error)
+        }
+    }
+    
+    private func fetchFeedFromLocal(urlString: String) throws -> FeedModel? {
+        try context.fetch(
+            FetchDescriptor<FeedModel>(predicate: #Predicate { $0.url == urlString })
+        ).first
+    }
+    
+    private func fetchEntryFromLocal(urlString: String) throws -> EntryModel? {
+        try context.fetch(
+            FetchDescriptor<EntryModel>(predicate: #Predicate { $0.url == urlString })
+        ).first
+    }
 }
 
-#Preview {
+#Preview { @MainActor in
     AddFeedScreen()
+        .modelContainer(previewContainer)
 }

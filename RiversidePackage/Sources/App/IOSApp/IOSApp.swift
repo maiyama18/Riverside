@@ -1,4 +1,6 @@
+import Models
 import NavigationState
+import SwiftData
 import SwiftUI
 
 @MainActor
@@ -12,5 +14,6 @@ public struct IOSApp: App {
             MainTabScreen()
         }
         .environment(navigationState)
+        .modelContainer(for: FeedModel.self)
     }
 }

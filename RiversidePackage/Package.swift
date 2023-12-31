@@ -23,6 +23,7 @@ let targets: [PackageDescription.Target] = [
         name: "IOSApp",
         dependencies: [
             "FeedsFeature",
+            "Models",
             "NavigationState",
         ],
         path: "Sources/App/IOSApp"
@@ -31,6 +32,7 @@ let targets: [PackageDescription.Target] = [
         name: "AddFeedFeature",
         dependencies: [
             "FeedClient",
+            "Models",
             "Utilities",
         ],
         path: "Sources/Feature/AddFeedFeature"
@@ -53,9 +55,14 @@ let targets: [PackageDescription.Target] = [
             .feedKit,
             .swiftSoup,
             .dependencies,
+            "Models",
         ],
         path: "Sources/Client/FeedClient",
         exclude: ["FeedClient.xctestplan"]
+    ),
+    .target(
+        name: "Models",
+        path: "Sources/Core/Models"
     ),
     .target(
         name: "Utilities",
