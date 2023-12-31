@@ -12,6 +12,8 @@ struct FeedDetailScreen: View {
     
     @AppStorage("unread-only-feed-detail") private var unreadOnly: Bool = true
     
+    @State private var markAllAsReadDialogPresented: Bool = false
+    
     init(feed: FeedModel) {
         self.feed = feed
         self._entries = Query(EntryModel.all(for: feed))
@@ -47,10 +49,28 @@ struct FeedDetailScreen: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Toggle(isOn: $unreadOnly) { Text("Unread only") }
+                    Button("Mark all as read...") { markAllAsReadDialogPresented = true }
+                        .disabled(entries.filter { !$0.read }.isEmpty)
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
             }
+        }
+        .alert(
+            "Mark all entries as read?",
+            isPresented: $markAllAsReadDialogPresented
+        ) {
+            Button(
+                role: .destructive,
+                action: {
+                    for entry in entries {
+                        entry.read = true
+                    }
+                }
+            ) {
+                Text("Confirm")
+            }
+            Button(role: .cancel, action: {}) { Text("Cancel") }
         }
     }
     

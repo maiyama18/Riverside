@@ -13,6 +13,8 @@ public struct StreamScreen: View {
     
     @AppStorage("unread-only-stream") private var unreadOnly: Bool = true
     
+    @State private var markAllAsReadDialogPresented: Bool = false
+    
     public init() {}
     
     public var body: some View {
@@ -20,7 +22,7 @@ public struct StreamScreen: View {
         
         NavigationStack {
             Group {
-                if entries.isEmpty {
+                if sections.isEmpty {
                     if feeds.isEmpty {
                         ContentUnavailableView(
                             label: {
@@ -80,10 +82,28 @@ public struct StreamScreen: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         Toggle(isOn: $unreadOnly) { Text("Unread only") }
+                        Button("Mark all as read...") { markAllAsReadDialogPresented = true }
+                            .disabled(entries.filter { !$0.read }.isEmpty)
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
                 }
+            }
+            .alert(
+                "Mark all entries as read?",
+                isPresented: $markAllAsReadDialogPresented
+            ) {
+                Button(
+                    role: .destructive,
+                    action: {
+                        for entry in entries {
+                            entry.read = true
+                        }
+                    }
+                ) {
+                    Text("Confirm")
+                }
+                Button(role: .cancel, action: {}) { Text("Cancel") }
             }
         }
     }
