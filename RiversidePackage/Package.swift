@@ -22,6 +22,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSApp",
         dependencies: [
+            "FeedsFeature",
             "NavigationState",
         ],
         path: "Sources/App/IOSApp"
@@ -33,6 +34,14 @@ let targets: [PackageDescription.Target] = [
             "Utilities",
         ],
         path: "Sources/Feature/AddFeedFeature"
+    ),
+    .target(
+        name: "FeedsFeature",
+        dependencies: [
+            "AddFeedFeature",
+            "NavigationState",
+        ],
+        path: "Sources/Feature/FeedsFeature"
     ),
     .target(
         name: "NavigationState",

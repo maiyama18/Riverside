@@ -1,3 +1,4 @@
+import FeedsFeature
 import NavigationState
 import SwiftUI
 
@@ -13,7 +14,8 @@ struct MainTabScreen: View {
                     }
                     .tag(MainTab.stream)
 
-                Text("Feeds")
+                
+                FeedsScreen()
                     .tabItem {
                         Label("Feeds", systemImage: "square.stack")
                     }
