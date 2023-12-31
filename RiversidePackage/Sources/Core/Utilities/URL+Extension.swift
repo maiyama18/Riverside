@@ -1,7 +1,7 @@
-import UIKit
+import Foundation
 
 public extension URL {
-    var isValid: Bool {
-        UIApplication.shared.canOpenURL(self)
+    func isValid() -> Bool {
+        absoluteString.firstMatch(of: #/https?:\/\/[\w-]+(\.[\w-]+)+[\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-]/#) != nil
     }
 }

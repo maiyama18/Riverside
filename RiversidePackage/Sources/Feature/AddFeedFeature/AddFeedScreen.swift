@@ -76,7 +76,7 @@ public struct AddFeedScreen: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(Material.ultraThin, for: .navigationBar)
             .task(id: text) {
-                guard let url = URL(string: text), url.isValid else { return }
+                guard let url = URL(string: text), url.isValid() else { return }
                 
                 try? await Task.sleep(for: .milliseconds(300))
                 
