@@ -45,15 +45,22 @@ public struct StreamScreen: View {
                     }
                 } else {
                     List {
-                        ForEach(entries) { entry in
-                            EntryRowView(
-                                entry: entry,
-                                onFeedTapped: { feed in
-                                    Task {
-                                        await navigationState.routeToFeedDetail(feed: feed)
-                                    }
+                        ForEach(sections, id: \.publishedDate) { section in
+                            Section {
+                                ForEach(section.entries) { entry in
+                                    EntryRowView(
+                                        entry: entry,
+                                        onFeedTapped: { feed in
+                                            Task {
+                                                await navigationState.routeToFeedDetail(feed: feed)
+                                            }
+                                        }
+                                    )
                                 }
-                            )
+                            } header: {
+                                Text(section.publishedDate.formatted(date: .numeric, time: .omitted))
+                                    .foregroundStyle(.orange)
+                            }
                         }
                     }
                     .listStyle(.plain)
@@ -61,6 +68,10 @@ public struct StreamScreen: View {
             }
             .navigationTitle("Stream")
         }
+    }
+    
+    private var sections: [StreamSection] {
+        StreamSectionBuilder.build(entries: entries)
     }
 }
 
