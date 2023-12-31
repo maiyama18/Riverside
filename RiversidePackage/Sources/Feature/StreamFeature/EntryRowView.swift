@@ -30,5 +30,6 @@ struct EntryRowView: View {
                     .lineLimit(2)
             }
         }
+        .foregroundStyle(entry.read ? .secondary : .primary)
     }
 }

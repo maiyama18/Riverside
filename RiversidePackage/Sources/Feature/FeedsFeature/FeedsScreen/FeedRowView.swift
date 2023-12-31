@@ -20,8 +20,7 @@ struct FeedRowView: View {
                 }
             }
         }
-        // TODO: show unreads count only
-        .badge(feed.entries?.count ?? 0)
+        .badge(feed.unreadCount)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

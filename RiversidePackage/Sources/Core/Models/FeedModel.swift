@@ -15,6 +15,10 @@ public final class FeedModel {
         self.title = title
         self.overview = overview
     }
+    
+    public var unreadCount: Int {
+        entries?.filter { $0.read == false }.count ?? 0
+    }
 }
 
 @Model

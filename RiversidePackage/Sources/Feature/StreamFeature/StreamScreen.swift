@@ -11,6 +11,8 @@ public struct StreamScreen: View {
     @Query(EntryModel.all, animation: .default) var entries: [EntryModel]
     @Query(FeedModel.all) var feeds: [FeedModel]
     
+    @AppStorage("unread-only-stream") private var unreadOnly: Bool = true
+    
     public init() {}
     
     public var body: some View {
@@ -39,7 +41,7 @@ public struct StreamScreen: View {
                         ContentUnavailableView(
                             label: {
                                 Label(
-                                    title: { Text("You read all feeds") },
+                                    title: { Text("You've read all entries") },
                                     icon: { Image(systemName: "list.dash") }
                                 )
                             }
@@ -60,6 +62,7 @@ public struct StreamScreen: View {
                                     )
                                     .onTapGesture {
                                         guard let url = URL(string: entry.url) else { return }
+                                        entry.read = true
                                         showSafari(url: url)
                                     }
                                 }
@@ -73,11 +76,20 @@ public struct StreamScreen: View {
                 }
             }
             .navigationTitle("Stream")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Toggle(isOn: $unreadOnly) { Text("Unread only") }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+                }
+            }
         }
     }
     
     private var sections: [StreamSection] {
-        StreamSectionBuilder.build(entries: entries)
+        StreamSectionBuilder.build(entries: entries, unreadOnly: unreadOnly)
     }
 }
 

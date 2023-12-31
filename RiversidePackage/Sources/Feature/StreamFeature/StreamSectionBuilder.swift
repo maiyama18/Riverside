@@ -7,11 +7,11 @@ struct StreamSection {
 }
 
 enum StreamSectionBuilder {
-    static func build(entries: [EntryModel]) -> [StreamSection] {
+    static func build(entries: [EntryModel], unreadOnly: Bool) -> [StreamSection] {
         var calendar = Calendar.current
         calendar.timeZone = NSTimeZone.local
         
-        let sections: [StreamSection] = Dictionary(grouping: entries) { entry -> Date in
+        let sections: [StreamSection] = Dictionary(grouping: entries.filter({ unreadOnly ? $0.read == false : true })) { entry -> Date in
             calendar.startOfDay(for: entry.publishedAt)
         }.map { (publishedDate, entries) -> StreamSection in
             StreamSection(publishedDate: publishedDate, entries: entries)
