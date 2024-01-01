@@ -35,7 +35,7 @@ extension FeedClient {
         }
         
         @Sendable
-        func extractFeedURL(data: Data) async throws -> URL {
+        func extractFeedURL(data: Data) throws -> URL {
             let html = try SwiftSoup.parse(String(decoding: data, as: UTF8.self))
             let links = try html.select("link[rel=alternate][type=application/rss+xml], link[rel=alternate][type=application/atom+xml]")
             guard let link = try links.compactMap({ try URL(string: $0.attr("href")) }).first else {
@@ -44,19 +44,87 @@ extension FeedClient {
             return link
         }
         
+        @Sendable
+        func extractFaviconURL(data: Data, feed: Feed) throws -> URL? {
+            let html = try SwiftSoup.parse(String(decoding: data, as: UTF8.self))
+            let links = try html.select(#"link[rel="icon"], link[rel="shortcut icon"]"#)
+            guard let faviconURL = try links.compactMap({ try URL(string: $0.attr("href")) }).first else {
+                return nil
+            }
+            if faviconURL.scheme != nil {
+                return faviconURL
+            } else {
+                if faviconURL.absoluteString.hasPrefix("/"),
+                   let baseURL = feed.pageURL?.baseURL() ?? feed.url.baseURL() {
+                    guard var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
+                        return defaultFaviconURL(url: baseURL)
+                    }
+                    urlComponents.path = faviconURL.absoluteString
+                    return urlComponents.url ?? defaultFaviconURL(url: baseURL)
+                } else {
+                    return defaultFaviconURL(url: feed.pageURL ?? feed.url)
+                }
+            }
+        }
+        
+        @Sendable
+        func imageURL(of feed: Feed, htmlData: Data?) async -> URL? {
+            if let htmlData {
+                if let imageURL = try? extractFaviconURL(data: htmlData, feed: feed) {
+                    return imageURL
+                }
+                guard let pageURL = feed.pageURL else { return nil }
+                return defaultFaviconURL(url: pageURL)
+            } else {
+                guard let pageURL = feed.pageURL else { return nil }
+                do {
+                    let (htmlData, _) = try await fetchDataAndContentType(url: pageURL)
+                    if let imageURL = try? extractFaviconURL(data: htmlData, feed: feed) {
+                        return imageURL
+                    }
+                } catch {
+                    print(error)
+                }
+                return defaultFaviconURL(url: pageURL)
+            }
+        }
+        
+        @Sendable
+        func defaultFaviconURL(url: URL) -> URL? {
+            guard var faviconURLComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+                return nil
+            }
+            faviconURLComponents.path = "/favicon.ico"
+            faviconURLComponents.query = nil
+            faviconURLComponents.fragment = nil
+            return faviconURLComponents.url
+        }
+        
         return FeedClient(
             fetch: { url in
                 let (data, contentType) = try await fetchDataAndContentType(url: url)
                 switch contentType {
                 case .html:
-                    let feedURL = try await extractFeedURL(data: data)
-                    let (data, contentType) = try await fetchDataAndContentType(url: feedURL)
-                    guard contentType == .feed else { throw NSError(domain: "FeedClient", code: -4) }
-                    let feed = try await FeedParser(data: data).parseFeed()
-                    return feed.convert(url: feedURL)
+                    let feedURL = try extractFeedURL(data: data)
+                    let (feedData, feedContentType) = try await fetchDataAndContentType(url: feedURL)
+                    guard feedContentType == .feed else { throw NSError(domain: "FeedClient", code: -4) }
+                    let rawFeed = try await FeedParser(data: feedData).parseFeed()
+                    var feed = rawFeed.convert(url: feedURL)
+                    if feed.imageURL != nil {
+                        return feed
+                    } else {
+                        feed.imageURL = await imageURL(of: feed, htmlData: data)
+                        return feed
+                    }
                 case .feed:
-                    let feed = try await FeedParser(data: data).parseFeed()
-                    return feed.convert(url: url)
+                    let rawFeed = try await FeedParser(data: data).parseFeed()
+                    var feed = rawFeed.convert(url: url)
+                    if feed.imageURL != nil {
+                        return feed
+                    } else {
+                        feed.imageURL = await imageURL(of: feed, htmlData: nil)
+                        return feed
+                    }
                 }
             }
         )

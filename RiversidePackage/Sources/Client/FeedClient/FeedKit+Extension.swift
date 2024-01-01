@@ -22,8 +22,10 @@ extension FeedKit.Feed {
         case .rss(let rssFeed):
             Feed(
                 url: url,
+                pageURL: rssFeed.link.flatMap(URL.init(string:)) ?? url.baseURL(),
                 title: rssFeed.title ?? "",
                 overview: rssFeed.description ?? "",
+                imageURL: rssFeed.image?.url.flatMap(URL.init(string:)),
                 entries: rssFeed.items?.compactMap { item in
                     guard let urlString = item.link, let url = URL(string: urlString),
                           let publishedAt = item.pubDate else {
@@ -40,8 +42,10 @@ extension FeedKit.Feed {
         case .atom(let atomFeed):
             Feed(
                 url: url,
+                pageURL: atomFeed.links?.first(where: { $0.attributes?.type == "text/html" })?.attributes?.href.flatMap(URL.init(string:)) ?? url.baseURL(),
                 title: atomFeed.title ?? "",
                 overview: atomFeed.subtitle?.value ?? "",
+                imageURL: atomFeed.icon.flatMap(URL.init(string:)),
                 entries: atomFeed.entries?.compactMap { item in
                     guard let urlString = item.links?.first?.attributes?.href, let url = URL(string: urlString),
                           let publishedAt = item.published ?? item.updated else {
@@ -58,8 +62,10 @@ extension FeedKit.Feed {
         case .json(let jsonFeed):
             Feed(
                 url: url,
+                pageURL: jsonFeed.homePageURL.flatMap(URL.init(string:)) ?? url.baseURL(),
                 title: jsonFeed.title ?? "",
                 overview: jsonFeed.description ?? "",
+                imageURL: (jsonFeed.favicon ?? jsonFeed.icon).flatMap(URL.init(string:)),
                 entries: jsonFeed.items?.compactMap { item in
                     guard let urlString = item.url, let url = URL(string: urlString),
                           let publishedAt = item.datePublished else {
@@ -90,19 +96,4 @@ extension FeedKit.Feed {
             .trimmingPrefix(#/\s/#)
         return String(replaced.prefix(500))
     }
-}
-
-func normalizeURL(_ url: URL) -> URL? {
-     var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-
-     components?.query = nil
-
-     guard let newURL = components?.url else { return nil }
-
-     var urlString = newURL.absoluteString
-     if urlString.hasSuffix("/") {
-         urlString.removeLast()
-     }
-
-     return URL(string: urlString)
 }

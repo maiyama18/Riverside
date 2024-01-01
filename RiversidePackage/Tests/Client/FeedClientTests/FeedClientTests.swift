@@ -7,6 +7,14 @@ import XCTest
 final class FeedClientTests: XCTestCase {
     // HTML
     private static let maiyama4HTMLURL = URL(string: "https://maiyama4.hatenablog.com")!
+    private static let iOSDevWeeklyHTMLURL = URL(string: "https://iosdevweekly.com/issues")!
+    private static let r7kamuraHTMLURL = URL(string: "https://r7kamura.com/")!
+    private static let swiftUILabHTMLURL = URL(string: "https://swiftui-lab.com/")!
+    private static let qiitaHTMLURL = URL(string: "https://qiita.com/")!
+    private static let stackoverflowSwiftHTMLURL = URL(string: "https://stackoverflow.com/questions/tagged/?tagnames=swift&sort=newest")!
+    private static let phaNoteHTMLURL = URL(string: "https://note.com/pha/")!
+    private static let andanteHTMLURL = URL(string: "https://ofni.necocen.info/")!
+    private static let jxckHTMLURL = URL(string: "https://blog.jxck.io/")!
     
     // RSS
     private static let maiyama4RSSURL = URL(string: "https://maiyama4.hatenablog.com/rss")!
@@ -84,6 +92,14 @@ final class FeedClientTests: XCTestCase {
 
         // HTML
         try setFeedData(to: &responses, url: Self.maiyama4HTMLURL, responseType: .html, resourceName: "maiyama4")
+        try setFeedData(to: &responses, url: Self.iOSDevWeeklyHTMLURL, responseType: .html, resourceName: "iOSDevWeekly")
+        try setFeedData(to: &responses, url: Self.r7kamuraHTMLURL, responseType: .html, resourceName: "r7kamura")
+        try setFeedData(to: &responses, url: Self.swiftUILabHTMLURL, responseType: .html, resourceName: "swiftUILab")
+        try setFeedData(to: &responses, url: Self.qiitaHTMLURL, responseType: .html, resourceName: "qiita")
+        try setFeedData(to: &responses, url: Self.stackoverflowSwiftHTMLURL, responseType: .html, resourceName: "stackoverflowSwift")
+        try setFeedData(to: &responses, url: Self.phaNoteHTMLURL, responseType: .html, resourceName: "phaNote")
+        try setFeedData(to: &responses, url: Self.andanteHTMLURL, responseType: .html, resourceName: "andante")
+        try setFeedData(to: &responses, url: Self.jxckHTMLURL, responseType: .html, resourceName: "jxck")
         
         // RSS
         try setFeedData(to: &responses, url: Self.maiyama4RSSURL, responseType: .rssFeed, resourceName: "maiyama4_rss")
@@ -114,9 +130,10 @@ final class FeedClientTests: XCTestCase {
 
     func test_maiyama4_html() async throws {
         let feed = try await client.fetch(Self.maiyama4HTMLURL)
-        XCTAssertEqual(feed.url, Self.maiyama4HTMLURL)
+        XCTAssertEqual(feed.url, Self.maiyama4AtomURL)
         XCTAssertEqual(feed.title, "maiyama log")
         XCTAssertEqual(feed.overview, "")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://maiyama4.hatenablog.com/icon/favicon")!)
 
         XCTAssertEqual(feed.entries.count, 4)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -134,6 +151,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.maiyama4RSSURL)
         XCTAssertEqual(feed.title, "maiyama log")
         XCTAssertEqual(feed.overview, "")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://maiyama4.hatenablog.com/icon/favicon")!)
 
         XCTAssertEqual(feed.entries.count, 4)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -149,6 +167,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.iOSDevWeeklyURL)
         XCTAssertEqual(feed.title, "iOS Dev Weekly")
         XCTAssertEqual(feed.overview, "Subscribe to a hand-picked round-up of the best iOS development links every week. Curated by Dave Verwer and published every Friday. Free.")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://dxj7eshgz03ln.cloudfront.net/production/publication/publication_icon/1/favicon_442526aa-1e62-489a-87ac-8f09b5f0f867.png")!)
 
         XCTAssertEqual(feed.entries.count, 10)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -164,6 +183,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.iOSCodeReviewURL)
         XCTAssertEqual(feed.title, " iOS Code Review | Curated code improvement tips")
         XCTAssertEqual(feed.overview, "Bi-weekly newsletter amplifying code improvement tips from the Apple developer community in a bite-sized format. Swift, Objective-C, iOS, macOS, SwiftUI, UIKit and more.  Curated by Marina Gornostaeva and published every other Thursday. ")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://ioscodereview.com/favicon.png")!)
 
         XCTAssertEqual(feed.entries.count, 97)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -179,8 +199,9 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.r7kamuraURL)
         XCTAssertEqual(feed.title, "r7kamura.com")
         XCTAssertEqual(feed.overview, "r7kamuraの生活やプログラミングに関するウェブサイト")
-
+        XCTAssertEqual(feed.imageURL, URL(string: "https://r7kamura.com/favicon.ico")!)
         XCTAssertEqual(feed.entries.count, 20)
+
         let entry = try XCTUnwrap(feed.entries.first)
         XCTAssertEqual(entry.url, URL(string: "https://r7kamura.com/articles/2023-12-29-vscode-ruby-light"))
         XCTAssertEqual(entry.title, "vscode-ruby-light開発日記 - Prismパーサー導入編")
@@ -194,6 +215,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.swiftUILabURL)
         XCTAssertEqual(feed.title, "The SwiftUI Lab")
         XCTAssertEqual(feed.overview, "When the documentation is missing, we experiment.")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://swiftui-lab.com/favicon.ico")!)
 
         XCTAssertEqual(feed.entries.count, 25)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -209,6 +231,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.zennSwiftURL)
         XCTAssertEqual(feed.title, "Zennの「Swift」のフィード")
         XCTAssertEqual(feed.overview, "Zennのトピック「Swift」のRSSフィードです")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://storage.googleapis.com/zenn-user-upload/topics/84dd786118.png")!)
 
         XCTAssertEqual(feed.entries.count, 20)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -224,6 +247,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.qiitaSwiftURL)
         XCTAssertEqual(feed.title, "Swiftタグが付けられた新着記事 - Qiita")
         XCTAssertEqual(feed.overview, "")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://cdn.qiita.com/assets/favicons/public/production-c620d3e403342b1022967ba5e3db1aaa.ico")!)
 
         XCTAssertEqual(feed.entries.count, 4)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -239,6 +263,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.stackoverflowSwiftURL)
         XCTAssertEqual(feed.title, "Newest questions tagged swift - Stack Overflow")
         XCTAssertEqual(feed.overview, "most recent 30 from stackoverflow.com")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico?v=ec617d715196")!)
 
         XCTAssertEqual(feed.entries.count, 30)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -254,6 +279,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.phaNoteURL)
         XCTAssertEqual(feed.title, "pha")
         XCTAssertEqual(feed.overview, "毎日寝て暮らしたい。読んだ本の感想やだらだらした日常のことを書いている日記です。毎回最初の1日分は無料で読めるようにしています。雑誌などに書いた文章もここに載せたりします。")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://assets.st-note.com/poc-image/manual/note-common-images/production/svg/production.ico")!)
 
         XCTAssertEqual(feed.entries.count, 25)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -269,6 +295,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.naoyaSizumeURL)
         XCTAssertEqual(feed.title, "naoya - しずかなインターネット")
         XCTAssertEqual(feed.overview, "naoya さんの記事一覧のRSSフィードです")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://r2.sizu.me/users/15658/avatar.jpeg?v=1701072017204")!)
 
         XCTAssertEqual(feed.entries.count, 3)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -286,6 +313,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.maiyama4AtomURL)
         XCTAssertEqual(feed.title, "maiyama log")
         XCTAssertEqual(feed.overview, "")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://maiyama4.hatenablog.com/icon/favicon")!)
 
         XCTAssertEqual(feed.entries.count, 4)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -301,7 +329,8 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.jessesquiresAtomURL)
         XCTAssertEqual(feed.title, "Jesse Squires")
         XCTAssertEqual(feed.overview, "Turing complete with a stack of 0xdeadbeef")
-
+        XCTAssertEqual(feed.imageURL, URL(string: "https://www.jessesquires.com/img/logo.png")!)
+    
         XCTAssertEqual(feed.entries.count, 30)
         let entry = try XCTUnwrap(feed.entries.first)
         XCTAssertEqual(entry.url, URL(string: "https://www.jessesquires.com/blog/2023/12/29/reading-list-2023/"))
@@ -316,6 +345,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.andanteURL)
         XCTAssertEqual(feed.title, "andante")
         XCTAssertEqual(feed.overview, "個人的な日記です")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://ofni.necocen.info/static/favicon.png")!)
 
         XCTAssertEqual(feed.entries.count, 10)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -334,6 +364,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.jxckURL)
         XCTAssertEqual(feed.title, "blog.jxck.io")
         XCTAssertEqual(feed.overview, "")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://blog.jxck.io/assets/img/jxck.svg")!)
 
         XCTAssertEqual(feed.entries.count, 185)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -351,6 +382,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.jessesquiresJSONURL)
         XCTAssertEqual(feed.title, "Jesse Squires")
         XCTAssertEqual(feed.overview, "Turing complete with a stack of 0xdeadbeef")
+        XCTAssertEqual(feed.imageURL, URL(string: "https://www.jessesquires.com/favicon.ico")!)
 
         XCTAssertEqual(feed.entries.count, 31)
         let entry = try XCTUnwrap(feed.entries.first)

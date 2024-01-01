@@ -32,7 +32,7 @@ public final class URLProtocolStub: URLProtocol {
         defer { client?.urlProtocolDidFinishLoading(self) }
 
         guard let url = request.url,
-              let response = Self.responses[url] else {
+              let response = Self.responses[url] ?? Self.responses[toggleTrailingSlash(url: url)] else {
             client?.urlProtocol(self, didFailWithError: NSError(domain: "stub response not match", code: 0))
             return
         }
@@ -53,4 +53,14 @@ public final class URLProtocolStub: URLProtocol {
     }
 
     override public func stopLoading() {}
+    
+    private func toggleTrailingSlash(url: URL) -> URL {
+        var urlString = url.absoluteString
+        if urlString.hasSuffix("/") {
+            urlString.removeLast()
+        } else {
+            urlString += "/"
+        }
+        return URL(string: urlString)!
+    }
 }

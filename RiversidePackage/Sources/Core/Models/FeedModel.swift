@@ -6,11 +6,12 @@ public final class FeedModel {
     public let url: String = ""
     public let title: String = ""
     public let overview: String? = nil
+    public let imageURL: String? = nil
     
     @Relationship(deleteRule: .cascade)
     public var entries: [EntryModel]?
     
-    public init(url: String, title: String, overview: String?) {
+    public init(url: String, title: String, overview: String?, imageURL: String?) {
         self.url = url
         self.title = title
         self.overview = overview

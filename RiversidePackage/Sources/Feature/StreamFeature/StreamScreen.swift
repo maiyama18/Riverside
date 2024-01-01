@@ -77,7 +77,7 @@ public struct StreamScreen: View {
                     .listStyle(.plain)
                 }
             }
-            .navigationTitle("Stream")
+            .navigationTitle(navigationTitle)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
@@ -110,6 +110,11 @@ public struct StreamScreen: View {
     
     private var sections: [StreamSection] {
         StreamSectionBuilder.build(entries: entries, unreadOnly: unreadOnly)
+    }
+    
+    private var navigationTitle: String {
+        let unreadCount = entries.filter { !$0.read }.count
+        return unreadCount == 0 ? "Stream" : "Stream (\(unreadCount))"
     }
 }
 

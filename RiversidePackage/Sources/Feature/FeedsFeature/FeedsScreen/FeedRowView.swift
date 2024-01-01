@@ -26,5 +26,5 @@ struct FeedRowView: View {
 }
 
 #Preview {
-    FeedRowView(feed: .init(url: "https://example.com", title: "Sample Feed", overview: nil))
+    FeedRowView(feed: .init(url: "https://example.com", title: "Sample Feed", overview: nil, imageURL: nil))
 }
