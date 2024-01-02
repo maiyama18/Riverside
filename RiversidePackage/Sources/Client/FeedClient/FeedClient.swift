@@ -48,7 +48,7 @@ extension FeedClient {
         func extractFaviconURL(data: Data, feed: Feed) throws -> URL? {
             let html = try SwiftSoup.parse(String(decoding: data, as: UTF8.self))
             let links = try html.select(#"link[rel="icon"], link[rel="shortcut icon"]"#)
-            guard let faviconURL = try links.compactMap({ try URL(string: $0.attr("href")) }).first else {
+            guard let faviconURL = try links.compactMap({ try URL(string: $0.attr("href")) }).filter({ !$0.absoluteString.contains("svg") }).first else {
                 return nil
             }
             if faviconURL.scheme != nil {
