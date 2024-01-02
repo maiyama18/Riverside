@@ -15,6 +15,7 @@ public final class FeedModel {
         self.url = url
         self.title = title
         self.overview = overview
+        self.imageURL = imageURL
     }
     
     public var unreadCount: Int {
