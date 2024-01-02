@@ -96,6 +96,13 @@ let targets: [PackageDescription.Target] = [
         ],
         path: "Tests/Client/FeedClientTests",
         resources: [.process("Resources")]
+    ),
+    .testTarget(
+        name: "UtilitiesTests",
+        dependencies: [
+            "Utilities",
+        ],
+        path: "Tests/Core/UtilitiesTests"
     )
 ].map { (target: PackageDescription.Target) -> PackageDescription.Target in
     guard target.type != .plugin else { return target }
@@ -132,6 +139,7 @@ let package = Package(
             ]
         ),
         .library(name: "FeedClient", targets: ["FeedClient"]),
+        .library(name: "Utilities", targets: ["Utilities"]),
     ],
     dependencies: dependencies,
     targets: targets

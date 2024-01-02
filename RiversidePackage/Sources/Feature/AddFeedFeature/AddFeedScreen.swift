@@ -99,8 +99,8 @@ public struct AddFeedScreen: View {
         guard case .fetched(let feed) = feedState, let feed else {
             return false
         }
-        // TODO: URLComponents で比較するのが良い
-        return feeds.contains(where: { $0.url == feed.url.absoluteString })
+        let addedFeedURLs = feeds.map(\.url).compactMap(URL.init(string:))
+        return addedFeedURLs.contains(where: { $0.isSame(as: feed.url) })
     }
     
     private func fetchFeed() async  {
