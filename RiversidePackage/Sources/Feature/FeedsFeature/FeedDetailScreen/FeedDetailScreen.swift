@@ -8,6 +8,8 @@ import Utilities
 struct FeedDetailScreen: View {
     private let feed: FeedModel
     
+    @Environment(\.modelContext) private var context
+    
     @Query private var entries: [EntryModel]
     
     @AppStorage("unread-only-feed-detail") private var unreadOnly: Bool = true
@@ -38,6 +40,26 @@ struct FeedDetailScreen: View {
                                 guard let url = URL(string: entry.url) else { return }
                                 entry.read = true
                                 showSafari(url: url)
+                            }
+                            .swipeActions(
+                                edge: .trailing,
+                                allowsFullSwipe: false
+                            ) {
+                                Button {
+                                    entry.read = true
+                                } label: {
+                                    Image(systemName: "checkmark")
+                                }
+                                .tint(.blue)
+                                
+                                #if DEBUG
+                                Button {
+                                    context.delete(entry)
+                                } label: {
+                                    Image(systemName: "trash")
+                                }
+                                .tint(.red)
+                                #endif
                             }
                     }
                 }
