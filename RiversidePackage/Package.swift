@@ -25,6 +25,7 @@ let targets: [PackageDescription.Target] = [
             "FeedsFeature",
             "Models",
             "NavigationState",
+            "SettingsFeature",
             "StreamFeature",
         ],
         path: "Sources/App/IOSApp"
@@ -46,6 +47,13 @@ let targets: [PackageDescription.Target] = [
             "NavigationState",
         ],
         path: "Sources/Feature/FeedsFeature"
+    ),
+    .target(
+        name: "SettingsFeature",
+        dependencies: [
+            "NavigationState",
+        ],
+        path: "Sources/Feature/SettingsFeature"
     ),
     .target(
         name: "StreamFeature",
@@ -135,6 +143,7 @@ let package = Package(
             targets: [
                 "AddFeedFeature",
                 "FeedsFeature",
+                "SettingsFeature",
                 "StreamFeature",
             ]
         ),

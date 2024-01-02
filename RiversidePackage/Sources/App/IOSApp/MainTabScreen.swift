@@ -1,5 +1,6 @@
 import FeedsFeature
 import NavigationState
+import SettingsFeature
 import StreamFeature
 import SwiftUI
 
@@ -25,7 +26,7 @@ struct MainTabScreen: View {
                     }
                     .tag(MainTab.feeds)
 
-                Text("Settings")
+                SettingsScreen()
                     .tabItem {
                         Label("Settings", systemImage: "gearshape")
                     }
