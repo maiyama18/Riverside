@@ -5,15 +5,23 @@ import PackageDescription
 // MARK: - Dependencies
 
 let dependencies: [PackageDescription.Package.Dependency] = [
+    // Libraries
     .package(url: "https://github.com/nmdias/FeedKit", exact: "9.1.2"),
     .package(url: "https://github.com/scinfu/SwiftSoup", exact: "2.6.1"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.1.5"),
+    
+    // Plugins
+    .package(url: "https://github.com/maiyama18/LicensesPlugin", exact: "0.1.6"),
 ]
 
 extension PackageDescription.Target.Dependency {
     static let feedKit: Self = .product(name: "FeedKit", package: "FeedKit")
     static let swiftSoup: Self = .product(name: "SwiftSoup", package: "SwiftSoup")
     static let dependencies: Self = .product(name: "Dependencies", package: "swift-dependencies")
+}
+
+extension PackageDescription.Target.PluginUsage {
+    static let licenses: Self = .plugin(name: "LicensesPlugin", package: "LicensesPlugin")
 }
 
 // MARK: - Targets
@@ -53,7 +61,8 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             "NavigationState",
         ],
-        path: "Sources/Feature/SettingsFeature"
+        path: "Sources/Feature/SettingsFeature",
+        plugins: [.licenses]
     ),
     .target(
         name: "StreamFeature",

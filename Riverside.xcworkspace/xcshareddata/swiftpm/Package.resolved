@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "licensesplugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/maiyama18/LicensesPlugin",
+      "state" : {
+        "revision" : "b303f6b92427d6236e63bd75b559f095101817aa",
+        "version" : "0.1.6"
+      }
+    },
+    {
       "identity" : "swift-clocks",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-clocks",
