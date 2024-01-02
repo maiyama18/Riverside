@@ -24,3 +24,47 @@ public extension Feed {
         return (feedModel, entryModels)
     }
 }
+
+extension Feed {
+    public enum PreviewContents {
+        public static let maiyama4: Feed = Feed(
+            url: URL(string: "https://maiyama4.hatenablog.com/rss")!,
+            pageURL: URL(string: "https://maiyama4.hatenablog.com/")!,
+            title: "maiyama log",
+            overview: nil,
+            imageURL: URL(string: "https://maiyama4.hatenablog.com/icon/favicon")!,
+            entries: Array(repeating: Feed.Entry.PreviewContents.random(), count: 4)
+        )
+        
+        public static let jessesquires: Feed = Feed(
+            url: URL(string: "https://www.jessesquires.com/feed.xml")!,
+            pageURL: URL(string: "https://www.jessesquires.com")!,
+            title: "Jesse Squires",
+            overview: "Turing complete with a stack of 0xdeadbeef",
+            imageURL: URL(string: "https://www.jessesquires.com/img/logo.png")!,
+            entries: Array(repeating: Feed.Entry.PreviewContents.random(), count: 10)
+        )
+        
+        public static let phaNote: Feed = Feed(
+            url: URL(string: "https://note.com/pha/rss")!,
+            pageURL: URL(string: "https://note.com/pha")!,
+            title: "pha",
+            overview: "毎日寝て暮らしたい。読んだ本の感想やだらだらした日常のことを書いている日記です。毎回最初の1日分は無料で読めるようにしています。雑誌などに書いた文章もここに載せたりします。",
+            imageURL: URL(string: "https://assets.st-note.com/poc-image/manual/note-common-images/production/svg/production.ico")!,
+            entries: Array(repeating: Feed.Entry.PreviewContents.random(), count: 15)
+        )
+    }
+}
+
+extension Feed.Entry {
+    public enum PreviewContents {
+        public static func random() -> Feed.Entry {
+            .init(
+                url: URL(string: "https://example.com/" + UUID().uuidString)!,
+                title: "Title",
+                publishedAt: .now,
+                content: nil
+            )
+        }
+    }
+}

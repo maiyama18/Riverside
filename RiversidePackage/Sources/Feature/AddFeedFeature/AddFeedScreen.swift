@@ -42,29 +42,11 @@ public struct AddFeedScreen: View {
                         EmptyView()
                     case .fetched(let feed):
                         if let feed {
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(feed.title)
-                                    Text(feed.url.absoluteString)
-                                        .foregroundStyle(.secondary)
-                                        .font(.caption)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                                Button {
-                                    addFeed()
-                                } label: {
-                                    if currentFeedAlreadyAdded {
-                                        Text("Already added")
-                                            .font(.caption)
-                                    } else {
-                                        Image(systemName: "plus")
-                                            .padding(.vertical, 8)
-                                            .padding(.leading, 8)
-                                    }
-                                }
-                                .disabled(currentFeedAlreadyAdded)
-                            }
+                            FeedSummaryView(
+                                feed: feed,
+                                feedAlreadyAdded: currentFeedAlreadyAdded,
+                                onAddTapped: { addFeed() }
+                            )
                         }
                     case .failed(let error):
                         HStack {
@@ -117,6 +99,7 @@ public struct AddFeedScreen: View {
         guard case .fetched(let feed) = feedState, let feed else {
             return false
         }
+        // TODO: URLComponents で比較するのが良い
         return feeds.contains(where: { $0.url == feed.url.absoluteString })
     }
     
