@@ -19,10 +19,6 @@ struct FeedSummaryView: View {
                         .frame(width: 40, height: 40)
                         .clipShape(Circle())
                 }
-                .overlay {
-                    Circle()
-                        .stroke(.black, lineWidth: 0.5)
-                }
             }
             
             HStack(alignment: .center) {
