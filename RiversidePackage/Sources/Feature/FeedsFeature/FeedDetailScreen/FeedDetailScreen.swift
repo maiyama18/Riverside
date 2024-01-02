@@ -1,3 +1,4 @@
+import Algorithms
 import Dependencies
 import FeedUseCase
 @preconcurrency import Models
@@ -108,6 +109,6 @@ struct FeedDetailScreen: View {
     }
     
     private var filteredEntries: [EntryModel] {
-        entries.filter { unreadOnly ? $0.read == false : true }
+        entries.uniqued(on: \.url).filter { unreadOnly ? $0.read == false : true }
     }
 }

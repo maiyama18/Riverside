@@ -1,3 +1,4 @@
+import Algorithms
 import Foundation
 import Models
 
@@ -11,7 +12,7 @@ enum StreamSectionBuilder {
         var calendar = Calendar.current
         calendar.timeZone = NSTimeZone.local
         
-        let sections: [StreamSection] = Dictionary(grouping: entries.filter({ unreadOnly ? $0.read == false : true })) { entry -> Date in
+        let sections: [StreamSection] = Dictionary(grouping: entries.uniqued(on: \.url).filter({ unreadOnly ? $0.read == false : true })) { entry -> Date in
             calendar.startOfDay(for: entry.publishedAt)
         }.map { (publishedDate, entries) -> StreamSection in
             StreamSection(publishedDate: publishedDate, entries: entries)
