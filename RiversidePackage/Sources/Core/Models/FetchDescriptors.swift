@@ -9,7 +9,10 @@ public extension FeedModel {
 
 public extension EntryModel {
     static var all: FetchDescriptor<EntryModel> {
-        FetchDescriptor(sortBy: [SortDescriptor(\.publishedAt, order: .reverse)])
+        FetchDescriptor(
+            predicate: #Predicate { $0.feed != nil },
+            sortBy: [SortDescriptor(\.publishedAt, order: .reverse)]
+        )
     }
     
     static func all(for feed: FeedModel) -> FetchDescriptor<EntryModel> {

@@ -14,14 +14,20 @@ public struct Feed: Sendable {
     public let title: String
     public let overview: String?
     public var imageURL: URL?
-    public let entries: [Entry]
+    public var entries: [Entry]
 }
 
 public extension Feed {
     func toModel() -> (FeedModel, [EntryModel]) {
         let feedModel = FeedModel(url: url.absoluteString, title: title, overview: overview, imageURL: imageURL?.absoluteString)
-        let entryModels = entries.map { EntryModel(url: $0.url.absoluteString, title: $0.title, publishedAt: $0.publishedAt, content: $0.content) }
+        let entryModels = entries.map { $0.toModel() }
         return (feedModel, entryModels)
+    }
+}
+
+public extension Feed.Entry {
+    func toModel() -> EntryModel {
+        EntryModel(url: url.absoluteString, title: title, publishedAt: publishedAt, content: content)
     }
 }
 

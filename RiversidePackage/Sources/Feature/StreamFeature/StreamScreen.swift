@@ -1,12 +1,17 @@
+import Dependencies
+import FeedUseCase
 import Models
 import NavigationState
-import SwiftData
+@preconcurrency import SwiftData
 import SwiftUI
 import Utilities
 
 @MainActor
 public struct StreamScreen: View {
+    @Dependency(\.feedUseCase) private var feedUseCase
+    
     @Environment(NavigationState.self) private var navigationState
+    @Environment(\.modelContext) private var context
     
     @Query(EntryModel.all, animation: .default) var entries: [EntryModel]
     @Query(FeedModel.all) var feeds: [FeedModel]
@@ -104,6 +109,13 @@ public struct StreamScreen: View {
                     Text("Confirm")
                 }
                 Button(role: .cancel, action: {}) { Text("Cancel") }
+            }
+            .task {
+                do {
+                    try await feedUseCase.addNewEpisodesForAllFeeds(context)
+                } catch {
+                    print(error)
+                }
             }
         }
     }

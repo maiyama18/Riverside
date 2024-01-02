@@ -1,4 +1,6 @@
-import Models
+import Dependencies
+import FeedUseCase
+@preconcurrency import Models
 import NavigationState
 import SwiftData
 import SwiftUI
@@ -7,6 +9,8 @@ import Utilities
 @MainActor
 struct FeedDetailScreen: View {
     private let feed: FeedModel
+    
+    @Dependency(\.feedUseCase) private var feedUseCase
     
     @Environment(\.modelContext) private var context
     
@@ -64,6 +68,13 @@ struct FeedDetailScreen: View {
                     }
                 }
                 .listStyle(.plain)
+            }
+        }
+        .task {
+            do {
+                try await feedUseCase.addNewEpisodes(feed)
+            } catch {
+                print(error)
             }
         }
         .navigationTitle(feed.title)

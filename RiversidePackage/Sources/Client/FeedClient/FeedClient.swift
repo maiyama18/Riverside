@@ -137,6 +137,7 @@ public extension DependencyValues {
         set { self[FeedClientKey.self] = newValue }
     }
 }
+
 private enum FeedClientKey: DependencyKey {
     static let liveValue: FeedClient = .live(urlSession: .shared)
 }

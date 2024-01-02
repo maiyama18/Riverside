@@ -51,6 +51,7 @@ let targets: [PackageDescription.Target] = [
         name: "FeedsFeature",
         dependencies: [
             "AddFeedFeature",
+            "FeedUseCase",
             "Models",
             "NavigationState",
         ],
@@ -67,10 +68,19 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "StreamFeature",
         dependencies: [
+            "FeedUseCase",
             "Models",
             "NavigationState",
         ],
         path: "Sources/Feature/StreamFeature"
+    ),
+    .target(
+        name: "FeedUseCase",
+        dependencies: [
+            "FeedClient",
+            "Models",
+        ],
+        path: "Sources/UseCase/FeedUseCase"
     ),
     .target(
         name: "NavigationState",

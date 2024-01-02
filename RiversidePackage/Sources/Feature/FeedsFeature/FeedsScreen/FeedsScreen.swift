@@ -1,4 +1,6 @@
 import AddFeedFeature
+import Dependencies
+import FeedUseCase
 import Models
 import NavigationState
 import SwiftData
@@ -7,6 +9,8 @@ import Utilities
 
 @MainActor
 public struct FeedsScreen: View {
+    @Dependency(\.feedUseCase) private var feedUseCase
+    
     @Environment(NavigationState.self) private var navigationState
     @Environment(\.modelContext) private var context
     
@@ -78,6 +82,13 @@ public struct FeedsScreen: View {
                 case .feedDetail(let feed):
                     FeedDetailScreen(feed: feed)
                 }
+            }
+        }
+        .task {
+            do {
+                try await feedUseCase.addNewEpisodesForAllFeeds(context)
+            } catch {
+                print(error)
             }
         }
     }
