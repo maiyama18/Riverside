@@ -9,10 +9,23 @@ import Utilities
 
 @MainActor
 public struct FeedsScreen: View {
+    enum Presentation: Identifiable {
+        case remove(feed: FeedModel)
+        
+        var id: String {
+            switch self {
+            case .remove(let feed):
+                return "remove-\(feed.id)"
+            }
+        }
+    }
+    
     @Dependency(\.feedUseCase) private var feedUseCase
     
     @Environment(NavigationState.self) private var navigationState
     @Environment(\.modelContext) private var context
+    
+    @State private var presentation: Presentation? = nil
     
     @Query(FeedModel.all, animation: .default) var feeds: [FeedModel]
     
@@ -49,7 +62,7 @@ public struct FeedsScreen: View {
                                         allowsFullSwipe: false
                                     ) {
                                         Button {
-                                            context.delete(feed)
+                                            presentation = .remove(feed: feed)
                                         } label: {
                                             Image(systemName: "trash")
                                         }
@@ -89,6 +102,18 @@ public struct FeedsScreen: View {
                 try await feedUseCase.addNewEpisodesForAllFeeds(context)
             } catch {
                 print(error)
+            }
+        }
+        .alert(item: $presentation) { presentation in
+            switch presentation {
+            case .remove(let feed):
+                Alert(
+                    title: Text("Are you sure to remove feed '\(feed.title)'"),
+                    primaryButton: .destructive(Text("Remove")) {
+                        context.delete(feed)
+                    },
+                    secondaryButton: .cancel()
+                )
             }
         }
     }
