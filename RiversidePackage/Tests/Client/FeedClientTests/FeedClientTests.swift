@@ -279,7 +279,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.phaNoteURL)
         XCTAssertEqual(feed.title, "pha")
         XCTAssertEqual(feed.overview, "毎日寝て暮らしたい。読んだ本の感想やだらだらした日常のことを書いている日記です。毎回最初の1日分は無料で読めるようにしています。雑誌などに書いた文章もここに載せたりします。")
-        XCTAssertEqual(feed.imageURL, URL(string: "https://assets.st-note.com/poc-image/manual/note-common-images/production/svg/production.ico")!)
+        XCTAssertEqual(feed.imageURL, URL(string: "https://assets.st-note.com/poc-image/manual/note-common-images/production/icons/android-chrome-192x192.png")!)
 
         XCTAssertEqual(feed.entries.count, 25)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -364,7 +364,7 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(feed.url, Self.jxckURL)
         XCTAssertEqual(feed.title, "blog.jxck.io")
         XCTAssertEqual(feed.overview, "")
-        XCTAssertEqual(feed.imageURL, URL(string: "https://blog.jxck.io/assets/img/jxck.svg")!)
+        XCTAssertEqual(feed.imageURL, URL(string: "https://blog.jxck.io/assets/img/jxck.120x120.png")!)
 
         XCTAssertEqual(feed.entries.count, 185)
         let entry = try XCTUnwrap(feed.entries.first)
