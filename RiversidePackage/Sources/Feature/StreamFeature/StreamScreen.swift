@@ -90,7 +90,7 @@ public struct StreamScreen: View {
                         Button("Mark all as read...") { markAllAsReadDialogPresented = true }
                             .disabled(entries.filter { !$0.read }.isEmpty)
                     } label: {
-                        Image(systemName: "ellipsis.circle")
+                        Image(systemName: "ellipsis")
                     }
                 }
             }
@@ -130,6 +130,8 @@ public struct StreamScreen: View {
     }
 }
 
-#Preview {
+#Preview { @MainActor in
     StreamScreen()
+        .environment(NavigationState())
+        .modelContainer(previewContainer())
 }

@@ -86,7 +86,7 @@ struct FeedDetailScreen: View {
                     Button("Mark all as read...") { markAllAsReadDialogPresented = true }
                         .disabled(entries.filter { !$0.read }.isEmpty)
                 } label: {
-                    Image(systemName: "ellipsis.circle")
+                    Image(systemName: "ellipsis")
                 }
             }
         }
