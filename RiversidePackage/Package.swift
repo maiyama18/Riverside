@@ -10,6 +10,7 @@ let dependencies: [PackageDescription.Package.Dependency] = [
     .package(url: "https://github.com/scinfu/SwiftSoup", exact: "2.6.1"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.1.5"),
     .package(url: "https://github.com/apple/swift-algorithms", exact: "1.2.0"),
+    .package(url: "https://github.com/omaralbeik/Drops", exact: "1.7.0"),
     
     // Plugins
     .package(url: "https://github.com/maiyama18/LicensesPlugin", exact: "0.1.6"),
@@ -20,6 +21,7 @@ extension PackageDescription.Target.Dependency {
     static let swiftSoup: Self = .product(name: "SwiftSoup", package: "SwiftSoup")
     static let dependencies: Self = .product(name: "Dependencies", package: "swift-dependencies")
     static let algorithms: Self = .product(name: "Algorithms", package: "swift-algorithms")
+    static let drops: Self = .product(name: "Drops", package: "Drops")
 }
 
 extension PackageDescription.Target.PluginUsage {
@@ -103,6 +105,14 @@ let targets: [PackageDescription.Target] = [
         ],
         path: "Sources/Client/FeedClient",
         exclude: ["FeedClient.xctestplan"]
+    ),
+    .target(
+        name: "FlashClient",
+        dependencies: [
+            .dependencies,
+            .drops,
+        ],
+        path: "Sources/Client/FlashClient"
     ),
     .target(
         name: "Models",
