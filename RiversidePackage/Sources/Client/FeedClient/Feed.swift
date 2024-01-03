@@ -20,7 +20,7 @@ public struct Feed: Sendable {
 public extension Feed {
     func toModel() -> (FeedModel, [EntryModel]) {
         let feedModel = FeedModel(url: url.absoluteString, title: title, overview: overview, imageURL: imageURL?.absoluteString)
-        let entryModels = entries.map { $0.toModel() }
+        let entryModels = entries.sorted(by: { $0.publishedAt > $1.publishedAt }).map { $0.toModel() }
         return (feedModel, entryModels)
     }
 }

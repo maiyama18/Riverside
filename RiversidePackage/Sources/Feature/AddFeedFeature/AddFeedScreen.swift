@@ -138,7 +138,8 @@ public struct AddFeedScreen: View {
             
             context.insert(feedModel)
             try context.save()
-            for entryModel in entryModels {
+            for (i, entryModel) in entryModels.enumerated() {
+                entryModel.read = i >= 3
                 entryModel.feed = feedModel
             }
             
