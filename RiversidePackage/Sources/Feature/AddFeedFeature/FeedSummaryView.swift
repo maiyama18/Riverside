@@ -1,5 +1,6 @@
 import FeedClient
 import SwiftUI
+import UIComponents
 
 struct FeedSummaryView: View {
     let feed: Feed
@@ -9,16 +10,7 @@ struct FeedSummaryView: View {
     var body: some View {
         HStack(alignment: .top) {
             if let imageURL = feed.imageURL {
-                AsyncImage(url: imageURL) { image in
-                    image
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                } placeholder: {
-                    Color.gray.opacity(0.3)
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                }
+                FeedImage(url: imageURL, size: 44)
             }
             
             HStack(alignment: .center) {

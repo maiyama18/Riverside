@@ -1,5 +1,6 @@
 import Models
 import SwiftUI
+import UIComponents
 
 @MainActor
 struct EntryRowView: View {
@@ -9,21 +10,13 @@ struct EntryRowView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
-                if let imageURLString = entry.feed?.imageURL,
-                   let imageURL = URL(string: imageURLString) {
-                    AsyncImage(url: imageURL) { image in
-                        image
-                            .resizable()
-                            .frame(width: 32, height: 32)
-                            .clipShape(Circle())
-                    } placeholder: {
-                        Color.gray.opacity(0.3)
-                            .frame(width: 32, height: 32)
-                            .clipShape(Circle())
-                    }
+                if let imageURLString = entry.feed?.imageURL {
+                    FeedImage(url: URL(string: imageURLString), size: 32)
+                } else {
+                    FeedImage.default(size: 32)
                 }
                 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 0) {
                     Text(entry.title)
                         .bold()
                         .lineLimit(2)
@@ -35,6 +28,7 @@ struct EntryRowView: View {
                             Text(feed.title)
                                 .font(.footnote)
                                 .underline(true)
+                                .padding(.vertical, 2)
                         }
                         .buttonStyle(.plain)
                     }

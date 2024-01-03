@@ -1,5 +1,6 @@
 import Models
 import SwiftUI
+import UIComponents
 
 @MainActor
 struct FeedRowView: View {
@@ -7,22 +8,10 @@ struct FeedRowView: View {
     
     var body: some View {
         HStack {
-            if let imageURLString = feed.imageURL, let imageURL = URL(string: imageURLString) {
-                AsyncImage(url: imageURL) { image in
-                    image
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                } placeholder: {
-                    Color.gray.opacity(0.3)
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                }
+            if let imageURLString = feed.imageURL {
+                FeedImage(url: URL(string: imageURLString), size: 44)
             } else {
-                Image(systemName: "newspaper.circle.fill")
-                    .resizable()
-                    .foregroundStyle(.secondary)
-                    .frame(width: 40, height: 40)
+                FeedImage.default(size: 44)
             }
             
             VStack(alignment: .leading, spacing: 4) {

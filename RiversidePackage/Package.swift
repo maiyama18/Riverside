@@ -11,6 +11,7 @@ let dependencies: [PackageDescription.Package.Dependency] = [
     .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.1.5"),
     .package(url: "https://github.com/apple/swift-algorithms", exact: "1.2.0"),
     .package(url: "https://github.com/omaralbeik/Drops", exact: "1.7.0"),
+    .package(url: "https://github.com/kean/Nuke", exact: "12.2.0"),
     
     // Plugins
     .package(url: "https://github.com/maiyama18/LicensesPlugin", exact: "0.1.6"),
@@ -22,6 +23,7 @@ extension PackageDescription.Target.Dependency {
     static let dependencies: Self = .product(name: "Dependencies", package: "swift-dependencies")
     static let algorithms: Self = .product(name: "Algorithms", package: "swift-algorithms")
     static let drops: Self = .product(name: "Drops", package: "Drops")
+    static let nukeUI: Self = .product(name: "NukeUI", package: "Nuke")
 }
 
 extension PackageDescription.Target.PluginUsage {
@@ -49,6 +51,7 @@ let targets: [PackageDescription.Target] = [
             "FlashClient",
             "Models",
             "Utilities",
+            "UIComponents",
         ],
         path: "Sources/Feature/AddFeedFeature"
     ),
@@ -60,6 +63,7 @@ let targets: [PackageDescription.Target] = [
             "FeedUseCase",
             "Models",
             "NavigationState",
+            "UIComponents",
         ],
         path: "Sources/Feature/FeedsFeature"
     ),
@@ -124,6 +128,13 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Core/Utilities"
     ),
     .target(
+        name: "UIComponents",
+        dependencies: [
+            .nukeUI,
+        ],
+        path: "Sources/Core/UIComponents"
+    ),
+    .target(
         name: "TestHelpers",
         dependencies: [
             .dependencies,
@@ -183,6 +194,7 @@ let package = Package(
         ),
         .library(name: "FeedClient", targets: ["FeedClient"]),
         .library(name: "Utilities", targets: ["Utilities"]),
+        .library(name: "UIComponents", targets: ["UIComponents"]),
     ],
     dependencies: dependencies,
     targets: targets
