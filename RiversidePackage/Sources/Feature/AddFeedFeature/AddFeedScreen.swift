@@ -1,5 +1,6 @@
 import Dependencies
 import FeedClient
+import FlashClient
 import Models
 import SwiftData
 import SwiftUI
@@ -13,6 +14,8 @@ public struct AddFeedScreen: View {
     @Query(FeedModel.all) private var feeds: [FeedModel]
     
     @Dependency(\.feedClient) private var feedClient
+    @Dependency(\.flashClient) private var flashClient
+    
     @Environment(\.modelContext) private var context
     
     public init() {}
@@ -143,7 +146,7 @@ public struct AddFeedScreen: View {
             feedState = .fetched(nil)
         } catch {
             context.rollback()
-            print(error)
+            flashClient.present(.error, "Failed to add feed: \(error.localizedDescription)")
         }
     }
 }
