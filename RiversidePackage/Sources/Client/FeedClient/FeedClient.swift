@@ -2,6 +2,7 @@ import Dependencies
 import FeedKit
 import Foundation
 import SwiftSoup
+import Utilities
 
 public struct FeedClient: Sendable {
     public var fetch: @Sendable (_ url: URL) async throws -> Feed
@@ -23,13 +24,24 @@ extension FeedClient {
                 throw NSError(domain: "FeedClient", code: -1)
             }
             
-            let contentType: ContentType = if contentTypeString.contains("text/html") {
-                .html
-            } else if contentTypeString.contains("application") && contentTypeString.contains(#/(xml|json)/#) {
-                .feed
-            } else {
-                throw NSError(domain: "FeedClient", code: -2)
-            }
+            let contentType: ContentType = try {
+                if contentTypeString.contains("html") {
+                    return .html
+                } else if contentTypeString.contains(#/(xml|json)/#) {
+                    return .feed
+                } else {
+                    let string = String(decoding: data, as: UTF8.self).lowercased()
+                    if string.hasPrefix("<!DOCTYPE html") || string.hasPrefix("<html") {
+                        return .html
+                    } else if string.hasPrefix("<?xml") || string.hasPrefix("<rss") || string.hasPrefix("{") {
+                        return .feed
+                    } else {
+                        throw NSError(domain: "FeedClient", code: -2, userInfo: [
+                            NSLocalizedDescriptionKey: "Failed to determine content type from response",
+                        ])
+                    }
+                }
+            }()
             
             return (data, contentType)
         }
@@ -39,7 +51,9 @@ extension FeedClient {
             let html = try SwiftSoup.parse(String(decoding: data, as: UTF8.self))
             let links = try html.select("link[rel=alternate][type=application/rss+xml], link[rel=alternate][type=application/atom+xml]")
             guard let link = try links.compactMap({ try URL(string: $0.attr("href")) }).first else {
-                throw NSError(domain: "FeedClient", code: -3)
+                throw NSError(domain: "FeedClient", code: -3, userInfo: [
+                    NSLocalizedDescriptionKey: "Cannot find feed URL",
+                ])
             }
             return link
         }
@@ -54,38 +68,41 @@ extension FeedClient {
             if faviconURL.scheme != nil {
                 return faviconURL
             } else {
-                if faviconURL.absoluteString.hasPrefix("/"),
-                   let baseURL = feed.pageURL?.baseURL() ?? feed.url.baseURL() {
-                    guard var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
-                        return defaultFaviconURL(url: baseURL)
-                    }
-                    urlComponents.path = faviconURL.absoluteString
-                    return urlComponents.url ?? defaultFaviconURL(url: baseURL)
-                } else {
-                    return defaultFaviconURL(url: feed.pageURL ?? feed.url)
-                }
+                return faviconURL.insertBaseURLIfNeeded(referenceURL: feed.pageURL ?? feed.url)
             }
         }
         
         @Sendable
         func imageURL(of feed: Feed, htmlData: Data?) async -> URL? {
+            func defaultURLOrNil(originalURL: URL) async -> URL? {
+                guard let defaultURL = defaultFaviconURL(url: originalURL),
+                      defaultURL.isValid() else {
+                    return nil
+                }
+                
+                return await isResponseOK(url: defaultURL) ? defaultURL : nil
+            }
+            
             if let htmlData {
-                if let imageURL = try? extractFaviconURL(data: htmlData, feed: feed) {
+                if let imageURL = try? extractFaviconURL(data: htmlData, feed: feed),
+                   imageURL.isValid(),
+                   await isResponseOK(url: imageURL) {
                     return imageURL
                 }
                 guard let pageURL = feed.pageURL else { return nil }
-                return defaultFaviconURL(url: pageURL)
+                return await defaultURLOrNil(originalURL: pageURL)
             } else {
                 guard let pageURL = feed.pageURL else { return nil }
                 do {
                     let (htmlData, _) = try await fetchDataAndContentType(url: pageURL)
-                    if let imageURL = try? extractFaviconURL(data: htmlData, feed: feed) {
+                    if let imageURL = try? extractFaviconURL(data: htmlData, feed: feed),
+                       imageURL.isValid() {
                         return imageURL
                     }
                 } catch {
                     print(error)
                 }
-                return defaultFaviconURL(url: pageURL)
+                return await defaultURLOrNil(originalURL: pageURL)
             }
         }
         
@@ -100,12 +117,27 @@ extension FeedClient {
             return faviconURLComponents.url
         }
         
+        @Sendable
+        func isResponseOK(url: URL) async -> Bool {
+            do {
+                let (_, response) = try await urlSession.data(from: url)
+                if let response = response as? HTTPURLResponse,
+                   response.statusCode == 200 {
+                    return true
+                } else {
+                    return false
+                }
+            } catch {
+                return false
+            }
+        }
+        
         return FeedClient(
             fetch: { url in
                 let (data, contentType) = try await fetchDataAndContentType(url: url)
                 switch contentType {
                 case .html:
-                    let feedURL = try extractFeedURL(data: data)
+                    let feedURL = try extractFeedURL(data: data).insertBaseURLIfNeeded(referenceURL: url)
                     let (feedData, feedContentType) = try await fetchDataAndContentType(url: feedURL)
                     guard feedContentType == .feed else { throw NSError(domain: "FeedClient", code: -4) }
                     let rawFeed = try await FeedParser(data: feedData).parseFeed()

@@ -15,4 +15,18 @@ extension URL {
         
         return components.url
     }
+    
+    func insertBaseURLIfNeeded(referenceURL: URL) -> URL {
+        if scheme != nil && host() != nil { return self }
+        
+        if let baseURL = referenceURL.baseURL() {
+            guard var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
+                return self
+            }
+            urlComponents.path = absoluteString.hasPrefix("/") ? absoluteString : "/\(absoluteString)"
+            return urlComponents.url ?? self
+        } else {
+            return self
+        }
+    }
 }

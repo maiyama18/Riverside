@@ -16,6 +16,10 @@ final class FeedClientTests: XCTestCase {
     private static let andanteHTMLURL = URL(string: "https://ofni.necocen.info/")!
     private static let jxckHTMLURL = URL(string: "https://blog.jxck.io/")!
     
+    // Favicon
+    private static let r7kamuraFaviconURL = URL(string: "https://r7kamura.com/favicon.ico")!
+    private static let swiftUILabFaviconURL = URL(string: "https://swiftui-lab.com/favicon.ico")!
+    
     // RSS
     private static let maiyama4RSSURL = URL(string: "https://maiyama4.hatenablog.com/rss")!
     private static let iOSDevWeeklyURL = URL(string: "https://iosdevweekly.com/issues.rss")!
@@ -100,6 +104,16 @@ final class FeedClientTests: XCTestCase {
         try setFeedData(to: &responses, url: Self.phaNoteHTMLURL, responseType: .html, resourceName: "phaNote")
         try setFeedData(to: &responses, url: Self.andanteHTMLURL, responseType: .html, resourceName: "andante")
         try setFeedData(to: &responses, url: Self.jxckHTMLURL, responseType: .html, resourceName: "jxck")
+        
+        // Favicon
+        for url in [Self.r7kamuraFaviconURL, Self.swiftUILabFaviconURL] {
+            responses[url] = .success(
+                .init(
+                    statusCode: 200, data: Data(),
+                    headerFields: ["Content-Type": "image/png"]
+                )
+            )
+        }
         
         // RSS
         try setFeedData(to: &responses, url: Self.maiyama4RSSURL, responseType: .rssFeed, resourceName: "maiyama4_rss")
