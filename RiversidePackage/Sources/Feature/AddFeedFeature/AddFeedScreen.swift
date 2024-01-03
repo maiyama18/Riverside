@@ -145,6 +145,8 @@ public struct AddFeedScreen: View {
             
             text = ""
             feedState = .fetched(nil)
+            
+            flashClient.present(.info, "'\(feedModel.title)' is added")
         } catch {
             context.rollback()
             flashClient.present(.error, "Failed to add feed: \(error.localizedDescription)")
