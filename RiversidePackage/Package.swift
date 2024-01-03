@@ -82,6 +82,7 @@ let targets: [PackageDescription.Target] = [
             "FeedUseCase",
             "Models",
             "NavigationState",
+            "UIComponents",
         ],
         path: "Sources/Feature/StreamFeature"
     ),
