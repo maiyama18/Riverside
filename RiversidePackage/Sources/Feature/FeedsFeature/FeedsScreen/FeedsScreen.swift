@@ -11,11 +11,14 @@ import Utilities
 public struct FeedsScreen: View {
     enum Presentation: Identifiable {
         case remove(feed: FeedModel)
+        case markAsRead(feed: FeedModel)
         
         var id: String {
             switch self {
             case .remove(let feed):
-                return "remove-\(feed.id)"
+                "remove-\(feed.id)"
+            case .markAsRead(let feed):
+                "mark-as-read-\(feed.id)"
             }
         }
     }
@@ -67,6 +70,15 @@ public struct FeedsScreen: View {
                                             Image(systemName: "trash")
                                         }
                                         .tint(.red)
+                                        
+                                        if feed.unreadCount > 0 {
+                                            Button {
+                                                presentation = .markAsRead(feed: feed)
+                                            } label: {
+                                                Image(systemName: "checkmark")
+                                            }
+                                            .tint(.blue)
+                                        }
                                     }
                             }
                         }
@@ -111,6 +123,17 @@ public struct FeedsScreen: View {
                     title: Text("Are you sure to remove feed '\(feed.title)'"),
                     primaryButton: .destructive(Text("Remove")) {
                         context.delete(feed)
+                    },
+                    secondaryButton: .cancel()
+                )
+            case .markAsRead(let feed):
+                Alert(
+                    title: Text("Mark all entries of '\(feed.title)' as read?"),
+                    primaryButton: .default(Text("Confirm")) {
+                        guard let entries = feed.entries else { return }
+                        for entry in entries {
+                            entry.read = true
+                        }
                     },
                     secondaryButton: .cancel()
                 )
