@@ -20,6 +20,7 @@ struct EntryRowView: View {
                     Text(entry.title)
                         .bold()
                         .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                     
                     if let feed = entry.feed {
                         Button {
@@ -28,7 +29,7 @@ struct EntryRowView: View {
                             Text(feed.title)
                                 .font(.footnote)
                                 .underline(true)
-                                .padding(.vertical, 2)
+                                .padding(.vertical, 4)
                         }
                         .buttonStyle(.plain)
                     }
@@ -36,7 +37,7 @@ struct EntryRowView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             
-            if let content = entry.content {
+            if let content = entry.content, !content.isEmpty {
                 Text(content)
                     .font(.footnote)
                     .foregroundStyle(.secondary)

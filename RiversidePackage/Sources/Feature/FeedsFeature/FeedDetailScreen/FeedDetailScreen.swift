@@ -41,6 +41,7 @@ struct FeedDetailScreen: View {
                 List {
                     ForEach(filteredEntries) { entry in
                         EntryRowView(entry: entry)
+                            .contentShape(Rectangle())
                             .onTapGesture {
                                 guard let url = URL(string: entry.url) else { return }
                                 entry.read = true

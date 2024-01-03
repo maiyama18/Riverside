@@ -14,7 +14,7 @@ struct EntryRowView: View {
                 .bold()
                 .lineLimit(2)
             
-            if let content = entry.content {
+            if let content = entry.content, !content.isEmpty {
                 Text(content)
                     .font(.footnote)
                     .foregroundStyle(.secondary)

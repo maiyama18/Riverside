@@ -67,6 +67,7 @@ public struct StreamScreen: View {
                                             }
                                         }
                                     )
+                                    .contentShape(Rectangle())
                                     .onTapGesture {
                                         guard let url = URL(string: entry.url) else { return }
                                         entry.read = true
