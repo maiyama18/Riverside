@@ -7,8 +7,8 @@ import SwiftData
 import SwiftUI
 
 public struct FeedUseCase: Sendable {
-    public var addNewEpisodes: @Sendable (_ feed: FeedModel) async throws -> Void
-    public var addNewEpisodesForAllFeeds: @Sendable (_ context: ModelContext, _ force: Bool) async throws -> Void
+    public var addNewEpisodes: @Sendable @MainActor (_ feed: FeedModel) async throws -> Void
+    public var addNewEpisodesForAllFeeds: @Sendable @MainActor (_ context: ModelContext, _ force: Bool) async throws -> Void
 }
 
 extension FeedUseCase {
@@ -16,6 +16,7 @@ extension FeedUseCase {
         @Dependency(\.feedClient) var feedClient
         
         @Sendable
+        @MainActor
         func addNewEpisodes(for feed: FeedModel) async throws {
             guard let feedURL = URL(string: feed.url) else {
                 throw NSError(domain: "FeedUseCase", code: -1)
