@@ -27,7 +27,7 @@ extension FeedClient {
             let contentType: ContentType = try {
                 if contentTypeString.contains("html") {
                     return .html
-                } else if contentTypeString.contains(#/(xml|json)/#) {
+                } else if contentTypeString.contains(/(xml|json)/) {
                     return .feed
                 } else {
                     let string = String(decoding: data, as: UTF8.self).lowercased()

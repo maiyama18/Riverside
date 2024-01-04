@@ -91,9 +91,9 @@ extension FeedKit.Feed {
 
     private func sanitizeEntryContent(_ string: String) -> String {
         let replaced = string
-            .replacing(#/<[^>]+>/#, with: "")
-            .replacing(#/\s+/#, with: " ")
-            .trimmingPrefix(#/\s/#)
+            .replacing(/<[^>]+>/, with: "")
+            .replacing(/\s+/, with: " ")
+            .trimmingPrefix(/\s/)
         return String(replaced.prefix(500))
     }
 }

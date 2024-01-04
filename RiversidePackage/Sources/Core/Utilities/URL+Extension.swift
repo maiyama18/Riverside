@@ -2,7 +2,7 @@ import Foundation
 
 public extension URL {
     func isValid() -> Bool {
-        absoluteString.firstMatch(of: #/https?:\/\/[\w-]+(\.[\w-]+)+[\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-]/#) != nil
+        absoluteString.firstMatch(of: /https?:\/\/[\w-]+(\.[\w-]+)+[\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-]/) != nil
     }
     
     func isSame(as other: URL) -> Bool {
