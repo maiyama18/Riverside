@@ -36,6 +36,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSApp",
         dependencies: [
+            "CloudSyncState",
             "FeedsFeature",
             "Models",
             "NavigationState",
@@ -70,6 +71,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "SettingsFeature",
         dependencies: [
+            "CloudSyncState",
             "NavigationState",
         ],
         path: "Sources/Feature/SettingsFeature",
@@ -93,6 +95,10 @@ let targets: [PackageDescription.Target] = [
             "Models",
         ],
         path: "Sources/UseCase/FeedUseCase"
+    ),
+    .target(
+        name: "CloudSyncState",
+        path: "Sources/State/CloudSyncState"
     ),
     .target(
         name: "NavigationState",

@@ -1,3 +1,4 @@
+import CoreData
 import FeedsFeature
 import NavigationState
 import SettingsFeature

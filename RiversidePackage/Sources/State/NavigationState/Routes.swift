@@ -6,6 +6,7 @@ public enum FeedsRoute: Hashable {
 }
 
 public enum SettingsRoute: Hashable {
+    case cloudSyncStatus
     case licenses
     case licenseDetail(licenseName: String, licenseText: String)
 }

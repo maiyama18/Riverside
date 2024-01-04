@@ -8,6 +8,10 @@ public struct SettingsScreen: View {
         NavigationStack {
             List {
                 Section {
+                    NavigationLink(value: SettingsRoute.cloudSyncStatus) { Text("Cloud Sync Status") }
+                }
+                
+                Section {
                     if let versionString {
                         HStack {
                             Text("Version")
@@ -22,10 +26,7 @@ public struct SettingsScreen: View {
                     }
                     
                     NavigationLink(value: SettingsRoute.licenses) { Text("Licenses") }
-                } header: {
-                    Text("About App")
                 }
-
             }
             .navigationTitle("Settings")
             .navigationDestination(for: SettingsRoute.self) { route in
@@ -34,6 +35,8 @@ public struct SettingsScreen: View {
                     LicensesScreen()
                 case .licenseDetail(let licenseName, let licenseText):
                     LicenseDetailScreen(licenseName: licenseName, licenseText: licenseText)
+                case .cloudSyncStatus:
+                    CloudSyncScreen()
                 }
             }
         }
