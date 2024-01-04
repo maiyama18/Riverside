@@ -3,7 +3,7 @@ import FeedUseCase
 import FlashClient
 import Models
 import NavigationState
-@preconcurrency import SwiftData
+import SwiftData
 import SwiftUI
 import Utilities
 

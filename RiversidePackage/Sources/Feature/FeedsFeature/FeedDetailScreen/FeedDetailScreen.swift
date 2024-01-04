@@ -2,7 +2,7 @@ import Algorithms
 import Dependencies
 import FeedUseCase
 import FlashClient
-@preconcurrency import Models
+import Models
 import NavigationState
 import SwiftData
 import SwiftUI
