@@ -167,6 +167,7 @@ let targets: [PackageDescription.Target] = [
             [
                 "-strict-concurrency=complete",
                 "-enable-actor-data-race-checks",
+                "-enable-upcoming-feature", "ExistentialAny"
             ],
             .when(configuration: .debug)
         )
