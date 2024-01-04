@@ -24,9 +24,20 @@ public struct AddFeedScreen: View {
         NavigationStack {
             List {
                 Section {
-                    TextField("URL", text: $text, prompt: Text("https://..."))
-                        .keyboardType(.URL)
-                        .textInputAutocapitalization(.never)
+                    HStack {
+                        TextField("URL", text: $text, prompt: Text("https://..."))
+                            .keyboardType(.URL)
+                            .textInputAutocapitalization(.never)
+                        
+                        Button {
+                            text = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .tint(.secondary)
+                                .padding(4)
+                                .offset(x: 4)
+                        }
+                    }
                 } header: {
                     Text("Blog/Feed URL")
                         .textCase(nil)
