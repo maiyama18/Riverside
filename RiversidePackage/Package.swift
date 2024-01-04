@@ -169,6 +169,7 @@ let targets: [PackageDescription.Target] = [
                 "-enable-actor-data-race-checks",
                 "-enable-upcoming-feature", "ExistentialAny",
                 "-enable-upcoming-feature", "BareSlashRegexLiterals",
+                "-enable-upcoming-feature", "DisableOutwardActorInference",
             ],
             .when(configuration: .debug)
         )
