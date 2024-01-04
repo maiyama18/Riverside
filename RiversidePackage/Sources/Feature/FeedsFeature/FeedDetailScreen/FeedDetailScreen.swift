@@ -1,4 +1,5 @@
 import Algorithms
+import CloudSyncState
 import Dependencies
 import FeedUseCase
 import FlashClient
@@ -15,6 +16,7 @@ struct FeedDetailScreen: View {
     @Dependency(\.feedUseCase) private var feedUseCase
     @Dependency(\.flashClient) private var flashClient
     
+    @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(\.modelContext) private var context
     
     @Query private var entries: [EntryModel]
@@ -91,12 +93,18 @@ struct FeedDetailScreen: View {
         .navigationTitle(feed.title)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Toggle(isOn: $unreadOnly) { Text("Unread only") }
-                    Button("Mark all as read...") { markAllAsReadDialogPresented = true }
-                        .disabled(entries.filter { !$0.read }.isEmpty)
-                } label: {
-                    Image(systemName: "ellipsis")
+                HStack {
+                    if cloudSyncState.syncing {
+                        ProgressView()
+                    }
+                    
+                    Menu {
+                        Toggle(isOn: $unreadOnly) { Text("Unread only") }
+                        Button("Mark all as read...") { markAllAsReadDialogPresented = true }
+                            .disabled(entries.filter { !$0.read }.isEmpty)
+                    } label: {
+                        Image(systemName: "ellipsis")
+                    }
                 }
             }
         }

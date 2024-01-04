@@ -1,3 +1,4 @@
+import CloudSyncState
 import Dependencies
 import FeedUseCase
 import FlashClient
@@ -12,6 +13,7 @@ public struct StreamScreen: View {
     @Dependency(\.feedUseCase) private var feedUseCase
     @Dependency(\.flashClient) private var flashClient
     
+    @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(NavigationState.self) private var navigationState
     @Environment(\.modelContext) private var context
     
@@ -95,12 +97,18 @@ public struct StreamScreen: View {
             .navigationTitle(navigationTitle)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        Toggle(isOn: $unreadOnly) { Text("Unread only") }
-                        Button("Mark all as read...") { markAllAsReadDialogPresented = true }
-                            .disabled(entries.filter { !$0.read }.isEmpty)
-                    } label: {
-                        Image(systemName: "ellipsis")
+                    HStack {
+                        if cloudSyncState.syncing {
+                            ProgressView()
+                        }
+                        
+                        Menu {
+                            Toggle(isOn: $unreadOnly) { Text("Unread only") }
+                            Button("Mark all as read...") { markAllAsReadDialogPresented = true }
+                                .disabled(entries.filter { !$0.read }.isEmpty)
+                        } label: {
+                            Image(systemName: "ellipsis")
+                        }
                     }
                 }
             }
@@ -142,6 +150,7 @@ public struct StreamScreen: View {
 
 #Preview { @MainActor in
     StreamScreen()
+        .environment(CloudSyncState())
         .environment(NavigationState())
         .modelContainer(previewContainer())
 }

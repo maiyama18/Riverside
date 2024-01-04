@@ -1,4 +1,5 @@
 import AddFeedFeature
+import CloudSyncState
 import Dependencies
 import FeedUseCase
 import Models
@@ -25,6 +26,7 @@ public struct FeedsScreen: View {
     
     @Dependency(\.feedUseCase) private var feedUseCase
     
+    @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(NavigationState.self) private var navigationState
     @Environment(\.modelContext) private var context
     
@@ -102,6 +104,13 @@ public struct FeedsScreen: View {
                 }
             }
             .navigationTitle("Feeds")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    if cloudSyncState.syncing {
+                        ProgressView()
+                    }
+                }
+            }
             .navigationDestination(for: FeedsRoute.self) { route in
                 switch route {
                 case .feedDetail(let feed):

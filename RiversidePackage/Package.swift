@@ -61,6 +61,7 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             .algorithms,
             "AddFeedFeature",
+            "CloudSyncState",
             "FeedUseCase",
             "Models",
             "NavigationState",
@@ -81,7 +82,9 @@ let targets: [PackageDescription.Target] = [
         name: "StreamFeature",
         dependencies: [
             .algorithms,
+            "CloudSyncState",
             "FeedUseCase",
+            "FlashClient",
             "Models",
             "NavigationState",
             "UIComponents",

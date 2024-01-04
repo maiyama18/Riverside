@@ -4,6 +4,7 @@ import Foundation
 import Observation
 
 @Observable
+@MainActor
 public final class CloudSyncState {
     public enum SyncStatus {
         case notStarted
@@ -25,7 +26,7 @@ public final class CloudSyncState {
             return false
         }
         
-        init(event: Event) {
+        init(event: NSPersistentCloudKitContainer.Event) {
             if let endDate = event.endDate {
                 if let error = event.error {
                     self = .failed(date: endDate, error: error)
@@ -69,14 +70,6 @@ public final class CloudSyncState {
         }
     }
     
-    typealias Event = NSPersistentCloudKitContainer.Event
-    
-    private static let eventsPublisher: some Publisher<Event, Never> = NotificationCenter.default
-        .publisher(for: NSPersistentCloudKitContainer.eventChangedNotification)
-        .compactMap { notification in
-            notification.userInfo?[NSPersistentCloudKitContainer.eventNotificationUserInfoKey] as? Event
-        }
-        
     public var importStatus: SyncStatus = .notStarted
     public var exportStatus: SyncStatus = .notStarted
     
@@ -87,7 +80,14 @@ public final class CloudSyncState {
     private var cancellable: AnyCancellable? = nil
     
     public init() {
-        cancellable = Self.eventsPublisher
+        cancellable = NotificationCenter.default
+            .publisher(for: NSPersistentCloudKitContainer.eventChangedNotification)
+            .receive(on: DispatchQueue.main)
+            .compactMap { notification in
+                notification.userInfo?[
+                    NSPersistentCloudKitContainer.eventNotificationUserInfoKey
+                ] as? NSPersistentCloudKitContainer.Event
+            }
             .sink { [weak self] event in
                 guard let self else { return }
                 
