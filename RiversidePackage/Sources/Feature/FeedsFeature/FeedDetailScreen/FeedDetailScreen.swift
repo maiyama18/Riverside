@@ -1,6 +1,7 @@
 import Algorithms
 import Dependencies
 import FeedUseCase
+import FlashClient
 @preconcurrency import Models
 import NavigationState
 import SwiftData
@@ -12,6 +13,7 @@ struct FeedDetailScreen: View {
     private let feed: FeedModel
     
     @Dependency(\.feedUseCase) private var feedUseCase
+    @Dependency(\.flashClient) private var flashClient
     
     @Environment(\.modelContext) private var context
     
@@ -70,6 +72,13 @@ struct FeedDetailScreen: View {
                     }
                 }
                 .listStyle(.plain)
+                .refreshable {
+                    do {
+                        try await feedUseCase.addNewEpisodes(feed)
+                    } catch {
+                        flashClient.present(.error, "Failed refresh feed: \(error.localizedDescription)")
+                    }
+                }
             }
         }
         .task {

@@ -8,7 +8,7 @@ import SwiftUI
 
 public struct FeedUseCase: Sendable {
     public var addNewEpisodes: @Sendable (_ feed: FeedModel) async throws -> Void
-    public var addNewEpisodesForAllFeeds: @Sendable (_ context: ModelContext) async throws -> Void
+    public var addNewEpisodesForAllFeeds: @Sendable (_ context: ModelContext, _ force: Bool) async throws -> Void
 }
 
 extension FeedUseCase {
@@ -42,6 +42,11 @@ extension FeedUseCase {
         }
         
         @Sendable
+        func deleteLastAddExecutionDate() {
+            UserDefaults.standard.removeObject(forKey: "last-all-episodes-fetched-at")
+        }
+        
+        @Sendable
         func setLastAddExecutionDate(date: Date) {
             UserDefaults.standard.setValue(date, forKey: "last-all-episodes-fetched-at")
         }
@@ -50,10 +55,14 @@ extension FeedUseCase {
             addNewEpisodes: { feed in
                 try await addNewEpisodes(for: feed)
             },
-            addNewEpisodesForAllFeeds: { context in
+            addNewEpisodesForAllFeeds: { context, force in
+                if force {
+                    deleteLastAddExecutionDate()
+                }
+                
                 if let lastExecutionDate = getLastAddExecutionDate(),
                    // 10 min
-                   Date.now.timeIntervalSince(lastExecutionDate) < 1 * 10 {
+                   Date.now.timeIntervalSince(lastExecutionDate) < 60 * 10 {
                     return
                 }
                 

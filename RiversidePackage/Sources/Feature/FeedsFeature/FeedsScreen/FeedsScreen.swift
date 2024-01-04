@@ -111,7 +111,7 @@ public struct FeedsScreen: View {
         }
         .task {
             do {
-                try await feedUseCase.addNewEpisodesForAllFeeds(context)
+                try await feedUseCase.addNewEpisodesForAllFeeds(context, false)
             } catch {
                 print(error)
             }

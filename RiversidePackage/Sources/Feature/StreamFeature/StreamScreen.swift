@@ -1,5 +1,6 @@
 import Dependencies
 import FeedUseCase
+import FlashClient
 import Models
 import NavigationState
 @preconcurrency import SwiftData
@@ -9,6 +10,7 @@ import Utilities
 @MainActor
 public struct StreamScreen: View {
     @Dependency(\.feedUseCase) private var feedUseCase
+    @Dependency(\.flashClient) private var flashClient
     
     @Environment(NavigationState.self) private var navigationState
     @Environment(\.modelContext) private var context
@@ -81,6 +83,13 @@ public struct StreamScreen: View {
                         }
                     }
                     .listStyle(.plain)
+                    .refreshable {
+                        do {
+                            try await feedUseCase.addNewEpisodesForAllFeeds(context, true)
+                        } catch {
+                            flashClient.present(.error, "Failed to refresh feeds: \(error.localizedDescription)")
+                        }
+                    }
                 }
             }
             .navigationTitle(navigationTitle)
@@ -113,7 +122,7 @@ public struct StreamScreen: View {
             }
             .task {
                 do {
-                    try await feedUseCase.addNewEpisodesForAllFeeds(context)
+                    try await feedUseCase.addNewEpisodesForAllFeeds(context, false)
                 } catch {
                     print(error)
                 }
