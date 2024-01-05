@@ -1,4 +1,5 @@
 import Algorithms
+import ClipboardClient
 import CloudSyncState
 import Dependencies
 import FeedUseCase
@@ -13,6 +14,7 @@ import Utilities
 struct FeedDetailScreen: View {
     private let feed: FeedModel
     
+    @Dependency(\.clipboardClient) private var clipboardClient
     @Dependency(\.feedUseCase) private var feedUseCase
     @Dependency(\.flashClient) private var flashClient
     
@@ -99,9 +101,18 @@ struct FeedDetailScreen: View {
                     }
                     
                     Menu {
-                        Toggle(isOn: $unreadOnly) { Text("Unread only") }
-                        Button("Mark all as read...") { markAllAsReadDialogPresented = true }
-                            .disabled(entries.filter { !$0.read }.isEmpty)
+                        Section {
+                            Toggle(isOn: $unreadOnly) { Text("Unread only") }
+                        }
+                        
+                        Section {
+                            Button("Mark all as read...") { markAllAsReadDialogPresented = true }
+                                .disabled(entries.filter { !$0.read }.isEmpty)
+                            Button("Copy Feed URL") {
+                                clipboardClient.copy(feed.url)
+                                flashClient.present(.info, "Copied!\n\(feed.url)")
+                            }
+                        }
                     } label: {
                         Image(systemName: "ellipsis")
                     }

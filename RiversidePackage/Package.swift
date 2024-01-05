@@ -61,6 +61,7 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             .algorithms,
             "AddFeedFeature",
+            "ClipboardClient",
             "CloudSyncState",
             "FeedUseCase",
             "Models",
@@ -109,6 +110,13 @@ let targets: [PackageDescription.Target] = [
             "Models",
         ],
         path: "Sources/State/NavigationState"
+    ),
+    .target(
+        name: "ClipboardClient",
+        dependencies: [
+            .dependencies,
+        ],
+        path: "Sources/Client/ClipboardClient"
     ),
     .target(
         name: "FeedClient",
@@ -179,8 +187,7 @@ let targets: [PackageDescription.Target] = [
                 "-enable-upcoming-feature", "ExistentialAny",
                 "-enable-upcoming-feature", "BareSlashRegexLiterals",
                 "-enable-upcoming-feature", "DisableOutwardActorInference",
-            ],
-            .when(configuration: .debug)
+            ]
         )
     )
     target.swiftSettings = swiftSettings
