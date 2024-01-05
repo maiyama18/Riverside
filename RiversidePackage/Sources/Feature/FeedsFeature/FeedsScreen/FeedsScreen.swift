@@ -153,6 +153,7 @@ public struct FeedsScreen: View {
 
 #Preview { @MainActor in
     FeedsScreen()
+        .environment(CloudSyncState())
         .environment(NavigationState())
         .modelContainer(previewContainer())
 }
