@@ -95,6 +95,7 @@ public struct StreamScreen: View {
                 }
             }
             .navigationTitle(navigationTitle)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack {

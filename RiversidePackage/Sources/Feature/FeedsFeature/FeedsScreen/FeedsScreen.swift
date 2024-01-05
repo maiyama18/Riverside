@@ -104,6 +104,7 @@ public struct FeedsScreen: View {
                 }
             }
             .navigationTitle("Feeds")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     if cloudSyncState.syncing {
