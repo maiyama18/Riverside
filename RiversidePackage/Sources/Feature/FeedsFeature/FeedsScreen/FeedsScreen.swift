@@ -90,10 +90,16 @@ public struct FeedsScreen: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        navigationState.feedsPresentation = .addFeed
-                    } label: {
-                        Image(systemName: "plus")
+                    HStack {
+                        if cloudSyncState.syncing {
+                            ProgressView()
+                        }
+                        
+                        Button {
+                            navigationState.feedsPresentation = .addFeed
+                        } label: {
+                            Image(systemName: "plus")
+                        }
                     }
                 }
             }
@@ -105,13 +111,6 @@ public struct FeedsScreen: View {
             }
             .navigationTitle("Feeds")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    if cloudSyncState.syncing {
-                        ProgressView()
-                    }
-                }
-            }
             .navigationDestination(for: FeedsRoute.self) { route in
                 switch route {
                 case .feedDetail(let feed):
