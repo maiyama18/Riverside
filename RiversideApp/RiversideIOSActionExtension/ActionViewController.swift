@@ -23,10 +23,10 @@ final class ActionViewController: UIViewController {
         contentView.addSubview(contentViewController.view)
         contentViewController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: contentViewController.view.topAnchor),
-            view.bottomAnchor.constraint(equalTo: contentViewController.view.bottomAnchor),
-            view.leadingAnchor.constraint(equalTo: contentViewController.view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: contentViewController.view.trailingAnchor),
+            contentView.topAnchor.constraint(equalTo: contentViewController.view.topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: contentViewController.view.bottomAnchor),
+            contentView.leadingAnchor.constraint(equalTo: contentViewController.view.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: contentViewController.view.trailingAnchor),
         ])
     }
 
