@@ -1,13 +1,17 @@
 import Models
 import SwiftUI
-import UIComponents
 
 @MainActor
-struct EntryRowView: View {
-    let entry: EntryModel
-    let onFeedTapped: (FeedModel) -> Void
+public struct StreamEntryRowView: View {
+    private let entry: EntryModel
+    private let onFeedTapped: (FeedModel) -> Void
     
-    var body: some View {
+    public init(entry: EntryModel, onFeedTapped: @escaping (FeedModel) -> Void) {
+        self.entry = entry
+        self.onFeedTapped = onFeedTapped
+    }
+    
+    public var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
                 if let imageURLString = entry.feed?.imageURL {

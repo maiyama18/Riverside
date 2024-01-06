@@ -2,10 +2,14 @@ import Models
 import SwiftUI
 
 @MainActor
-struct EntryRowView: View {
-    let entry: EntryModel
+public struct FeedEntryRowView: View {
+    private let entry: EntryModel
     
-    var body: some View {
+    public init(entry: EntryModel) {
+        self.entry = entry
+    }
+    
+    public var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(entry.publishedAt.formatted(date: .numeric, time: .omitted))
                 .font(.footnote.monospacedDigit())

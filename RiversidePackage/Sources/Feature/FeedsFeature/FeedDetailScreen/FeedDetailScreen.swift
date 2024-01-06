@@ -9,6 +9,7 @@ import NavigationState
 import SwiftData
 import SwiftUI
 import Utilities
+import UIComponents
 
 @MainActor
 struct FeedDetailScreen: View {
@@ -46,7 +47,7 @@ struct FeedDetailScreen: View {
             } else {
                 List {
                     ForEach(filteredEntries) { entry in
-                        EntryRowView(entry: entry)
+                        FeedEntryRowView(entry: entry)
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 guard let url = URL(string: entry.url) else { return }

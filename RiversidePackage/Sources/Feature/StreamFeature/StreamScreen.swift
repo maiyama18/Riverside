@@ -6,6 +6,7 @@ import Models
 import NavigationState
 import SwiftData
 import SwiftUI
+import UIComponents
 import Utilities
 
 @MainActor
@@ -63,7 +64,7 @@ public struct StreamScreen: View {
                         ForEach(sections, id: \.publishedDate) { section in
                             Section {
                                 ForEach(section.entries) { entry in
-                                    EntryRowView(
+                                    StreamEntryRowView(
                                         entry: entry,
                                         onFeedTapped: { feed in
                                             Task {
