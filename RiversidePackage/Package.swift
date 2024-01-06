@@ -48,7 +48,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSActionExtension",
         dependencies: [
-            "FeedClient",
+            "FeedUseCase",
             "Models",
         ],
         path: "Sources/App/IOSActionExtension"

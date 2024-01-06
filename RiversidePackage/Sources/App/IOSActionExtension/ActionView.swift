@@ -1,15 +1,28 @@
 import Combine
+import Models
+import SwiftData
 import SwiftUI
 
-public struct ActionView: View {
+public struct ActionContainerView: View {
     let model: ActionModel
     
     public var body: some View {
+        ActionView(model: model)
+            .modelContainer(for: FeedModel.self)
+    }
+}
+
+struct ActionView: View {
+    let model: ActionModel
+    
+    @Environment(\.modelContext) private var context
+    
+    var body: some View {
         Group {
             switch model.result {
             case nil:
                 ProgressView()
-            case .success(let url):
+            case .success(let feed):
                 VStack(spacing: 12) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 72))
@@ -19,7 +32,11 @@ public struct ActionView: View {
                         Text("Subscribed!")
                             .font(.title.bold())
                         
-                        Text(url.absoluteString)
+                        Text(feed.title)
+                        
+                        Text(feed.url.absoluteString)
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
                     }
                 }
             case .failure(let error):
@@ -34,7 +51,7 @@ public struct ActionView: View {
             }
         }
         .task {
-            await model.onAppear()
+            await model.onAppear(context: context)
         }
     }
 }
@@ -60,6 +77,6 @@ import UniformTypeIdentifiers
             return item
         }()
         
-        ActionView(model: .init(inputItems: [item]))
+        ActionView(model: .init(inputItems: [item], successCompletion: {}))
     }
 }

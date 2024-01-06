@@ -14,7 +14,7 @@ public struct FeedUseCase: Sendable {
     
     public var addNewEpisodes: @Sendable @MainActor (_ feed: FeedModel) async throws -> Void
     public var addNewEpisodesForAllFeeds: @Sendable @MainActor (_ context: ModelContext, _ force: Bool) async throws -> Void
-    public var subscribeFeed: @Sendable @MainActor (_ context: ModelContext, _ input: SubscribeInput) async throws -> Void
+    public var subscribeFeed: @Sendable @MainActor (_ context: ModelContext, _ input: SubscribeInput) async throws -> Feed
 }
 
 extension FeedUseCase {
@@ -110,6 +110,7 @@ extension FeedUseCase {
                     entryModel.read = i >= 3
                     entryModel.feed = feedModel
                 }
+                return feed
             }
         )
     }
