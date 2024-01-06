@@ -26,14 +26,6 @@ struct SidebarListView: View {
     
     @Query(FeedModel.all) private var feeds: [FeedModel]
     
-    private var navigationTitle: String {
-        if let selectedFeedID {
-            feeds.first(where: { $0.id == selectedFeedID })?.title ?? ""
-        } else {
-            "All"
-        }
-    }
-    
     var body: some View {
         List(selection: $selectedFeedID) {
             Section {
@@ -62,7 +54,6 @@ struct SidebarListView: View {
             }
             .selectionDisabled()
         }
-        .navigationTitle(navigationTitle)
     }
 }
 

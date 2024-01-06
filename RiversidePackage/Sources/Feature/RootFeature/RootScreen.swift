@@ -26,8 +26,10 @@ public struct RootScreen: View {
         } content: {
             EntryListView(
                 entries: filteredEntries,
+                selectedFeedID: $selectedFeedID,
                 selectedEntryID: $selectedEntryID
             )
+            .navigationTitle("Riverside")
         } detail: {
             if let selectedEntry {
                 EntryWebView(entry: selectedEntry)
