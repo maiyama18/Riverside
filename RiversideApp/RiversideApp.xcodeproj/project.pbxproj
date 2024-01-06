@@ -43,6 +43,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		383314702B49188B00A47514 /* RiversideIOSActionExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideIOSActionExtension.entitlements; sourceTree = "<group>"; };
 		383776BF2B4812BA0011BD41 /* RiversideIOSActionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RiversideIOSActionExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		383776C02B4812BA0011BD41 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
 		383776C32B4812BA0011BD41 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
@@ -80,6 +81,7 @@
 		383776C22B4812BA0011BD41 /* RiversideIOSActionExtension */ = {
 			isa = PBXGroup;
 			children = (
+				383314702B49188B00A47514 /* RiversideIOSActionExtension.entitlements */,
 				383776C32B4812BA0011BD41 /* Media.xcassets */,
 				383776C52B4812BA0011BD41 /* ActionViewController.swift */,
 				383776C72B4812BA0011BD41 /* MainInterface.storyboard */,
@@ -270,20 +272,22 @@
 		383776CF2B4812BA0011BD41 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = ExtensionIcon;
+				CODE_SIGN_ENTITLEMENTS = RiversideIOSActionExtension/RiversideIOSActionExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 56T4RFDKJR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RiversideIOSActionExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = RiversideIOSActionExtension;
+				INFOPLIST_KEY_CFBundleDisplayName = "Subscribe in Riverside";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.muijp.RiversideIOSApp.RiversideIOSActionExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -296,20 +300,22 @@
 		383776D02B4812BA0011BD41 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = ExtensionIcon;
+				CODE_SIGN_ENTITLEMENTS = RiversideIOSActionExtension/RiversideIOSActionExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 56T4RFDKJR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RiversideIOSActionExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = RiversideIOSActionExtension;
+				INFOPLIST_KEY_CFBundleDisplayName = "Subscribe in Riverside";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.muijp.RiversideIOSApp.RiversideIOSActionExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

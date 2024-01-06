@@ -4,8 +4,6 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
-	<key>com.apple.security.app-sandbox</key>
-	<true/>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
 		<string>iCloud.com.muijp.Riverside</string>
@@ -13,6 +11,12 @@
 	<key>com.apple.developer.icloud-services</key>
 	<array>
 		<string>CloudKit</string>
+	</array>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.muijp.RiversideIOS</string>
 	</array>
 </dict>
 </plist>
