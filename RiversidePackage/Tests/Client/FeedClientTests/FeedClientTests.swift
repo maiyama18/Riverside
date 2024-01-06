@@ -73,7 +73,7 @@ final class FeedClientTests: XCTestCase {
             }
         }
         
-        func setFeedData(to responses: inout [URL: Result<StubResponse, Error>], url: URL, responseType: ResponseType, resourceName: String) throws {
+        func setFeedData(to responses: inout [URL: Result<StubResponse, any Error>], url: URL, responseType: ResponseType, resourceName: String) throws {
             let resourceURL = try XCTUnwrap(Bundle.module.url(forResource: resourceName, withExtension: responseType.resourceExtension))
             let data = try Data(contentsOf: resourceURL)
             
@@ -92,7 +92,7 @@ final class FeedClientTests: XCTestCase {
         config.protocolClasses = [URLProtocolStub.self]
         let urlSession = URLSession(configuration: config)
 
-        var responses: [URL: Result<StubResponse, Error>] = [:]
+        var responses: [URL: Result<StubResponse, any Error>] = [:]
 
         // HTML
         try setFeedData(to: &responses, url: Self.maiyama4HTMLURL, responseType: .html, resourceName: "maiyama4")

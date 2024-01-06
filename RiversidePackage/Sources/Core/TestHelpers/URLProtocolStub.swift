@@ -14,9 +14,9 @@ public struct StubResponse: Sendable {
 }
 
 public final class URLProtocolStub: URLProtocol {
-    private static let responses: LockIsolated<[URL: Result<StubResponse, Error>]> = .init([:])
+    private static let responses: LockIsolated<[URL: Result<StubResponse, any Error>]> = .init([:])
 
-    public static func setResponses(_ responses: [URL: Result<StubResponse, Error>]) {
+    public static func setResponses(_ responses: [URL: Result<StubResponse, any Error>]) {
         self.responses.withValue { $0 = responses }
     }
 
