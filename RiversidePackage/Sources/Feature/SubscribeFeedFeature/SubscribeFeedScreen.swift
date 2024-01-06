@@ -7,7 +7,7 @@ import SwiftUI
 import Utilities
 
 @MainActor
-public struct AddFeedScreen: View {
+public struct SubscribeFeedScreen: View {
     @State private var text: String = ""
     @State private var feedState: FetchState<Feed?> = .fetched(nil)
     
@@ -58,8 +58,8 @@ public struct AddFeedScreen: View {
                         if let feed {
                             FeedSummaryView(
                                 feed: feed,
-                                feedAlreadyAdded: currentFeedAlreadyAdded,
-                                onAddTapped: { addFeed() }
+                                feedAlreadySubscribed: currentFeedAlreadySubscribed,
+                                onSubscribeTapped: { subscribeFeed() }
                             )
                         }
                     case .failed(let error):
@@ -79,7 +79,7 @@ public struct AddFeedScreen: View {
                     }
                 }
             }
-            .navigationTitle("Add feed")
+            .navigationTitle("Subscribe feed")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(Material.ultraThin, for: .navigationBar)
@@ -109,12 +109,12 @@ public struct AddFeedScreen: View {
         }
     }
     
-    private var currentFeedAlreadyAdded: Bool {
+    private var currentFeedAlreadySubscribed: Bool {
         guard case .fetched(let feed) = feedState, let feed else {
             return false
         }
-        let addedFeedURLs = feeds.map(\.url).compactMap(URL.init(string:))
-        return addedFeedURLs.contains(where: { $0.isSame(as: feed.url) })
+        let subscribedFeedURLs = feeds.map(\.url).compactMap(URL.init(string:))
+        return subscribedFeedURLs.contains(where: { $0.isSame(as: feed.url) })
     }
     
     private func fetchFeed() async  {
@@ -137,13 +137,13 @@ public struct AddFeedScreen: View {
         }
     }
     
-    private func addFeed() {
+    private func subscribeFeed() {
         guard case .fetched(let feed) = feedState, let feed else { return }
         let (feedModel, entryModels) = feed.toModel()
         
         do {
-            guard !currentFeedAlreadyAdded else {
-                print("Already added")
+            guard !currentFeedAlreadySubscribed else {
+                print("Already subscribed")
                 return
             }
             
@@ -157,7 +157,7 @@ public struct AddFeedScreen: View {
             text = ""
             feedState = .fetched(nil)
             
-            flashClient.present(.info, "'\(feedModel.title)' is added")
+            flashClient.present(.info, "'\(feedModel.title)' is subscribed")
         } catch {
             context.rollback()
             flashClient.present(.error, "Failed to add feed: \(error.localizedDescription)")
@@ -166,6 +166,6 @@ public struct AddFeedScreen: View {
 }
 
 #Preview { @MainActor in
-    AddFeedScreen()
+    SubscribeFeedScreen()
         .modelContainer(previewContainer())
 }

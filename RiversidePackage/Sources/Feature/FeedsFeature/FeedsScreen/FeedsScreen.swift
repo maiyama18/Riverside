@@ -1,4 +1,4 @@
-import AddFeedFeature
+import SubscribeFeedFeature
 import CloudSyncState
 import Dependencies
 import FeedUseCase
@@ -51,9 +51,9 @@ public struct FeedsScreen: View {
                         },
                         actions: {
                             Button {
-                                navigationState.feedsPresentation = .addFeed
+                                navigationState.feedsPresentation = .subscribeFeed
                             } label: {
-                                Text("Add feed")
+                                Text("Subscribe feed")
                             }
                         }
                     )
@@ -96,7 +96,7 @@ public struct FeedsScreen: View {
                         }
                         
                         Button {
-                            navigationState.feedsPresentation = .addFeed
+                            navigationState.feedsPresentation = .subscribeFeed
                         } label: {
                             Image(systemName: "plus")
                         }
@@ -105,8 +105,8 @@ public struct FeedsScreen: View {
             }
             .sheet(item: $navigationState.feedsPresentation) { presentation in
                 switch presentation {
-                case .addFeed:
-                    AddFeedScreen()
+                case .subscribeFeed:
+                    SubscribeFeedScreen()
                 }
             }
             .navigationTitle("Feeds")

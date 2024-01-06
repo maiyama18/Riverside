@@ -54,7 +54,7 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/App/IOSActionExtension"
     ),
     .target(
-        name: "AddFeedFeature",
+        name: "SubscribeFeedFeature",
         dependencies: [
             "FeedClient",
             "FlashClient",
@@ -62,13 +62,13 @@ let targets: [PackageDescription.Target] = [
             "Utilities",
             "UIComponents",
         ],
-        path: "Sources/Feature/AddFeedFeature"
+        path: "Sources/Feature/SubscribeFeedFeature"
     ),
     .target(
         name: "FeedsFeature",
         dependencies: [
             .algorithms,
-            "AddFeedFeature",
+            "SubscribeFeedFeature",
             "ClipboardClient",
             "CloudSyncState",
             "FeedUseCase",
@@ -216,7 +216,7 @@ let package = Package(
         .library(
             name: "Features",
             targets: [
-                "AddFeedFeature",
+                "SubscribeFeedFeature",
                 "FeedsFeature",
                 "SettingsFeature",
                 "StreamFeature",

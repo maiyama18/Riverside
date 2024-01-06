@@ -13,10 +13,10 @@ final class ActionModel {
     }
     
     func onAppear() async {
-        await addFeed()
+        await subscribeFeed()
     }
     
-    private func addFeed() async {
+    private func subscribeFeed() async {
         let urlProvider = inputItems
             .compactMap { $0 as? NSExtensionItem }
             .compactMap { $0.attachments }

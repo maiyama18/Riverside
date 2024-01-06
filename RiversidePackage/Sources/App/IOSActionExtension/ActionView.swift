@@ -16,8 +16,8 @@ public struct ActionView: View {
                         .foregroundStyle(.green)
                     
                     VStack(spacing: 4) {
-                        Text("Added!")
-                            .font(.title)
+                        Text("Subscribed!")
+                            .font(.title.bold())
                         
                         Text(url.absoluteString)
                     }

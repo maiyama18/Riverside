@@ -4,8 +4,8 @@ import UIComponents
 
 struct FeedSummaryView: View {
     let feed: Feed
-    let feedAlreadyAdded: Bool
-    let onAddTapped: () -> Void
+    let feedAlreadySubscribed: Bool
+    let onSubscribeTapped: () -> Void
     
     var body: some View {
         HStack(alignment: .top) {
@@ -40,10 +40,10 @@ struct FeedSummaryView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Button {
-                    onAddTapped()
+                    onSubscribeTapped()
                 } label: {
-                    if feedAlreadyAdded {
-                        Text("Already added")
+                    if feedAlreadySubscribed {
+                        Text("Already subscribed")
                             .font(.caption)
                     } else {
                         Image(systemName: "plus")
@@ -51,7 +51,7 @@ struct FeedSummaryView: View {
                             .padding(.leading, 8)
                     }
                 }
-                .disabled(feedAlreadyAdded)
+                .disabled(feedAlreadySubscribed)
             }
         }
     }
@@ -70,8 +70,8 @@ struct FeedSummaryView: View {
             Section {
                 FeedSummaryView(
                     feed: feed,
-                    feedAlreadyAdded: false,
-                    onAddTapped: {}
+                    feedAlreadySubscribed: false,
+                    onSubscribeTapped: {}
                 )
             }
         }

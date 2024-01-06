@@ -42,7 +42,7 @@ public struct StreamScreen: View {
                             },
                             actions: {
                                 Button {
-                                    navigationState.routeToAddFeed()
+                                    navigationState.routeToSubscribeFeed()
                                 } label: {
                                     Text("Add feed")
                                 }

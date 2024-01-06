@@ -6,7 +6,7 @@ import SwiftUI
 @MainActor
 public final class NavigationState {
     public enum FeedsPresentation: String, Identifiable {
-        case addFeed
+        case subscribeFeed
         
         public var id: String { self.rawValue }
     }
@@ -22,9 +22,9 @@ public final class NavigationState {
     
     // MARK: - Methods
     
-    public func routeToAddFeed() {
+    public func routeToSubscribeFeed() {
         mainTab = .feeds
-        feedsPresentation = .addFeed
+        feedsPresentation = .subscribeFeed
     }
     
     public func routeToFeedDetail(feed: FeedModel) async {
