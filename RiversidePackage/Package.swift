@@ -57,6 +57,7 @@ let targets: [PackageDescription.Target] = [
         name: "SubscribeFeedFeature",
         dependencies: [
             "FeedClient",
+            "FeedUseCase",
             "FlashClient",
             "Models",
             "Utilities",

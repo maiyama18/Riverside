@@ -1,5 +1,6 @@
 import Dependencies
 import FeedClient
+import FeedUseCase
 import FlashClient
 import Models
 import SwiftData
@@ -14,6 +15,7 @@ public struct SubscribeFeedScreen: View {
     @Query(FeedModel.all) private var feeds: [FeedModel]
     
     @Dependency(\.feedClient) private var feedClient
+    @Dependency(\.feedUseCase) private var feedUseCase
     @Dependency(\.flashClient) private var flashClient
     
     @Environment(\.modelContext) private var context
@@ -59,7 +61,9 @@ public struct SubscribeFeedScreen: View {
                             FeedSummaryView(
                                 feed: feed,
                                 feedAlreadySubscribed: currentFeedAlreadySubscribed,
-                                onSubscribeTapped: { subscribeFeed() }
+                                onSubscribeTapped: {
+                                    Task { await subscribeFeed() }
+                                }
                             )
                         }
                     case .failed(let error):
@@ -137,27 +141,16 @@ public struct SubscribeFeedScreen: View {
         }
     }
     
-    private func subscribeFeed() {
+    private func subscribeFeed() async {
         guard case .fetched(let feed) = feedState, let feed else { return }
-        let (feedModel, entryModels) = feed.toModel()
         
         do {
-            guard !currentFeedAlreadySubscribed else {
-                print("Already subscribed")
-                return
-            }
-            
-            context.insert(feedModel)
-            try context.save()
-            for (i, entryModel) in entryModels.enumerated() {
-                entryModel.read = i >= 3
-                entryModel.feed = feedModel
-            }
+            try await feedUseCase.subscribeFeed(context, .feed(feed))
             
             text = ""
             feedState = .fetched(nil)
             
-            flashClient.present(.info, "'\(feedModel.title)' is subscribed")
+            flashClient.present(.info, "'\(feed.title)' is subscribed")
         } catch {
             context.rollback()
             flashClient.present(.error, "Failed to add feed: \(error.localizedDescription)")

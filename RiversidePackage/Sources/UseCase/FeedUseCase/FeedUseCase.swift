@@ -7,8 +7,14 @@ import SwiftData
 import SwiftUI
 
 public struct FeedUseCase: Sendable {
+    public enum SubscribeInput {
+        case url(URL)
+        case feed(Feed)
+    }
+    
     public var addNewEpisodes: @Sendable @MainActor (_ feed: FeedModel) async throws -> Void
     public var addNewEpisodesForAllFeeds: @Sendable @MainActor (_ context: ModelContext, _ force: Bool) async throws -> Void
+    public var subscribeFeed: @Sendable @MainActor (_ context: ModelContext, _ input: SubscribeInput) async throws -> Void
 }
 
 extension FeedUseCase {
@@ -80,6 +86,29 @@ extension FeedUseCase {
                     } catch {
                         print(error)
                     }
+                }
+            },
+            subscribeFeed: { context, input in
+                let feed = switch input {
+                case .feed(let feed):
+                    feed
+                case .url(let url):
+                    try await feedClient.fetch(url)
+                }
+                
+                let existingFeedURLs = try context.fetch(FeedModel.all).map(\.url).compactMap(URL.init(string:))
+                guard existingFeedURLs.filter({ url in url.isSame(as: feed.url) }).isEmpty else {
+                    throw NSError(domain: "FeedUseCase", code: -2, userInfo: [
+                        NSLocalizedDescriptionKey: "'\(feed.title)' is already subscribed"
+                    ])
+                }
+             
+                let (feedModel, entryModels) = feed.toModel()
+                context.insert(feedModel)
+                try context.save()
+                for (i, entryModel) in entryModels.enumerated() {
+                    entryModel.read = i >= 3
+                    entryModel.feed = feedModel
                 }
             }
         )
