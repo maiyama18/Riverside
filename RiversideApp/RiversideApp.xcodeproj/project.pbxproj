@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		380693F92B4949EF004E9711 /* MacApp in Frameworks */ = {isa = PBXBuildFile; productRef = 380693F82B4949EF004E9711 /* MacApp */; };
 		382A2BF52B48661B00C9F8FE /* IOSActionExtension in Frameworks */ = {isa = PBXBuildFile; productRef = 382A2BF42B48661B00C9F8FE /* IOSActionExtension */; };
-		383314782B493EEF00A47514 /* RiversideMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383314772B493EEF00A47514 /* RiversideMacApp.swift */; };
-		3833147A2B493EEF00A47514 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383314792B493EEF00A47514 /* ContentView.swift */; };
+		383314782B493EEF00A47514 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383314772B493EEF00A47514 /* main.swift */; };
 		3833147C2B493EF000A47514 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3833147B2B493EF000A47514 /* Assets.xcassets */; };
 		383776C12B4812BA0011BD41 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 383776C02B4812BA0011BD41 /* UniformTypeIdentifiers.framework */; };
 		383776C42B4812BA0011BD41 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 383776C32B4812BA0011BD41 /* Media.xcassets */; };
@@ -48,8 +48,7 @@
 /* Begin PBXFileReference section */
 		383314702B49188B00A47514 /* RiversideIOSActionExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideIOSActionExtension.entitlements; sourceTree = "<group>"; };
 		383314752B493EEF00A47514 /* RiversideMacApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RiversideMacApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		383314772B493EEF00A47514 /* RiversideMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiversideMacApp.swift; sourceTree = "<group>"; };
-		383314792B493EEF00A47514 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		383314772B493EEF00A47514 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		3833147B2B493EF000A47514 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		383314802B493EF000A47514 /* RiversideMacApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideMacApp.entitlements; sourceTree = "<group>"; };
 		383776BF2B4812BA0011BD41 /* RiversideIOSActionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RiversideIOSActionExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -70,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				380693F92B4949EF004E9711 /* MacApp in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,8 +96,7 @@
 		383314762B493EEF00A47514 /* RiversideMacApp */ = {
 			isa = PBXGroup;
 			children = (
-				383314772B493EEF00A47514 /* RiversideMacApp.swift */,
-				383314792B493EEF00A47514 /* ContentView.swift */,
+				383314772B493EEF00A47514 /* main.swift */,
 				3833147B2B493EF000A47514 /* Assets.xcassets */,
 				383314802B493EF000A47514 /* RiversideMacApp.entitlements */,
 			);
@@ -172,6 +171,9 @@
 			dependencies = (
 			);
 			name = RiversideMacApp;
+			packageProductDependencies = (
+				380693F82B4949EF004E9711 /* MacApp */,
+			);
 			productName = RiversideMacApp;
 			productReference = 383314752B493EEF00A47514 /* RiversideMacApp.app */;
 			productType = "com.apple.product-type.application";
@@ -292,8 +294,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3833147A2B493EEF00A47514 /* ContentView.swift in Sources */,
-				383314782B493EEF00A47514 /* RiversideMacApp.swift in Sources */,
+				383314782B493EEF00A47514 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -686,6 +687,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		380693F82B4949EF004E9711 /* MacApp */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MacApp;
+		};
 		382A2BF42B48661B00C9F8FE /* IOSActionExtension */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = IOSActionExtension;

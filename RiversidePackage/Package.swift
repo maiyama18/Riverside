@@ -54,6 +54,10 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/App/IOSActionExtension"
     ),
     .target(
+        name: "MacApp",
+        path: "Sources/App/MacApp"
+    ),
+    .target(
         name: "SubscribeFeedFeature",
         dependencies: [
             "FeedClient",
@@ -214,6 +218,7 @@ let package = Package(
     products: [
         .library(name: "IOSApp", targets: ["IOSApp"]),
         .library(name: "IOSActionExtension", targets: ["IOSActionExtension"]),
+        .library(name: "MacApp", targets: ["MacApp"]),
         .library(
             name: "Features",
             targets: [

@@ -1,0 +1,3 @@
+import MacApp
+
+MacApp.main()
