@@ -145,7 +145,7 @@ public struct SubscribeFeedScreen: View {
         guard case .fetched(let feed) = feedState, let feed else { return }
         
         do {
-            try await feedUseCase.subscribeFeed(context, .feed(feed))
+            _ = try await feedUseCase.subscribeFeed(context, .feed(feed))
             
             text = ""
             feedState = .fetched(nil)
