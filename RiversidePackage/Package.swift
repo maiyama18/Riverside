@@ -46,6 +46,14 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/App/IOSApp"
     ),
     .target(
+        name: "IOSActionExtension",
+        dependencies: [
+            "FeedClient",
+            "Models",
+        ],
+        path: "Sources/App/IOSActionExtension"
+    ),
+    .target(
         name: "AddFeedFeature",
         dependencies: [
             "FeedClient",
@@ -125,6 +133,7 @@ let targets: [PackageDescription.Target] = [
             .swiftSoup,
             .dependencies,
             "Models",
+            "Utilities",
         ],
         path: "Sources/Client/FeedClient",
         exclude: ["FeedClient.xctestplan"]
@@ -203,6 +212,7 @@ let package = Package(
     platforms: [.iOS(.v17), .macOS(.v14)],
     products: [
         .library(name: "IOSApp", targets: ["IOSApp"]),
+        .library(name: "IOSActionExtension", targets: ["IOSActionExtension"]),
         .library(
             name: "Features",
             targets: [
