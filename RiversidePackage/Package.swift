@@ -55,6 +55,10 @@ let targets: [PackageDescription.Target] = [
     ),
     .target(
         name: "MacApp",
+        dependencies: [
+            "Models",
+            "RootFeature",
+        ],
         path: "Sources/App/MacApp"
     ),
     .target(
@@ -104,6 +108,15 @@ let targets: [PackageDescription.Target] = [
             "UIComponents",
         ],
         path: "Sources/Feature/StreamFeature"
+    ),
+    .target(
+        name: "RootFeature",
+        dependencies: [
+            "CloudSyncState",
+            "Models",
+            "UIComponents",
+        ],
+        path: "Sources/Feature/RootFeature"
     ),
     .target(
         name: "FeedUseCase",
