@@ -4,18 +4,27 @@ import SwiftUI
 import UIComponents
 
 struct EntryListView: View {
-    var entries: [EntryModel]
+    var allEntries: [EntryModel]
     var unreadOnly: Bool
     
     @Binding var selectedFeedID: PersistentIdentifier?
     @Binding var selectedEntryID: PersistentIdentifier?
     
+    private var filteredEntries: [EntryModel] {
+        let unreadFilteredEntries = allEntries
+            .filter { entry in
+                if entry.id == selectedEntryID { return true }
+                return unreadOnly ? entry.read == false : true
+            }
+        guard let selectedFeedID else { return unreadFilteredEntries }
+        return unreadFilteredEntries.filter { $0.feed?.id == selectedFeedID }
+    }
+    
     var body: some View {
         List(selection: $selectedEntryID) {
             if selectedFeedID == nil {
                 let sections = StreamSectionBuilder.build(
-                    entries: entries,
-                    unreadOnly: unreadOnly
+                    entries: filteredEntries
                 )
                 ForEach(sections, id: \.publishedDate) { section in
                     Section {
@@ -31,7 +40,7 @@ struct EntryListView: View {
                     }
                 }
             } else {
-                ForEach(entries) { entry in
+                ForEach(filteredEntries) { entry in
                     FeedEntryRowView(entry: entry)
                 }
             }

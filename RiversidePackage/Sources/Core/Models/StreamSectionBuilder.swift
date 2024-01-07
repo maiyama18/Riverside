@@ -15,10 +15,9 @@ public enum StreamSectionBuilder {
     
     public static func build(
         entries: [EntryModel],
-        unreadOnly: Bool,
         calendar: Calendar = defaultCalendar
     ) -> [StreamSection] {
-        let sections: [StreamSection] = Dictionary(grouping: entries.uniqued(on: \.url).filter({ unreadOnly ? $0.read == false : true })) { entry -> Date in
+        let sections: [StreamSection] = Dictionary(grouping: entries.uniqued(on: \.url)) { entry -> Date in
             calendar.startOfDay(for: entry.publishedAt)
         }.map { (publishedDate, entries) -> StreamSection in
             StreamSection(

@@ -21,11 +21,6 @@ public struct RootScreen: View {
     
     public init() {}
     
-    private var filteredEntries: [EntryModel] {
-        guard let selectedFeedID else { return entries }
-        return entries.filter { $0.feed?.id == selectedFeedID }
-    }
-    
     private var selectedEntry: EntryModel? {
         guard let selectedEntryID else { return nil }
         return entries.first(where: { $0.id == selectedEntryID })
@@ -36,7 +31,7 @@ public struct RootScreen: View {
             SidebarListView(selectedFeedID: $selectedFeedID)
         } content: {
             EntryListView(
-                entries: filteredEntries,
+                allEntries: entries,
                 unreadOnly: unreadOnly,
                 selectedFeedID: $selectedFeedID,
                 selectedEntryID: $selectedEntryID

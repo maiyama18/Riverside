@@ -141,7 +141,7 @@ public struct StreamScreen: View {
     }
     
     private var sections: [StreamSection] {
-        StreamSectionBuilder.build(entries: entries, unreadOnly: unreadOnly)
+        StreamSectionBuilder.build(entries: entries.filter({ unreadOnly ? $0.read == false : true }))
     }
     
     private var navigationTitle: String {
