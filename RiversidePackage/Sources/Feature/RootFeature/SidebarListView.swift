@@ -30,6 +30,7 @@ struct SidebarListView: View {
         List(selection: $selectedFeedID) {
             Section {
                 Text("All")
+                    .badge(feeds.map(\.unreadCount).reduce(into: 0) { $0 += $1 })
                     .listRow(
                         selected: selectedFeedID == nil,
                         onTapped: { selectedFeedID = nil }
@@ -46,6 +47,7 @@ struct SidebarListView: View {
                         
                         Text(feed.title)
                     }
+                    .badge(feed.unreadCount)
                     .listRow(
                         selected: selectedFeedID == feed.id,
                         onTapped: { selectedFeedID = feed.id }
@@ -54,6 +56,7 @@ struct SidebarListView: View {
             }
             .selectionDisabled()
         }
+        .badgeProminence(.decreased)
     }
 }
 
