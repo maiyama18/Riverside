@@ -26,6 +26,10 @@ struct SidebarListView: View {
     
     @Query(FeedModel.all) private var feeds: [FeedModel]
     
+    private var sortedFeeds: [FeedModel] {
+        feeds.sorted(by: { $0.unreadCount > $1.unreadCount })
+    }
+    
     var body: some View {
         List(selection: $selectedFeedID) {
             Section {
@@ -38,7 +42,7 @@ struct SidebarListView: View {
             }
             
             Section {
-                ForEach(feeds) { feed in
+                ForEach(sortedFeeds) { feed in
                     HStack {
                         FeedImage(
                             url: feed.imageURL.flatMap(URL.init(string:)),
