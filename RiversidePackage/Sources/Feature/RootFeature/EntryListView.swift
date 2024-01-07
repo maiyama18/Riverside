@@ -5,6 +5,7 @@ import UIComponents
 
 struct EntryListView: View {
     var entries: [EntryModel]
+    var unreadOnly: Bool
     
     @Binding var selectedFeedID: PersistentIdentifier?
     @Binding var selectedEntryID: PersistentIdentifier?
@@ -14,7 +15,7 @@ struct EntryListView: View {
             if selectedFeedID == nil {
                 let sections = StreamSectionBuilder.build(
                     entries: entries,
-                    unreadOnly: false
+                    unreadOnly: unreadOnly
                 )
                 ForEach(sections, id: \.publishedDate) { section in
                     Section {

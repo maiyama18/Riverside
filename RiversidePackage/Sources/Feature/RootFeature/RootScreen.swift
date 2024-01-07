@@ -3,6 +3,8 @@ import SwiftData
 import SwiftUI
 
 public struct RootScreen: View {
+    @AppStorage("unread-only") private var unreadOnly: Bool = true
+    
     @State private var selectedFeedID: PersistentIdentifier? = nil
     @State private var selectedEntryID: PersistentIdentifier? = nil
     
@@ -26,6 +28,7 @@ public struct RootScreen: View {
         } content: {
             EntryListView(
                 entries: filteredEntries,
+                unreadOnly: unreadOnly,
                 selectedFeedID: $selectedFeedID,
                 selectedEntryID: $selectedEntryID
             )
@@ -33,6 +36,14 @@ public struct RootScreen: View {
         } detail: {
             if let selectedEntry {
                 EntryWebView(entry: selectedEntry)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Toggle(isOn: $unreadOnly) {
+                    Text("Unread only")
+                }
+                .toggleStyle(.checkbox)
             }
         }
     }
