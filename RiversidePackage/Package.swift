@@ -9,6 +9,7 @@ let dependencies: [PackageDescription.Package.Dependency] = [
     .package(url: "https://github.com/nmdias/FeedKit", exact: "9.1.2"),
     .package(url: "https://github.com/scinfu/SwiftSoup", exact: "2.6.1"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.1.5"),
+    .package(url: "https://github.com/pointfreeco/swift-custom-dump", exact: "1.1.2"),
     .package(url: "https://github.com/apple/swift-algorithms", exact: "1.2.0"),
     .package(url: "https://github.com/omaralbeik/Drops", exact: "1.7.0"),
     .package(url: "https://github.com/kean/Nuke", exact: "12.2.0"),
@@ -24,6 +25,7 @@ extension PackageDescription.Target.Dependency {
     static let algorithms: Self = .product(name: "Algorithms", package: "swift-algorithms")
     static let drops: Self = .product(name: "Drops", package: "Drops")
     static let nukeUI: Self = .product(name: "NukeUI", package: "Nuke")
+    static let customDump: Self = .product(name: "CustomDump", package: "swift-custom-dump")
 }
 
 extension PackageDescription.Target.PluginUsage {
@@ -76,7 +78,6 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "FeedsFeature",
         dependencies: [
-            .algorithms,
             "SubscribeFeedFeature",
             "ClipboardClient",
             "CloudSyncState",
@@ -166,6 +167,9 @@ let targets: [PackageDescription.Target] = [
     ),
     .target(
         name: "Models",
+        dependencies: [
+            .algorithms,
+        ],
         path: "Sources/Core/Models"
     ),
     .target(
@@ -176,6 +180,7 @@ let targets: [PackageDescription.Target] = [
         name: "UIComponents",
         dependencies: [
             .nukeUI,
+            "Models",
         ],
         path: "Sources/Core/UIComponents"
     ),
@@ -194,6 +199,13 @@ let targets: [PackageDescription.Target] = [
         ],
         path: "Tests/Client/FeedClientTests",
         resources: [.process("Resources")]
+    ),
+    .testTarget(
+        name: "ModelsTests",
+        dependencies: [
+            "Models",
+        ],
+        path: "Tests/Core/ModelsTests"
     ),
     .testTarget(
         name: "UtilitiesTests",
@@ -219,6 +231,12 @@ let targets: [PackageDescription.Target] = [
     )
     target.swiftSettings = swiftSettings
     
+    if target.isTest {
+        var dependencies = target.dependencies
+        dependencies.append(.customDump)
+        target.dependencies = dependencies
+    }
+    
     return target
 }
 
@@ -242,6 +260,7 @@ let package = Package(
             ]
         ),
         .library(name: "FeedClient", targets: ["FeedClient"]),
+        .library(name: "Models", targets: ["Models"]),
         .library(name: "Utilities", targets: ["Utilities"]),
         .library(name: "UIComponents", targets: ["UIComponents"]),
     ],
