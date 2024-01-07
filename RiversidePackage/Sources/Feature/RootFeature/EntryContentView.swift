@@ -30,6 +30,12 @@ struct EntryContentView: View {
                     Image(systemName: "chevron.right")
                 }
                 .disabled(!state.canGoForward)
+                
+                Button {
+                    action = .refresh
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
             }
             .padding(8)
             .frame(maxWidth: .infinity, alignment: .leading)

@@ -55,6 +55,8 @@ public struct WebView: NSViewRepresentable {
             webView.goBack()
         case .goForward:
             webView.goForward()
+        case .refresh:
+            webView.reload()
         case nil:
             break
         }
