@@ -29,9 +29,6 @@ public struct RootScreen: View {
     public var body: some View {
         NavigationSplitView {
             SidebarListView(selectedFeedID: $selectedFeedID)
-                .toolbar {
-                    
-                }
         } content: {
             EntryListView(
                 allEntries: entries,
@@ -42,7 +39,8 @@ public struct RootScreen: View {
             .navigationTitle("Riverside")
         } detail: {
             if let selectedEntry {
-                EntryWebView(entry: selectedEntry)
+                EntryContentView(entry: selectedEntry)
+                    .id(selectedEntry.id)
             }
         }
         .toolbar {

@@ -119,6 +119,7 @@ let targets: [PackageDescription.Target] = [
             "Models",
             "SettingsFeature",
             "UIComponents",
+            "WebView",
         ],
         path: "Sources/Feature/RootFeature"
     ),
@@ -186,6 +187,10 @@ let targets: [PackageDescription.Target] = [
             "Models",
         ],
         path: "Sources/Core/UIComponents"
+    ),
+    .target(
+        name: "WebView",
+        path: "Sources/Core/WebView"
     ),
     .target(
         name: "TestHelpers",
