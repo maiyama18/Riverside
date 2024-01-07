@@ -45,5 +45,12 @@ struct EntryListView: View {
                 }
             }
         }
+        .animation(.default, value: filteredEntries)
+        .onChange(of: selectedEntryID) { _, selectedEntryID in
+            guard let entry = allEntries.first(where: { $0.id == selectedEntryID }) else {
+                return
+            }
+            entry.read = true
+        }
     }
 }
