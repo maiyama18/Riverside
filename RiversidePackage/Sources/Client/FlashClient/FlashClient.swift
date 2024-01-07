@@ -1,6 +1,5 @@
 import Dependencies
 import Drops
-import UIKit
 
 public struct FlashClient: Sendable {
     public enum FlashType: Sendable {
@@ -10,6 +9,9 @@ public struct FlashClient: Sendable {
     
     public var present: @Sendable (_ type: FlashType, _ message: String) -> Void
 }
+
+#if canImport(UIKit)
+import UIKit
 
 extension FlashClient {
     static let live: FlashClient = .init(
@@ -40,6 +42,16 @@ extension FlashClient {
         }
     )
 }
+#else
+extension FlashClient {
+    static let live: FlashClient = .init(
+        present: { type, message in
+            // TODO: implement for mac
+            print(type, message)
+        }
+    )
+}
+#endif
 
 public extension DependencyValues {
     var flashClient: FlashClient {

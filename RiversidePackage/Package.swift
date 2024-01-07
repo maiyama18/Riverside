@@ -114,6 +114,8 @@ let targets: [PackageDescription.Target] = [
         name: "RootFeature",
         dependencies: [
             "CloudSyncState",
+            "FeedUseCase",
+            "FlashClient",
             "Models",
             "UIComponents",
         ],
