@@ -11,14 +11,27 @@ struct EntryListView: View {
     
     var body: some View {
         List(selection: $selectedEntryID) {
-            ForEach(entries) { entry in
-                if selectedFeedID != nil {
+            if selectedFeedID == nil {
+                let sections = StreamSectionBuilder.build(
+                    entries: entries,
+                    unreadOnly: false
+                )
+                ForEach(sections, id: \.publishedDate) { section in
+                    Section {
+                        ForEach(section.entries) { entry in
+                            StreamEntryRowView(
+                                entry: entry,
+                                onFeedTapped: { selectedFeedID = $0.id }
+                            )
+                        }
+                    } header: {
+                        Text(section.publishedDate.formatted(date: .numeric, time: .omitted))
+                            .foregroundStyle(.orange)
+                    }
+                }
+            } else {
+                ForEach(entries) { entry in
                     FeedEntryRowView(entry: entry)
-                } else {
-                    StreamEntryRowView(
-                        entry: entry,
-                        onFeedTapped: { selectedFeedID = $0.id }
-                    )
                 }
             }
         }
