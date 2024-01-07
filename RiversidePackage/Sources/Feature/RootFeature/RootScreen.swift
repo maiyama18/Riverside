@@ -29,6 +29,9 @@ public struct RootScreen: View {
     public var body: some View {
         NavigationSplitView {
             SidebarListView(selectedFeedID: $selectedFeedID)
+                .toolbar {
+                    
+                }
         } content: {
             EntryListView(
                 allEntries: entries,
@@ -44,26 +47,30 @@ public struct RootScreen: View {
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                HStack {
-                    Button {
-                        Task {
-                            refreshing = true
-                            defer { refreshing = false }
-                            do {
-                                try await feedUseCase.addNewEpisodesForAllFeeds(context, true)
-                            } catch {
-                                flashClient.present(.error, "Failed to refresh feeds: \(error.localizedDescription)")
+                HStack(spacing: 24) {
+                    HStack(spacing: 4) {
+                        CloudSyncStateButton()
+                        
+                        Button {
+                            Task {
+                                refreshing = true
+                                defer { refreshing = false }
+                                do {
+                                    try await feedUseCase.addNewEpisodesForAllFeeds(context, true)
+                                } catch {
+                                    flashClient.present(.error, "Failed to refresh feeds: \(error.localizedDescription)")
+                                }
                             }
+                        } label: {
+                            Image(systemName: "arrow.clockwise")
                         }
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
+                        .disabled(refreshing)
                     }
-                    .disabled(refreshing)
                     
-                Toggle(isOn: $unreadOnly) {
-                    Text("Unread only")
-                }
-                .toggleStyle(.checkbox)
+                    Toggle(isOn: $unreadOnly) {
+                        Text("Unread only")
+                    }
+                    .toggleStyle(.checkbox)
                 }
             }
         }

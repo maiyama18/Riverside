@@ -117,6 +117,7 @@ let targets: [PackageDescription.Target] = [
             "FeedUseCase",
             "FlashClient",
             "Models",
+            "SettingsFeature",
             "UIComponents",
         ],
         path: "Sources/Feature/RootFeature"

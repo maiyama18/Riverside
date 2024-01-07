@@ -1,10 +1,12 @@
 import CloudSyncState
 import SwiftUI
 
-struct CloudSyncScreen: View {
+public struct CloudSyncScreen: View {
     @Environment(CloudSyncState.self) private var cloudSyncState
     
-    var body: some View {
+    public init() {}
+    
+    public var body: some View {
         List {
             Section {
                 statusView(key: "Import", status: cloudSyncState.importStatus)

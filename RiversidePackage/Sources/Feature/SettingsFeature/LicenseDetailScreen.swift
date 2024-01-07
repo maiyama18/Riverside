@@ -11,7 +11,17 @@ struct LicenseDetailScreen: View {
                 .foregroundColor(.secondary)
                 .padding()
         }
-        .background(Color(.systemGroupedBackground))
+        .background(backgroundColor)
         .navigationTitle(licenseName)
+    }
+    
+    private var backgroundColor: Color {
+        #if canImport(UIKit)
+            Color(.systemGroupedBackground)
+        #elseif canImport(AppKit)
+            Color(.controlBackgroundColor)
+        #else
+            Color.gray.opacity(0.3)
+        #endif
     }
 }
