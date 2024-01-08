@@ -47,7 +47,9 @@ public struct RootScreen: View {
             ToolbarItem(placement: .primaryAction) {
                 HStack(spacing: 24) {
                     HStack(spacing: 4) {
-                        SubscribeFeedButton()
+                        SubscribeFeedButton {
+                            Image(systemName: "plus")
+                        }
                         
                         CloudSyncStateButton()
                         

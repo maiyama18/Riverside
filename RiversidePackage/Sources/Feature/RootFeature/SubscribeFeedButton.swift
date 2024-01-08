@@ -1,14 +1,16 @@
 import SwiftUI
 import SubscribeFeedFeature
 
-struct SubscribeFeedButton: View {
+struct SubscribeFeedButton<Label: View>: View {
+    let label: () -> Label
+    
     @State private var isPresented: Bool = false
     
     var body: some View {
         Button {
             isPresented.toggle()
         } label: {
-            Image(systemName: "plus")
+            label()
         }
         .popover(isPresented: $isPresented) {
             SubscribeFeedScreen()

@@ -84,50 +84,66 @@ struct SidebarListView: View {
     }
     
     var body: some View {
-        List(selection: $selectedFeedID) {
-            Section {
-                Text("All")
-                    .badge(feeds.map(\.unreadCount).reduce(into: 0) { $0 += $1 })
-                    .listRow(
-                        selected: selectedFeedID == nil,
-                        onTapped: { selectedFeedID = nil },
-                        onMarkAsRead: {
-                            for feed in sortedFeeds {
-                                feed.markAll(read: true)
-                            }
-                        },
-                        unsubscribe: nil
+        if feeds.isEmpty {
+            ContentUnavailableView(
+                label: {
+                    Label(
+                        title: { Text("No following feed") },
+                        icon: { Image(systemName: "list.dash") }
                     )
-            }
-            
-            Section {
-                ForEach(sortedFeeds) { feed in
-                    HStack {
-                        FeedImage(
-                            url: feed.imageURL.flatMap(URL.init(string:)),
-                            size: 18
-                        )
-                        
-                        Text(feed.title)
+                },
+                actions: {
+                    SubscribeFeedButton {
+                        Text("Subscribe")
                     }
-                    .badge(feed.unreadCount)
-                    .listRow(
-                        selected: selectedFeedID == feed.id,
-                        onTapped: { selectedFeedID = feed.id },
-                        onMarkAsRead: { feed.markAll(read: true) },
-                        unsubscribe: .init(
-                            message: "Are you sure to unsubscribe '\(feed.title)'",
-                            action: { context.delete(feed) }
-                        )
-                    )
                 }
+            )
+        } else {
+            List(selection: $selectedFeedID) {
+                Section {
+                    Text("All")
+                        .badge(feeds.map(\.unreadCount).reduce(into: 0) { $0 += $1 })
+                        .listRow(
+                            selected: selectedFeedID == nil,
+                            onTapped: { selectedFeedID = nil },
+                            onMarkAsRead: {
+                                for feed in sortedFeeds {
+                                    feed.markAll(read: true)
+                                }
+                            },
+                            unsubscribe: nil
+                        )
+                }
+                
+                Section {
+                    ForEach(sortedFeeds) { feed in
+                        HStack {
+                            FeedImage(
+                                url: feed.imageURL.flatMap(URL.init(string:)),
+                                size: 18
+                            )
+                            
+                            Text(feed.title)
+                        }
+                        .badge(feed.unreadCount)
+                        .listRow(
+                            selected: selectedFeedID == feed.id,
+                            onTapped: { selectedFeedID = feed.id },
+                            onMarkAsRead: { feed.markAll(read: true) },
+                            unsubscribe: .init(
+                                message: "Are you sure to unsubscribe '\(feed.title)'",
+                                action: { context.delete(feed) }
+                            )
+                        )
+                    }
+                }
+                .selectionDisabled()
             }
-            .selectionDisabled()
+            .badgeProminence(.decreased)
         }
-        .badgeProminence(.decreased)
     }
 }
 
-#Preview {
-    SidebarListView(selectedFeedID: .constant(nil))
-}
+//#Preview {
+//    SidebarListView(selectedFeedID: .constant(nil))
+//}
