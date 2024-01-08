@@ -19,7 +19,7 @@ public final class FeedModel {
     }
     
     public var unreadCount: Int {
-        entries?.filter { $0.read == false }.count ?? 0
+        entries?.uniqued(on: \.url).filter { $0.read == false }.count ?? 0
     }
     
     public func markAll(read: Bool) {

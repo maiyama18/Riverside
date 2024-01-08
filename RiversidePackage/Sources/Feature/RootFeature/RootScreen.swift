@@ -1,3 +1,4 @@
+import Algorithms
 import Dependencies
 import FeedUseCase
 import FlashClient
@@ -31,7 +32,7 @@ public struct RootScreen: View {
             SidebarListView(selectedFeedID: $selectedFeedID)
         } content: {
             EntryListView(
-                allEntries: entries,
+                allEntries: entries.uniqued(on: \.url),
                 unreadOnly: unreadOnly,
                 selectedFeedID: $selectedFeedID,
                 selectedEntryID: $selectedEntryID
