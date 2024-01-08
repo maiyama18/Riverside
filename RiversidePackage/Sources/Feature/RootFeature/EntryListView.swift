@@ -5,7 +5,7 @@ import SwiftData
 import SwiftUI
 import UIComponents
 
-private struct ListRowModifier: ViewModifier {
+private struct EntryRowModifier: ViewModifier {
     let entry: EntryModel
     
     @Dependency(\.clipboardClient) private var clipboardClient
@@ -29,8 +29,8 @@ private struct ListRowModifier: ViewModifier {
 }
 
 private extension View {
-    func listRow(entry: EntryModel) -> some View {
-        modifier(ListRowModifier(entry: entry))
+    func entryRow(entry: EntryModel) -> some View {
+        modifier(EntryRowModifier(entry: entry))
     }
 }
 
@@ -64,7 +64,7 @@ struct EntryListView: View {
                                 entry: entry,
                                 onFeedTapped: { selectedFeedID = $0.id }
                             )
-                            .listRow(entry: entry)
+                            .entryRow(entry: entry)
                         }
                     } header: {
                         Text(section.publishedDate.formatted(date: .numeric, time: .omitted))
@@ -74,7 +74,7 @@ struct EntryListView: View {
             } else {
                 ForEach(filteredEntries) { entry in
                     FeedEntryRowView(entry: entry)
-                        .listRow(entry: entry)
+                        .entryRow(entry: entry)
                 }
             }
         }
