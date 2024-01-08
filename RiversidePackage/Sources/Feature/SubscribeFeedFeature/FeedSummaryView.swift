@@ -51,6 +51,7 @@ struct FeedSummaryView: View {
                             .padding(.leading, 8)
                     }
                 }
+                .buttonStyle(.plain)
                 .disabled(feedAlreadySubscribed)
             }
         }

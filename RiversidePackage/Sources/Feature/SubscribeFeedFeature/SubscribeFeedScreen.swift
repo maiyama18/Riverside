@@ -27,9 +27,13 @@ public struct SubscribeFeedScreen: View {
             List {
                 Section {
                     HStack {
+                        #if os(iOS)
                         TextField("URL", text: $text, prompt: Text("https://..."))
                             .keyboardType(.URL)
                             .textInputAutocapitalization(.never)
+                        #else
+                        TextField("URL", text: $text, prompt: Text("https://..."))
+                        #endif
                         
                         Button {
                             text = ""
@@ -39,6 +43,7 @@ public struct SubscribeFeedScreen: View {
                                 .padding(4)
                                 .offset(x: 4)
                         }
+                        .buttonStyle(.plain)
                     }
                 } header: {
                     Text("Blog/Feed URL")
@@ -84,9 +89,7 @@ public struct SubscribeFeedScreen: View {
                 }
             }
             .navigationTitle("Subscribe feed")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(Material.ultraThin, for: .navigationBar)
+            .iOSInlineNavigationBar()
             .task(id: text) {
                 await fetchFeed()
             }
@@ -155,6 +158,19 @@ public struct SubscribeFeedScreen: View {
             context.rollback()
             flashClient.present(.error, "Failed to add feed: \(error.localizedDescription)")
         }
+    }
+}
+
+private extension View {
+    func iOSInlineNavigationBar() -> some View {
+        #if os(iOS)
+        self
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(Material.ultraThin, for: .navigationBar)
+        #else
+        self
+        #endif
     }
 }
 

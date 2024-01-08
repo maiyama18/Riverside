@@ -118,6 +118,7 @@ let targets: [PackageDescription.Target] = [
             "FlashClient",
             "Models",
             "SettingsFeature",
+            "SubscribeFeedFeature",
             "UIComponents",
             "WebView",
         ],
