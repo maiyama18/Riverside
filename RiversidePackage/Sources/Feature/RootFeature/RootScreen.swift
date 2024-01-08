@@ -84,6 +84,7 @@ public struct RootScreen: View {
                 print(error)
             }
         }
+        .deleteDuplicatedEntriesOnce()
     }
 }
 
