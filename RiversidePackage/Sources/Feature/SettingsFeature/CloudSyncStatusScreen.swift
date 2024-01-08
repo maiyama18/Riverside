@@ -1,3 +1,4 @@
+import CloudKit
 import CloudSyncState
 import SwiftUI
 
@@ -54,7 +55,17 @@ public struct CloudSyncScreen: View {
                         }
                         
                         if case .failure(let error) = transaction.result {
-                            Text(error.localizedDescription)
+                            VStack(alignment: .leading) {
+                                if let ckError = error as? CKError {
+                                    Text(ckError.localizedDescription)
+                                    Text("Code: \(ckError.errorCode)")
+                                    if let underlying = (ckError.errorUserInfo[NSUnderlyingErrorKey] as? NSError)?.localizedDescription {
+                                        Text(underlying)
+                                    }
+                                } else {
+                                    Text(error.localizedDescription)
+                                }
+                            }
                                 .font(.caption)
                                 .foregroundStyle(.red)
                         }
