@@ -57,6 +57,7 @@
 		383776C52B4812BA0011BD41 /* ActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
 		383776C82B4812BA0011BD41 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		383776CA2B4812BA0011BD41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		387B06072B4C3F440075EBC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38C00B4F2B41101400029076 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38C00B502B41103200029076 /* RiversideIOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideIOSApp.entitlements; sourceTree = "<group>"; };
 		C827321C2B3805870053842F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -96,6 +97,7 @@
 		383314762B493EEF00A47514 /* RiversideMacApp */ = {
 			isa = PBXGroup;
 			children = (
+				387B06072B4C3F440075EBC0 /* Info.plist */,
 				383314772B493EEF00A47514 /* main.swift */,
 				3833147B2B493EF000A47514 /* Assets.xcassets */,
 				383314802B493EF000A47514 /* RiversideMacApp.entitlements */,
@@ -350,8 +352,9 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RiversideMacApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Riverside;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.magazines-and-newspapers";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -381,8 +384,9 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RiversideMacApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Riverside;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.magazines-and-newspapers";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
