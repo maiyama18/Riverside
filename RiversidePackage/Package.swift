@@ -113,6 +113,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "RootFeature",
         dependencies: [
+            "ClipboardClient",
             "CloudSyncState",
             "FeedUseCase",
             "FlashClient",

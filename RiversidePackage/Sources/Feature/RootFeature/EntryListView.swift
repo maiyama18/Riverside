@@ -1,7 +1,38 @@
+import ClipboardClient
+import Dependencies
 import Models
 import SwiftData
 import SwiftUI
 import UIComponents
+
+private struct ListRowModifier: ViewModifier {
+    let entry: EntryModel
+    
+    @Dependency(\.clipboardClient) private var clipboardClient
+    
+    func body(content: Content) -> some View {
+        content
+            .contextMenu {
+                Button {
+                    clipboardClient.copy(entry.url)
+                } label: {
+                    Text("Copy URL")
+                }
+                
+                Button {
+                    entry.read.toggle()
+                } label: {
+                    Text(entry.read ? "Mark as unread" : "Mark as read")
+                }
+            }
+    }
+}
+
+private extension View {
+    func listRow(entry: EntryModel) -> some View {
+        modifier(ListRowModifier(entry: entry))
+    }
+}
 
 struct EntryListView: View {
     var allEntries: [EntryModel]
@@ -33,6 +64,7 @@ struct EntryListView: View {
                                 entry: entry,
                                 onFeedTapped: { selectedFeedID = $0.id }
                             )
+                            .listRow(entry: entry)
                         }
                     } header: {
                         Text(section.publishedDate.formatted(date: .numeric, time: .omitted))
@@ -42,6 +74,7 @@ struct EntryListView: View {
             } else {
                 ForEach(filteredEntries) { entry in
                     FeedEntryRowView(entry: entry)
+                        .listRow(entry: entry)
                 }
             }
         }
