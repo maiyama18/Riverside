@@ -4,7 +4,12 @@ import SwiftUI
 import UIComponents
 
 private extension View {
-    func listRow(selected: Bool, onTapped: @escaping () -> Void) -> some View {
+    func listRow(
+        selected: Bool,
+        onTapped: @escaping () -> Void,
+        onMarkAsRead: @escaping () -> Void,
+        onUnsubscribe: (() -> Void)?
+    ) -> some View {
         self
             .foregroundStyle(selected ? .white : .primary)
             .padding(.horizontal, 4)
@@ -18,11 +23,26 @@ private extension View {
             )
             .contentShape(Rectangle())
             .onTapGesture(perform: onTapped)
+            .contextMenu {
+                Button("Mark all as read") {
+                    onMarkAsRead()
+                }
+                
+                if let onUnsubscribe {
+                    Button(role: .destructive) {
+                        onUnsubscribe()
+                    } label: {
+                        Text("Unsubscribe")
+                    }
+                }
+            }
     }
 }
 
 struct SidebarListView: View {
     @Binding var selectedFeedID: PersistentIdentifier?
+    
+    @Environment(\.modelContext) private var context
     
     @Query(FeedModel.all) private var feeds: [FeedModel]
     
@@ -37,7 +57,13 @@ struct SidebarListView: View {
                     .badge(feeds.map(\.unreadCount).reduce(into: 0) { $0 += $1 })
                     .listRow(
                         selected: selectedFeedID == nil,
-                        onTapped: { selectedFeedID = nil }
+                        onTapped: { selectedFeedID = nil },
+                        onMarkAsRead: {
+                            for feed in sortedFeeds {
+                                feed.markAll(read: true)
+                            }
+                        },
+                        onUnsubscribe: nil
                     )
             }
             
@@ -54,7 +80,9 @@ struct SidebarListView: View {
                     .badge(feed.unreadCount)
                     .listRow(
                         selected: selectedFeedID == feed.id,
-                        onTapped: { selectedFeedID = feed.id }
+                        onTapped: { selectedFeedID = feed.id },
+                        onMarkAsRead: { feed.markAll(read: true) },
+                        onUnsubscribe: { context.delete(feed) }
                     )
                 }
             }

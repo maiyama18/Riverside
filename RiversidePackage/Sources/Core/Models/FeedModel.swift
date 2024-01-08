@@ -21,6 +21,13 @@ public final class FeedModel {
     public var unreadCount: Int {
         entries?.filter { $0.read == false }.count ?? 0
     }
+    
+    public func markAll(read: Bool) {
+        guard let entries else { return }
+        for entry in entries {
+            entry.read = read
+        }
+    }
 }
 
 @Model
