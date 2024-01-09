@@ -47,7 +47,7 @@
 
 /* Begin PBXFileReference section */
 		383314702B49188B00A47514 /* RiversideIOSActionExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideIOSActionExtension.entitlements; sourceTree = "<group>"; };
-		383314752B493EEF00A47514 /* RiversideMacApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RiversideMacApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		383314752B493EEF00A47514 /* Riverside.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Riverside.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		383314772B493EEF00A47514 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		3833147B2B493EF000A47514 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		383314802B493EF000A47514 /* RiversideMacApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideMacApp.entitlements; sourceTree = "<group>"; };
@@ -133,7 +133,7 @@
 			children = (
 				C827322E2B3808690053842F /* RiversideIOSApp.app */,
 				383776BF2B4812BA0011BD41 /* RiversideIOSActionExtension.appex */,
-				383314752B493EEF00A47514 /* RiversideMacApp.app */,
+				383314752B493EEF00A47514 /* Riverside.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -177,7 +177,7 @@
 				380693F82B4949EF004E9711 /* MacApp */,
 			);
 			productName = RiversideMacApp;
-			productReference = 383314752B493EEF00A47514 /* RiversideMacApp.app */;
+			productReference = 383314752B493EEF00A47514 /* Riverside.app */;
 			productType = "com.apple.product-type.application";
 		};
 		383776BE2B4812BA0011BD41 /* RiversideIOSActionExtension */ = {
@@ -363,7 +363,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.muijp.RiversideMacApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Riverside;
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -395,7 +395,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.muijp.RiversideMacApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Riverside;
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
