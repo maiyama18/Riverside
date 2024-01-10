@@ -11,7 +11,7 @@ let dependencies: [PackageDescription.Package.Dependency] = [
     .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.1.5"),
     .package(url: "https://github.com/pointfreeco/swift-custom-dump", exact: "1.1.2"),
     .package(url: "https://github.com/apple/swift-algorithms", exact: "1.2.0"),
-    .package(url: "https://github.com/omaralbeik/Drops", exact: "1.7.0"),
+    .package(url: "https://github.com/danielsaidi/SystemNotification", exact: "0.7.2"),
     .package(url: "https://github.com/kean/Nuke", exact: "12.2.0"),
     
     // Plugins
@@ -23,7 +23,7 @@ extension PackageDescription.Target.Dependency {
     static let swiftSoup: Self = .product(name: "SwiftSoup", package: "SwiftSoup")
     static let dependencies: Self = .product(name: "Dependencies", package: "swift-dependencies")
     static let algorithms: Self = .product(name: "Algorithms", package: "swift-algorithms")
-    static let drops: Self = .product(name: "Drops", package: "Drops")
+    static let systemNotification: Self = .product(name: "SystemNotification", package: "SystemNotification")
     static let nukeUI: Self = .product(name: "NukeUI", package: "Nuke")
     static let customDump: Self = .product(name: "CustomDump", package: "swift-custom-dump")
 }
@@ -40,6 +40,7 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             "CloudSyncState",
             "FeedsFeature",
+            "FlashClient",
             "Models",
             "NavigationState",
             "SettingsFeature",
@@ -58,6 +59,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "MacApp",
         dependencies: [
+            "FlashClient",
             "Models",
             "RootFeature",
         ],
@@ -168,7 +170,7 @@ let targets: [PackageDescription.Target] = [
         name: "FlashClient",
         dependencies: [
             .dependencies,
-            .drops,
+            .systemNotification,
         ],
         path: "Sources/Client/FlashClient"
     ),

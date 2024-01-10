@@ -61,7 +61,10 @@ public struct RootScreen: View {
                                 do {
                                     try await feedUseCase.addNewEpisodesForAllFeeds(context, true)
                                 } catch {
-                                    flashClient.present(.error, "Failed to refresh feeds: \(error.localizedDescription)")
+                                    flashClient.present(
+                                        type: .error,
+                                        message: "Failed to refresh feeds: \(error.localizedDescription)"
+                                    )
                                 }
                             }
                         } label: {

@@ -153,10 +153,16 @@ public struct SubscribeFeedScreen: View {
             text = ""
             feedState = .fetched(nil)
             
-            flashClient.present(.info, "'\(feed.title)' is subscribed")
+            flashClient.present(
+                type: .info,
+                message: "'\(feed.title)' is subscribed"
+            )
         } catch {
             context.rollback()
-            flashClient.present(.error, "Failed to add feed: \(error.localizedDescription)")
+            flashClient.present(
+                type: .error,
+                message: "Failed to add feed: \(error.localizedDescription)"
+            )
         }
     }
 }

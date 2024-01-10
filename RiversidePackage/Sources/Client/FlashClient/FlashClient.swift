@@ -1,65 +1,54 @@
 import Dependencies
-import Drops
+import SystemNotification
+import SwiftUI
 
-public struct FlashClient: Sendable {
-    public enum FlashType: Sendable {
-        case info
-        case error
+public enum FlashType: Sendable {
+    case info
+    case error
+}
+
+@MainActor
+public protocol FlashClient: Sendable {
+    func injectContext(_ context: SystemNotificationContext)
+    func present(type: FlashType, message: String)
+}
+
+@MainActor
+final class FlashClientLive: FlashClient {
+    private var context: SystemNotificationContext?
+    
+    nonisolated init() {}
+    
+    func injectContext(_ context: SystemNotificationContext) {
+        self.context = context
     }
     
-    public var present: @Sendable (_ type: FlashType, _ message: String) -> Void
-}
-
-#if canImport(UIKit)
-import UIKit
-
-extension FlashClient {
-    static let live: FlashClient = .init(
-        present: { type, message in
-            Drops.hideAll()
-            
-            let iconSystemName: String = switch type {
-            case .info:
-                "checkmark.circle"
-            case .error:
-                "exclamationmark.circle"
-            }
-            
-            let iconColor: UIColor = switch type {
-            case .info:
-                .systemTeal
-            case .error:
-                .systemRed
-            }
-
-            let drop = Drop(
-                title: message,
-                titleNumberOfLines: 2,
-                icon: UIImage(systemName: iconSystemName)?
-                    .withTintColor(iconColor, renderingMode: .alwaysOriginal)
+    func present(type: FlashType, message: String) {
+        let icon: some View = switch type {
+        case .info:
+            Image(systemName: "checkmark.circle")
+                .foregroundStyle(.teal)
+        case .error:
+            Image(systemName: "exclamationmark.circle")
+                .foregroundStyle(.red)
+        }
+        context?.present {
+            SystemNotificationMessage(
+                icon: icon,
+                text: message,
+                style: .init(textColor: .primary)
             )
-            Drops.show(drop)
         }
-    )
+    }
 }
-#else
-extension FlashClient {
-    static let live: FlashClient = .init(
-        present: { type, message in
-            // TODO: implement for mac
-            print(type, message)
-        }
-    )
-}
-#endif
 
 public extension DependencyValues {
-    var flashClient: FlashClient {
+    var flashClient: any FlashClient {
         get { self[FlashClientKey.self] }
         set { self[FlashClientKey.self] = newValue }
     }
 }
 
 private enum FlashClientKey: DependencyKey {
-    static let liveValue: FlashClient = .live
+    static let liveValue: any FlashClient = FlashClientLive()
 }

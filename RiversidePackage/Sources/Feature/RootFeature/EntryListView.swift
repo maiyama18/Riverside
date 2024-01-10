@@ -1,5 +1,6 @@
 import ClipboardClient
 import Dependencies
+import FlashClient
 import Models
 import SwiftData
 import SwiftUI
@@ -9,12 +10,17 @@ private struct EntryRowModifier: ViewModifier {
     let entry: EntryModel
     
     @Dependency(\.clipboardClient) private var clipboardClient
+    @Dependency(\.flashClient) private var flashClient
     
     func body(content: Content) -> some View {
         content
             .contextMenu {
                 Button {
                     clipboardClient.copy(entry.url)
+                    flashClient.present(
+                        type: .info,
+                        message: "Copied!\n\(entry.url)"
+                    )
                 } label: {
                     Text("Copy URL")
                 }

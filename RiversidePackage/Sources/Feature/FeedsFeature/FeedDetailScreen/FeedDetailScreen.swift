@@ -81,7 +81,10 @@ struct FeedDetailScreen: View {
                     do {
                         try await feedUseCase.addNewEpisodes(feed)
                     } catch {
-                        flashClient.present(.error, "Failed refresh feed: \(error.localizedDescription)")
+                        flashClient.present(
+                            type: .error,
+                            message: "Failed refresh feed: \(error.localizedDescription)"
+                        )
                     }
                 }
             }
@@ -111,7 +114,10 @@ struct FeedDetailScreen: View {
                                 .disabled(entries.filter { !$0.read }.isEmpty)
                             Button("Copy Feed URL") {
                                 clipboardClient.copy(feed.url)
-                                flashClient.present(.info, "Copied!\n\(feed.url)")
+                                flashClient.present(
+                                    type: .info,
+                                    message: "Copied!\n\(feed.url)"
+                                )
                             }
                         }
                     } label: {

@@ -1,19 +1,33 @@
 import CloudSyncState
+import Dependencies
+import FlashClient
 import Models
 import RootFeature
+import SystemNotification
 import SwiftData
 import SwiftUI
 
 @MainActor
 public struct MacApp: App {
     private let cloudSyncState: CloudSyncState = .init()
-    public init() {}
+    
+    @Dependency(\.flashClient) private var flashClient
+    
+    @StateObject private var context: SystemNotificationContext
+    
+    public init() {
+        let context = SystemNotificationContext()
+        self._context = .init(wrappedValue: context)
+        
+        flashClient.injectContext(context)
+    }
     
     public var body: some Scene {
         WindowGroup {
             RootScreen()
                 .environment(cloudSyncState)
                 .modelContainer(for: FeedModel.self)
+                .systemNotification(context)
         }
     }
 }
