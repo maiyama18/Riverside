@@ -13,6 +13,8 @@ public struct MacApp: App {
     
     @Dependency(\.flashClient) private var flashClient
     
+    @Environment(\.openWindow) private var openWindow
+    
     @StateObject private var context: SystemNotificationContext
     
     public init() {
@@ -28,6 +30,18 @@ public struct MacApp: App {
                 .environment(cloudSyncState)
                 .modelContainer(for: FeedModel.self)
                 .systemNotification(context)
+            
+        }
+        .commands {
+            CommandGroup(after: .appSettings) {
+                Button("Licenses") {
+                    openWindow(id: "window-licenses")
+                }
+            }
+        }
+        
+        Window(Text("Licenses"), id: "window-licenses") {
+            Text("Licenses")
         }
     }
 }
