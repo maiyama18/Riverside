@@ -53,26 +53,8 @@ struct FeedDetailScreen: View {
                                 guard let url = URL(string: entry.url) else { return }
                                 showSafari(url: url, onDisappear: { entry.read = true })
                             }
-                            .swipeActions(
-                                edge: .trailing,
-                                allowsFullSwipe: false
-                            ) {
-                                Button {
-                                    entry.read = true
-                                } label: {
-                                    Image(systemName: "checkmark")
-                                }
-                                .tint(.blue)
-                                
-                                #if DEBUG
-                                Button {
-                                    context.delete(entry)
-                                } label: {
-                                    Image(systemName: "trash")
-                                }
-                                .tint(.red)
-                                #endif
-                            }
+                            .entrySwipeActions(context: context, entry: entry)
+                            .entryContextMenu(context: context, entry: entry)
                     }
                 }
                 .listStyle(.plain)

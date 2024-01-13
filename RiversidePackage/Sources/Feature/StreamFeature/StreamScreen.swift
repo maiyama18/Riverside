@@ -73,6 +73,8 @@ public struct StreamScreen: View {
                                         }
                                     )
                                     .contentShape(Rectangle())
+                                    .entrySwipeActions(context: context, entry: entry)
+                                    .entryContextMenu(context: context, entry: entry)
                                     .onTapGesture {
                                         guard let url = URL(string: entry.url) else { return }
                                         showSafari(

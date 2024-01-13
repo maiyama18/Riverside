@@ -6,6 +6,7 @@ import Models
 import NavigationState
 import SwiftData
 import SwiftUI
+import UIComponents
 import Utilities
 
 @MainActor
@@ -24,6 +25,8 @@ public struct FeedsScreen: View {
         }
     }
     
+    @Dependency(\.clipboardClient) private var clipboardClient
+    @Dependency(\.flashClient) private var flashClient
     @Dependency(\.feedUseCase) private var feedUseCase
     
     @Environment(CloudSyncState.self) private var cloudSyncState
@@ -62,25 +65,11 @@ public struct FeedsScreen: View {
                         ForEach(feeds) { feed in
                             NavigationLink(value: FeedsRoute.feedDetail(feed: feed)) {
                                 FeedRowView(feed: feed)
-                                    .swipeActions(
-                                        edge: .trailing,
-                                        allowsFullSwipe: false
-                                    ) {
-                                        Button {
-                                            presentation = .remove(feed: feed)
-                                        } label: {
-                                            Image(systemName: "trash")
-                                        }
-                                        .tint(.red)
-                                        
-                                        if feed.unreadCount > 0 {
-                                            Button {
-                                                presentation = .markAsRead(feed: feed)
-                                            } label: {
-                                                Image(systemName: "checkmark")
-                                            }
-                                            .tint(.blue)
-                                        }
+                                    .contextMenu {
+                                        feedMenu(feed: feed)
+                                    }
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        feedMenu(feed: feed)
                                     }
                             }
                         }
@@ -147,6 +136,48 @@ public struct FeedsScreen: View {
                     secondaryButton: .cancel()
                 )
             }
+        }
+    }
+    
+    @ViewBuilder
+    private func feedMenu(feed: FeedModel) -> some View {
+        Button {
+            presentation = .remove(feed: feed)
+        } label: {
+            Label {
+                Text("Unsubscribe")
+            } icon: {
+                Image(systemName: "trash")
+            }
+        }
+        .tint(.red)
+        
+        Button {
+            clipboardClient.copy(feed.url)
+            flashClient.present(
+                type: .info,
+                message: "Copied feed url!\n\(feed.url)"
+            )
+        } label: {
+            Label {
+                Text("Copy feed url")
+            } icon: {
+                Image(systemName: "doc.on.doc")
+            }
+        }
+        .tint(.gray)
+        
+        if feed.unreadCount > 0 {
+            Button {
+                presentation = .markAsRead(feed: feed)
+            } label: {
+                Label {
+                    Text("mark all as read")
+                } icon: {
+                    Image(systemName: "checkmark")
+                }
+            }
+            .tint(.blue)
         }
     }
 }
