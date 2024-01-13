@@ -51,8 +51,7 @@ struct FeedDetailScreen: View {
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 guard let url = URL(string: entry.url) else { return }
-                                entry.read = true
-                                showSafari(url: url)
+                                showSafari(url: url, onDisappear: { entry.read = true })
                             }
                             .swipeActions(
                                 edge: .trailing,

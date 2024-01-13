@@ -75,8 +75,10 @@ public struct StreamScreen: View {
                                     .contentShape(Rectangle())
                                     .onTapGesture {
                                         guard let url = URL(string: entry.url) else { return }
-                                        entry.read = true
-                                        showSafari(url: url)
+                                        showSafari(
+                                            url: url,
+                                            onDisappear: { withAnimation { entry.read = true } }
+                                        )
                                     }
                                 }
                             } header: {
