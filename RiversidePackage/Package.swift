@@ -238,15 +238,14 @@ let targets: [PackageDescription.Target] = [
     
     var swiftSettings = target.swiftSettings ?? []
     swiftSettings.append(
-        .unsafeFlags(
-            [
-                "-strict-concurrency=complete",
-                "-enable-actor-data-race-checks",
-                "-enable-upcoming-feature", "ExistentialAny",
-                "-enable-upcoming-feature", "BareSlashRegexLiterals",
-                "-enable-upcoming-feature", "DisableOutwardActorInference",
-            ]
-        )
+        contentsOf: [
+            // ref: https://github.com/apple/swift/blob/main/include/swift/Basic/Features.def
+            .enableUpcomingFeature("BareSlashRegexLiterals"),
+            .enableUpcomingFeature("ConciseMagicFile"),
+            .enableUpcomingFeature("DisableOutwardActorInference"),
+            .enableUpcomingFeature("ExistentialAny"),
+            .enableExperimentalFeature("StrictConcurrency"),
+        ]
     )
     target.swiftSettings = swiftSettings
     

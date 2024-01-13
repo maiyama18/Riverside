@@ -34,7 +34,6 @@ public struct FeedImage: View {
             }
         }
     }
-    
 }
 
 public extension FeedImage {
