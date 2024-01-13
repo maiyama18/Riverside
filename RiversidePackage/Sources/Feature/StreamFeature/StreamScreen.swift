@@ -133,13 +133,6 @@ public struct StreamScreen: View {
                 }
                 Button(role: .cancel, action: {}) { Text("Cancel") }
             }
-            .task {
-                do {
-                    try await feedUseCase.addNewEpisodesForAllFeeds(context, false)
-                } catch {
-                    print(error)
-                }
-            }
         }
     }
     

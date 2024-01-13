@@ -80,7 +80,7 @@ public struct RootScreen: View {
                 }
             }
         }
-        .task {
+        .onForeground { @MainActor in
             do {
                 try await feedUseCase.addNewEpisodesForAllFeeds(context, false)
             } catch {

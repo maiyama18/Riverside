@@ -1,13 +1,20 @@
 import CoreData
+import Dependencies
 import FeedsFeature
+import FeedUseCase
 import NavigationState
+import Utilities
 import SettingsFeature
 import StreamFeature
+import SwiftData
 import SwiftUI
 
 @MainActor
 struct MainTabScreen: View {
+    @Dependency(\.feedUseCase) private var feedUseCase
+    
     @Environment(NavigationState.self) private var navigationState
+    @Environment(\.modelContext) private var context
 
     var body: some View {
         @Bindable var navigationState = navigationState
@@ -37,5 +44,12 @@ struct MainTabScreen: View {
             .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         }
         .deleteDuplicatedEntriesOnce()
+        .onForeground { @MainActor in
+            do {
+                try await feedUseCase.addNewEpisodesForAllFeeds(context, false)
+            } catch {
+                print(error)
+            }
+        }
     }
 }
