@@ -1,6 +1,7 @@
 import CloudSyncState
 import Dependencies
 import FlashClient
+import LicensesFeature
 import Models
 import RootFeature
 import SystemNotification
@@ -41,7 +42,7 @@ public struct MacApp: App {
         }
         
         Window(Text("Licenses"), id: "window-licenses") {
-            Text("Licenses")
+            LicensesScreen()
         }
     }
 }

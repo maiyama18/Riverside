@@ -1,11 +1,16 @@
+import LicensesFeature
 import NavigationState
 import SwiftUI
 
 public struct SettingsScreen: View {
+    @Environment(NavigationState.self) private var navigationState
+    
     public init() {}
     
     public var body: some View {
-        NavigationStack {
+        @Bindable var navigationState = navigationState
+        
+        NavigationStack(path: $navigationState.settingsPath) {
             List {
                 Section {
                     NavigationLink(value: SettingsRoute.cloudSyncStatus) { Text("Cloud Sync Status") }
@@ -25,18 +30,22 @@ public struct SettingsScreen: View {
                         }
                     }
                     
-                    NavigationLink(value: SettingsRoute.licenses) { Text("Licenses") }
+                    Button("Licenses") {
+                        navigationState.settingsPresentation = .licenses
+                    }
                 }
             }
             .navigationTitle("Settings")
             .navigationDestination(for: SettingsRoute.self) { route in
                 switch route {
-                case .licenses:
-                    LicensesScreen()
-                case .licenseDetail(let licenseName, let licenseText):
-                    LicenseDetailScreen(licenseName: licenseName, licenseText: licenseText)
                 case .cloudSyncStatus:
                     CloudSyncScreen()
+                }
+            }
+            .sheet(item: $navigationState.settingsPresentation) { presentation in
+                switch presentation {
+                case .licenses:
+                    LicensesScreen()
                 }
             }
         }

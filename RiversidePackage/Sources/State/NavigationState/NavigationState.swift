@@ -11,6 +11,12 @@ public final class NavigationState {
         public var id: String { self.rawValue }
     }
     
+    public enum SettingsPresentation: String, Identifiable {
+        case licenses
+        
+        public var id: String { self.rawValue }
+    }
+    
     public init() {}
     
     // MARK: - Properties
@@ -34,4 +40,7 @@ public final class NavigationState {
         try? await Task.sleep(for: .milliseconds(300))
         feedsPath.append(.feedDetail(feed: feed))
     }
+    
+    public var settingsPath: [SettingsRoute] = []
+    public var settingsPresentation: SettingsPresentation? = nil
 }

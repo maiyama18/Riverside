@@ -91,13 +91,18 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Feature/FeedsFeature"
     ),
     .target(
+        name: "LicensesFeature",
+        path: "Sources/Feature/LicensesFeature",
+        plugins: [.licenses]
+    ),
+    .target(
         name: "SettingsFeature",
         dependencies: [
             "CloudSyncState",
+            "LicensesFeature",
             "NavigationState",
         ],
-        path: "Sources/Feature/SettingsFeature",
-        plugins: [.licenses]
+        path: "Sources/Feature/SettingsFeature"
     ),
     .target(
         name: "StreamFeature",
@@ -120,6 +125,7 @@ let targets: [PackageDescription.Target] = [
             "CloudSyncState",
             "FeedUseCase",
             "FlashClient",
+            "LicensesFeature",
             "Models",
             "SettingsFeature",
             "SubscribeFeedFeature",
