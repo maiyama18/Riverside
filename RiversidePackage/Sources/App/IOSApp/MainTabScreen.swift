@@ -1,3 +1,4 @@
+import AppAppearanceClient
 import CoreData
 import Dependencies
 import FeedsFeature
@@ -11,6 +12,9 @@ import SwiftUI
 
 @MainActor
 struct MainTabScreen: View {
+    @AppStorage("appearance") private var appearance: UIUserInterfaceStyle = .unspecified
+    
+    @Dependency(\.appAppearanceClient) private var appAppearanceClient
     @Dependency(\.feedUseCase) private var feedUseCase
     
     @Environment(NavigationState.self) private var navigationState
@@ -50,6 +54,9 @@ struct MainTabScreen: View {
             } catch {
                 print(error)
             }
+        }
+        .onChange(of: appearance, initial: true) { _, appearance in
+            appAppearanceClient.apply(appearance)
         }
     }
 }

@@ -38,6 +38,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSApp",
         dependencies: [
+            "AppAppearanceClient",
             "CloudSyncState",
             "FeedsFeature",
             "FlashClient",
@@ -152,6 +153,13 @@ let targets: [PackageDescription.Target] = [
             "Models",
         ],
         path: "Sources/State/NavigationState"
+    ),
+    .target(
+        name: "AppAppearanceClient",
+        dependencies: [
+            .dependencies,
+        ],
+        path: "Sources/Client/AppAppearanceClient"
     ),
     .target(
         name: "ClipboardClient",

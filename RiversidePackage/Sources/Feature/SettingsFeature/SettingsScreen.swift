@@ -1,8 +1,12 @@
+import Dependencies
 import LicensesFeature
 import NavigationState
 import SwiftUI
+import Utilities
 
 public struct SettingsScreen: View {
+    @AppStorage("appearance") private var appearance: UIUserInterfaceStyle = .unspecified
+    
     @Environment(NavigationState.self) private var navigationState
     
     public init() {}
@@ -12,6 +16,23 @@ public struct SettingsScreen: View {
         
         NavigationStack(path: $navigationState.settingsPath) {
             List {
+                Section {
+                    HStack {
+                        Text("Appearance")
+                            .font(.callout)
+                        
+                        Spacer()
+                        
+                        Picker("", selection: $appearance) {
+                            ForEach(UIUserInterfaceStyle.all, id: \.self) { appearance in
+                                Text(appearance.string)
+                                    .font(.callout)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                }
+                
                 Section {
                     NavigationLink(value: SettingsRoute.cloudSyncStatus) { Text("Cloud Sync Status") }
                 }
