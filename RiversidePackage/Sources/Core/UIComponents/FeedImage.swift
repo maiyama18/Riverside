@@ -24,9 +24,13 @@ public struct FeedImage: View {
                     .frame(width: size, height: size)
                     .clipShape(rectangle)
             } else {
-                rectangle
-                    .fill(state.error != nil ? .red.opacity(0.3) : .gray.opacity(0.3))
-                    .frame(width: size, height: size)
+                if state.error != nil {
+                    Self.default(size: size)
+                } else {
+                    rectangle
+                        .fill(state.error != nil ? .red.opacity(0.3) : .gray.opacity(0.3))
+                        .frame(width: size, height: size)
+                }
             }
         }
     }
