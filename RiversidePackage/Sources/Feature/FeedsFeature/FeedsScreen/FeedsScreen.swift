@@ -35,7 +35,11 @@ public struct FeedsScreen: View {
     
     @State private var presentation: Presentation? = nil
     
-    @Query(FeedModel.all, animation: .default) var feeds: [FeedModel]
+    @Query(FeedModel.all) private var feeds: [FeedModel]
+    
+    private var sortedFeeds: [FeedModel] {
+        feeds.sorted(by: { $0.unreadCount > $1.unreadCount })
+    }
     
     public init() {}
     
@@ -62,7 +66,7 @@ public struct FeedsScreen: View {
                     )
                 } else {
                     List {
-                        ForEach(feeds) { feed in
+                        ForEach(sortedFeeds) { feed in
                             NavigationLink(value: FeedsRoute.feedDetail(feed: feed)) {
                                 FeedRowView(feed: feed)
                                     .contextMenu {
@@ -75,6 +79,7 @@ public struct FeedsScreen: View {
                         }
                     }
                     .listStyle(.plain)
+                    .animation(.default, value: sortedFeeds)
                 }
             }
             .toolbar {
