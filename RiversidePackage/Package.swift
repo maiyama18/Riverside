@@ -40,6 +40,7 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             "AppAppearanceClient",
             "CloudSyncState",
+            "Entities",
             "FeedsFeature",
             "FlashClient",
             "Models",
@@ -194,6 +195,10 @@ let targets: [PackageDescription.Target] = [
             .systemNotification,
         ],
         path: "Sources/Client/FlashClient"
+    ),
+    .target(
+        name: "Entities",
+        path: "Sources/Core/Entities"
     ),
     .target(
         name: "Models",
