@@ -2,8 +2,8 @@ import Dependencies
 import FeedClient
 import Foundation
 import Utilities
-@preconcurrency import Models
-import SwiftData
+@preconcurrency import Entities
+@preconcurrency import CoreData
 import SwiftUI
 
 public struct FeedUseCase: Sendable {
@@ -12,9 +12,9 @@ public struct FeedUseCase: Sendable {
         case feed(Feed)
     }
     
-    public var addNewEpisodes: @Sendable @MainActor (_ feed: FeedModel) async throws -> Void
-    public var addNewEpisodesForAllFeeds: @Sendable @MainActor (_ context: ModelContext, _ force: Bool) async throws -> Void
-    public var subscribeFeed: @Sendable @MainActor (_ context: ModelContext, _ input: SubscribeInput) async throws -> Feed
+    public var addNewEpisodes: @Sendable @MainActor (_ context: NSManagedObjectContext, _ feed: FeedModel) async throws -> Void
+    public var addNewEpisodesForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool) async throws -> Void
+    public var subscribeFeed: @Sendable @MainActor (_ context: NSManagedObjectContext, _ input: SubscribeInput) async throws -> Feed
 }
 
 extension FeedUseCase {
@@ -23,22 +23,22 @@ extension FeedUseCase {
         
         @Sendable
         @MainActor
-        func addNewEpisodes(for feed: FeedModel) async throws {
-            guard let feedURL = URL(string: feed.url) else {
+        func addNewEpisodes(context: NSManagedObjectContext, feed: FeedModel) async throws {
+            guard let feedURL = feed.url else {
                 throw NSError(domain: "FeedUseCase", code: -1)
             }
             let fetchedEntries = try await feedClient.fetch(feedURL).entries
             
-            let existingEntries = feed.entries ?? []
-            let existingEntryURLs = existingEntries.map(\.url)
+            let existingEntries = feed.entries as? Set<EntryModel> ?? []
+            let existingEntryURLs = existingEntries.compactMap(\.url)
             
-            let latestEntryPublishedAt = existingEntries.map(\.publishedAt).max() ?? Date(timeIntervalSince1970: 0)
+            let latestEntryPublishedAt = existingEntries.compactMap(\.publishedAt).max() ?? Date(timeIntervalSince1970: 0)
             
             let newEntries = fetchedEntries.filter { $0.publishedAt > latestEntryPublishedAt }
             
             for newEntry in newEntries {
-                if !existingEntryURLs.compactMap(URL.init(string:)).contains(where: { $0.isSame(as: newEntry.url) }) {
-                    newEntry.toModel().feed = feed
+                if !existingEntryURLs.compactMap({ $0 }).contains(where: { $0.isSame(as: newEntry.url) }) {
+                    feed.addToEntries(newEntry.toModel(context: context))
                 }
             }
         }
@@ -59,8 +59,8 @@ extension FeedUseCase {
         }
         
         return .init(
-            addNewEpisodes: { feed in
-                try await addNewEpisodes(for: feed)
+            addNewEpisodes: { context, feed in
+                try await addNewEpisodes(context: context, feed: feed)
             },
             addNewEpisodesForAllFeeds: { context, force in
                 if force {
@@ -77,7 +77,7 @@ extension FeedUseCase {
                 await withThrowingTaskGroup(of: Void.self) { group in
                     for feed in feeds {
                         group.addTask {
-                            try await addNewEpisodes(for: feed)
+                            try await addNewEpisodes(context: context, feed: feed)
                         }
                     }
                     do {
@@ -96,20 +96,21 @@ extension FeedUseCase {
                     try await feedClient.fetch(url)
                 }
                 
-                let existingFeedURLs = try context.fetch(FeedModel.all).map(\.url).compactMap(URL.init(string:))
+                let existingFeedURLs = try context.fetch(FeedModel.all).compactMap(\.url)
                 guard existingFeedURLs.filter({ url in url.isSame(as: feed.url) }).isEmpty else {
                     throw NSError(domain: "FeedUseCase", code: -2, userInfo: [
                         NSLocalizedDescriptionKey: "'\(feed.title)' is already subscribed"
                     ])
                 }
              
-                let (feedModel, entryModels) = feed.toModel()
-                context.insert(feedModel)
-                try context.save()
+                let (feedModel, entryModels) = feed.toModel(context: context)
                 for (i, entryModel) in entryModels.enumerated() {
                     entryModel.read = i >= 3
-                    entryModel.feed = feedModel
+                    feedModel.addToEntries(entryModel)
                 }
+                context.insert(feedModel)
+                
+                try context.saveWithRollback()
                 return feed
             }
         )
