@@ -116,6 +116,7 @@ let targets: [PackageDescription.Target] = [
         name: "StreamFeature",
         dependencies: [
             .algorithms,
+            .dependencies,
             "CloudSyncState",
             "FeedUseCase",
             "FlashClient",
@@ -282,6 +283,10 @@ let package = Package(
         .library(name: "IOSApp", targets: ["IOSApp"]),
         .library(name: "IOSActionExtension", targets: ["IOSActionExtension"]),
         .library(name: "MacApp", targets: ["MacApp"]),
+        .library(
+            name: "AllTests",
+            targets: targets.filter({ $0.isTest }).map(\.name)
+        ),
         .library(
             name: "Features",
             targets: [
