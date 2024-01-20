@@ -1,3 +1,4 @@
+import Algorithms
 import CloudSyncState
 import Dependencies
 import FeedUseCase
@@ -24,6 +25,10 @@ public struct StreamScreen: View {
     @AppStorage("unread-only-stream") private var unreadOnly: Bool = true
     
     @State private var markAllAsReadDialogPresented: Bool = false
+    
+    private var uniquedEntries: [EntryModel] {
+        entries.uniqued(on: \.url)
+    }
     
     public init() {}
     
@@ -141,11 +146,11 @@ public struct StreamScreen: View {
     }
     
     private var sections: [StreamSection] {
-        StreamSectionBuilder.build(entries: entries.filter({ unreadOnly ? $0.read == false : true }))
+        StreamSectionBuilder.build(entries: uniquedEntries.filter({ unreadOnly ? $0.read == false : true }))
     }
     
     private var navigationTitle: String {
-        let unreadCount = entries.filter { !$0.read }.count
+        let unreadCount = uniquedEntries.filter { !$0.read }.count
         return unreadCount == 0 ? "Stream" : "Stream (\(unreadCount))"
     }
 }
