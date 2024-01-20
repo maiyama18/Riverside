@@ -2,7 +2,7 @@ import CloudKit
 import CloudSyncState
 import SwiftUI
 
-public struct CloudSyncScreen: View {
+public struct CloudSyncStatusScreen: View {
     @Environment(CloudSyncState.self) private var cloudSyncState
     
     public init() {}
@@ -115,7 +115,7 @@ public struct CloudSyncScreen: View {
 }
 
 #Preview {
-    CloudSyncScreen()
+    CloudSyncStatusScreen()
         .environment({
             let state = CloudSyncState()
             

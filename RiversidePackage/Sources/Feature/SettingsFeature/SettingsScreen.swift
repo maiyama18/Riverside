@@ -1,3 +1,4 @@
+import CloudSyncStatusFeature
 import Dependencies
 import LicensesFeature
 import NavigationState
@@ -60,7 +61,7 @@ public struct SettingsScreen: View {
             .navigationDestination(for: SettingsRoute.self) { route in
                 switch route {
                 case .cloudSyncStatus:
-                    CloudSyncScreen()
+                    CloudSyncStatusScreen()
                 }
             }
             .sheet(item: $navigationState.settingsPresentation) { presentation in
