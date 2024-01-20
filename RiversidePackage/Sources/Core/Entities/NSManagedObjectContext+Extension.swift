@@ -1,7 +1,7 @@
 import CoreData
 
 extension NSManagedObjectContext {
-    func saveWithRollback() throws {
+    public func saveWithRollback() throws {
         do {
             try save()
         } catch {

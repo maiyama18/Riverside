@@ -1,4 +1,4 @@
-@preconcurrency import CoreData
+import CoreData
 
 public final class PersistentProvider {
     public static let cloud: PersistentProvider = .init(

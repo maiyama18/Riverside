@@ -1,4 +1,4 @@
-import Models
+import Entities
 import SwiftUI
 
 @MainActor
@@ -14,14 +14,14 @@ public struct StreamEntryRowView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
-                if let imageURLString = entry.feed?.imageURL {
-                    FeedImage(url: URL(string: imageURLString), size: 32)
+                if let imageURL = entry.feed?.imageURL {
+                    FeedImage(url: imageURL, size: 32)
                 } else {
                     FeedImage.default(size: 32)
                 }
                 
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(entry.title)
+                    Text(entry.title ?? "")
                         .bold()
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
@@ -30,7 +30,7 @@ public struct StreamEntryRowView: View {
                         Button {
                             onFeedTapped(feed)
                         } label: {
-                            Text(feed.title)
+                            Text(feed.title ?? "")
                                 .font(.footnote)
                                 .underline(true)
                                 .padding(.vertical, 4)

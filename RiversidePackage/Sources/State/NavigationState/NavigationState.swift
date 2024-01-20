@@ -1,4 +1,4 @@
-import Models
+import Entities
 import Observation
 import SwiftUI
 

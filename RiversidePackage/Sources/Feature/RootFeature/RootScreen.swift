@@ -1,24 +1,25 @@
 import Algorithms
+import CoreData
 import Dependencies
+import Entities
 import FeedUseCase
 import FlashClient
-import Models
-import SwiftData
 import SwiftUI
 
+@MainActor
 public struct RootScreen: View {
     @AppStorage("unread-only") private var unreadOnly: Bool = true
     
     @Dependency(\.feedUseCase) private var feedUseCase
     @Dependency(\.flashClient) private var flashClient
     
-    @Environment(\.modelContext) private var context
+    @Environment(\.managedObjectContext) private var context
     
-    @State private var selectedFeedID: PersistentIdentifier? = nil
-    @State private var selectedEntryID: PersistentIdentifier? = nil
+    @State private var selectedFeedID: ObjectIdentifier? = nil
+    @State private var selectedEntryID: ObjectIdentifier? = nil
     @State private var refreshing: Bool = false
     
-    @Query(EntryModel.all) private var entries: [EntryModel]
+    @FetchRequest(fetchRequest: EntryModel.all) private var entries: FetchedResults<EntryModel>
     
     public init() {}
     
@@ -87,7 +88,7 @@ public struct RootScreen: View {
                 print(error)
             }
         }
-        .deleteDuplicatedEntriesOnce()
+        // TODO: 重複したレコードを削除する
     }
 }
 

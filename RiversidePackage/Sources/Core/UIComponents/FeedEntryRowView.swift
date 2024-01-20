@@ -1,4 +1,4 @@
-import Models
+import Entities
 import SwiftUI
 
 @MainActor
@@ -11,10 +11,12 @@ public struct FeedEntryRowView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(entry.publishedAt.formatted(date: .numeric, time: .omitted))
-                .font(.footnote.monospacedDigit())
+            if let publishedAt = entry.publishedAt {
+                Text(publishedAt.formatted(date: .numeric, time: .omitted))
+                    .font(.footnote.monospacedDigit())
+            }
             
-            Text(entry.title)
+            Text(entry.title ?? "")
                 .bold()
                 .lineLimit(2)
             

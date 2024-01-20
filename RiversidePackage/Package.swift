@@ -43,7 +43,6 @@ let targets: [PackageDescription.Target] = [
             "Entities",
             "FeedsFeature",
             "FlashClient",
-            "Models",
             "NavigationState",
             "SettingsFeature",
             "StreamFeature",
@@ -62,7 +61,7 @@ let targets: [PackageDescription.Target] = [
         name: "MacApp",
         dependencies: [
             "FlashClient",
-            "Models",
+            "Entities",
             "RootFeature",
         ],
         path: "Sources/App/MacApp"
@@ -80,7 +79,7 @@ let targets: [PackageDescription.Target] = [
             "FeedClient",
             "FeedUseCase",
             "FlashClient",
-            "Models",
+            "Entities",
             "Utilities",
             "UIComponents",
         ],
@@ -92,8 +91,8 @@ let targets: [PackageDescription.Target] = [
             "SubscribeFeedFeature",
             "ClipboardClient",
             "CloudSyncState",
+            "Entities",
             "FeedUseCase",
-            "Models",
             "NavigationState",
             "UIComponents",
         ],
@@ -119,9 +118,9 @@ let targets: [PackageDescription.Target] = [
             .algorithms,
             .dependencies,
             "CloudSyncState",
+            "Entities",
             "FeedUseCase",
             "FlashClient",
-            "Models",
             "NavigationState",
             "UIComponents",
         ],
@@ -133,10 +132,11 @@ let targets: [PackageDescription.Target] = [
             .algorithms,
             "ClipboardClient",
             "CloudSyncStatusFeature",
+            "CloudSyncState",
+            "Entities",
             "FeedUseCase",
             "FlashClient",
             "LicensesFeature",
-            "Models",
             "SubscribeFeedFeature",
             "UIComponents",
             "WebView",
@@ -146,8 +146,8 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "FeedUseCase",
         dependencies: [
+            "Entities",
             "FeedClient",
-            "Models",
         ],
         path: "Sources/UseCase/FeedUseCase"
     ),
@@ -158,7 +158,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "NavigationState",
         dependencies: [
-            "Models",
+            "Entities",
         ],
         path: "Sources/State/NavigationState"
     ),
@@ -198,6 +198,9 @@ let targets: [PackageDescription.Target] = [
     ),
     .target(
         name: "Entities",
+        dependencies: [
+            .algorithms,
+        ],
         path: "Sources/Core/Entities"
     ),
     .target(
@@ -215,7 +218,7 @@ let targets: [PackageDescription.Target] = [
         name: "UIComponents",
         dependencies: [
             .nukeUI,
-            "Models",
+            "Entities",
         ],
         path: "Sources/Core/UIComponents"
     ),

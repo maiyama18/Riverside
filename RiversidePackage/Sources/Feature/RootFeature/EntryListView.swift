@@ -1,8 +1,8 @@
 import ClipboardClient
+import CoreData
 import Dependencies
+import Entities
 import FlashClient
-import Models
-import SwiftData
 import SwiftUI
 import UIComponents
 
@@ -16,10 +16,11 @@ private struct EntryRowModifier: ViewModifier {
         content
             .contextMenu {
                 Button {
-                    clipboardClient.copy(entry.url)
+                    guard let urlString = entry.url?.absoluteString else { return }
+                    clipboardClient.copy(urlString)
                     flashClient.present(
                         type: .info,
-                        message: "Copied!\n\(entry.url)"
+                        message: "Copied!\n\(urlString)"
                     )
                 } label: {
                     Text("Copy URL")
@@ -44,8 +45,8 @@ struct EntryListView: View {
     var allEntries: [EntryModel]
     var unreadOnly: Bool
     
-    @Binding var selectedFeedID: PersistentIdentifier?
-    @Binding var selectedEntryID: PersistentIdentifier?
+    @Binding var selectedFeedID: ObjectIdentifier?
+    @Binding var selectedEntryID: ObjectIdentifier?
     
     private var filteredEntries: [EntryModel] {
         let unreadFilteredEntries = allEntries

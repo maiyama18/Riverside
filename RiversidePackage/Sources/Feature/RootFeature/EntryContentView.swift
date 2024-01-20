@@ -1,5 +1,5 @@
 import Combine
-import Models
+import Entities
 import SwiftUI
 import WebView
 
@@ -41,7 +41,7 @@ struct EntryContentView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             
             WebView(
-                url: URL(string: entry.url),
+                url: entry.url,
                 state: $state,
                 action: $action
             )

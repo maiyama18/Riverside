@@ -1,10 +1,9 @@
 import CloudSyncState
+import CoreData
 import Dependencies
 import Entities
-import Models
 import NavigationState
 import SystemNotification
-import SwiftData
 import SwiftUI
 
 @MainActor
@@ -30,7 +29,6 @@ public struct IOSApp: App {
                 .environment(cloudSyncState)
                 .environment(navigationState)
                 .environment(\.managedObjectContext, persistentProvider.viewContext)
-                .modelContainer(for: FeedModel.self)
                 .systemNotification(context)
         }
     }

@@ -1,5 +1,5 @@
-import Models
-import SwiftData
+import CoreData
+import Entities
 import SwiftUI
 import UIComponents
 
@@ -72,19 +72,20 @@ private extension View {
     }
 }
 
+@MainActor
 struct SidebarListView: View {
-    @Binding var selectedFeedID: PersistentIdentifier?
+    @Binding var selectedFeedID: ObjectIdentifier?
     
-    @Environment(\.modelContext) private var context
+    @Environment(\.managedObjectContext) private var context
     
-    @Query(FeedModel.all) private var feeds: [FeedModel]
+    @FetchRequest(fetchRequest: FeedModel.all) private var feeds: FetchedResults<FeedModel>
     
     private var sortedFeeds: [FeedModel] {
         feeds.sorted(by: { $0.unreadCount > $1.unreadCount })
     }
     
     var body: some View {
-        if feeds.isEmpty {
+        if sortedFeeds.isEmpty {
             ContentUnavailableView(
                 label: {
                     Label(
@@ -102,14 +103,15 @@ struct SidebarListView: View {
             List(selection: $selectedFeedID) {
                 Section {
                     Text("All")
-                        .badge(feeds.map(\.unreadCount).reduce(into: 0) { $0 += $1 })
+                        .badge(sortedFeeds.map(\.unreadCount).reduce(into: 0) { $0 += $1 })
                         .listRow(
                             selected: selectedFeedID == nil,
                             onTapped: { selectedFeedID = nil },
                             onMarkAsRead: {
                                 for feed in sortedFeeds {
-                                    feed.markAll(read: true)
+                                    feed.markAll(asRead: true)
                                 }
+                                try? context.saveWithRollback()
                             },
                             unsubscribe: nil
                         )
@@ -119,20 +121,26 @@ struct SidebarListView: View {
                     ForEach(sortedFeeds) { feed in
                         HStack {
                             FeedImage(
-                                url: feed.imageURL.flatMap(URL.init(string:)),
+                                url: feed.imageURL,
                                 size: 18
                             )
                             
-                            Text(feed.title)
+                            Text(feed.title ?? "")
                         }
                         .badge(feed.unreadCount)
                         .listRow(
                             selected: selectedFeedID == feed.id,
                             onTapped: { selectedFeedID = feed.id },
-                            onMarkAsRead: { feed.markAll(read: true) },
+                            onMarkAsRead: {
+                                feed.markAll(asRead: true)
+                                try? context.saveWithRollback()
+                            },
                             unsubscribe: .init(
-                                message: "Are you sure to unsubscribe '\(feed.title)'",
-                                action: { context.delete(feed) }
+                                message: "Are you sure to unsubscribe '\(feed.title ?? "")'",
+                                action: {
+                                    context.delete(feed)
+                                    try? context.saveWithRollback()
+                                }
                             )
                         )
                     }
@@ -143,7 +151,3 @@ struct SidebarListView: View {
         }
     }
 }
-
-//#Preview {
-//    SidebarListView(selectedFeedID: .constant(nil))
-//}

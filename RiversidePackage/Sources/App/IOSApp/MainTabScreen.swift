@@ -1,13 +1,13 @@
 import AppAppearanceClient
 import CoreData
 import Dependencies
+import Entities
 import FeedsFeature
 import FeedUseCase
 import NavigationState
 import Utilities
 import SettingsFeature
 import StreamFeature
-import SwiftData
 import SwiftUI
 
 @MainActor
@@ -18,7 +18,7 @@ struct MainTabScreen: View {
     @Dependency(\.feedUseCase) private var feedUseCase
     
     @Environment(NavigationState.self) private var navigationState
-    @Environment(\.modelContext) private var context
+    @Environment(\.managedObjectContext) private var context
 
     var body: some View {
         @Bindable var navigationState = navigationState
@@ -47,7 +47,7 @@ struct MainTabScreen: View {
             .toolbarBackground(.visible, for: .tabBar)
             .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         }
-        .deleteDuplicatedEntriesOnce()
+        // TODO: 重複したレコードを削除する
         .onForeground { @MainActor in
             do {
                 try await feedUseCase.addNewEpisodesForAllFeeds(context, false)

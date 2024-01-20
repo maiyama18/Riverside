@@ -1,10 +1,10 @@
+import CoreData
 import SubscribeFeedFeature
 import CloudSyncState
 import Dependencies
+import Entities
 import FeedUseCase
-import Models
 import NavigationState
-import SwiftData
 import SwiftUI
 import UIComponents
 import Utilities
@@ -31,11 +31,11 @@ public struct FeedsScreen: View {
     
     @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(NavigationState.self) private var navigationState
-    @Environment(\.modelContext) private var context
+    @Environment(\.managedObjectContext) private var context
     
     @State private var presentation: Presentation? = nil
     
-    @Query(FeedModel.all) private var feeds: [FeedModel]
+    @FetchRequest(fetchRequest: FeedModel.all) private var feeds: FetchedResults<FeedModel>
     
     private var sortedFeeds: [FeedModel] {
         feeds.sorted(by: { $0.unreadCount > $1.unreadCount })
@@ -123,7 +123,7 @@ public struct FeedsScreen: View {
             switch presentation {
             case .remove(let feed):
                 Alert(
-                    title: Text("Are you sure to remove feed '\(feed.title)'"),
+                    title: Text("Are you sure to remove feed '\(feed.title ?? "")'"),
                     primaryButton: .destructive(Text("Remove")) {
                         context.delete(feed)
                     },
@@ -131,12 +131,13 @@ public struct FeedsScreen: View {
                 )
             case .markAsRead(let feed):
                 Alert(
-                    title: Text("Mark all entries of '\(feed.title)' as read?"),
+                    title: Text("Mark all entries of '\(feed.title ?? "")' as read?"),
                     primaryButton: .default(Text("Confirm")) {
-                        guard let entries = feed.entries else { return }
+                        guard let entries = feed.entries as? Set<EntryModel> else { return }
                         for entry in entries {
                             entry.read = true
                         }
+                        try? context.saveWithRollback()
                     },
                     secondaryButton: .cancel()
                 )
@@ -158,10 +159,11 @@ public struct FeedsScreen: View {
         .tint(.red)
         
         Button {
-            clipboardClient.copy(feed.url)
+            guard let urlString = feed.url?.absoluteString else { return }
+            clipboardClient.copy(urlString)
             flashClient.present(
                 type: .info,
-                message: "Copied feed url!\n\(feed.url)"
+                message: "Copied feed url!\n\(urlString)"
             )
         } label: {
             Label {
@@ -191,5 +193,4 @@ public struct FeedsScreen: View {
     FeedsScreen()
         .environment(CloudSyncState())
         .environment(NavigationState())
-        .modelContainer(previewContainer())
 }

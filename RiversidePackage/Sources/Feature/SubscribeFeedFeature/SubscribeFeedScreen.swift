@@ -1,9 +1,9 @@
+import CoreData
 import Dependencies
+import Entities
 import FeedClient
 import FeedUseCase
 import FlashClient
-import Models
-import SwiftData
 import SwiftUI
 import Utilities
 
@@ -12,13 +12,13 @@ public struct SubscribeFeedScreen: View {
     @State private var text: String = ""
     @State private var feedState: FetchState<Feed?> = .fetched(nil)
     
-    @Query(FeedModel.all) private var feeds: [FeedModel]
+    @FetchRequest(fetchRequest: FeedModel.all) private var feeds: FetchedResults<FeedModel>
     
     @Dependency(\.feedClient) private var feedClient
     @Dependency(\.feedUseCase) private var feedUseCase
     @Dependency(\.flashClient) private var flashClient
     
-    @Environment(\.modelContext) private var context
+    @Environment(\.managedObjectContext) private var context
     
     public init() {}
     
@@ -120,7 +120,7 @@ public struct SubscribeFeedScreen: View {
         guard case .fetched(let feed) = feedState, let feed else {
             return false
         }
-        let subscribedFeedURLs = feeds.map(\.url).compactMap(URL.init(string:))
+        let subscribedFeedURLs = feeds.compactMap(\.url)
         return subscribedFeedURLs.contains(where: { $0.isSame(as: feed.url) })
     }
     
@@ -182,5 +182,4 @@ private extension View {
 
 #Preview { @MainActor in
     SubscribeFeedScreen()
-        .modelContainer(previewContainer())
 }

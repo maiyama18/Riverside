@@ -1,4 +1,4 @@
-import Models
+import Entities
 import SwiftUI
 import UIComponents
 
@@ -8,20 +8,20 @@ struct FeedRowView: View {
     
     var body: some View {
         HStack {
-            if let imageURLString = feed.imageURL {
-                FeedImage(url: URL(string: imageURLString), size: 44)
+            if let imageURL = feed.imageURL {
+                FeedImage(url: imageURL, size: 44)
             } else {
                 FeedImage.default(size: 44)
             }
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(feed.title)
+                Text(feed.title ?? "")
                     .bold()
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                 
                 HStack {
-                    if let host = URL(string: feed.url)?.host() {
+                    if let host = feed.url?.host() {
                         Text(host)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
@@ -32,8 +32,4 @@ struct FeedRowView: View {
         .badge(feed.unreadCount)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
-}
-
-#Preview {
-    FeedRowView(feed: .init(url: "https://example.com", title: "Sample Feed", overview: nil, imageURL: nil))
 }

@@ -1,12 +1,12 @@
 import Algorithms
 import ClipboardClient
 import CloudSyncState
+import CoreData
 import Dependencies
+import Entities
 import FeedUseCase
 import FlashClient
-import Models
 import NavigationState
-import SwiftData
 import SwiftUI
 import Utilities
 import UIComponents
@@ -20,17 +20,21 @@ struct FeedDetailScreen: View {
     @Dependency(\.flashClient) private var flashClient
     
     @Environment(CloudSyncState.self) private var cloudSyncState
-    @Environment(\.modelContext) private var context
+    @Environment(\.managedObjectContext) private var context
     
-    @Query private var entries: [EntryModel]
+    @FetchRequest private var entries: FetchedResults<EntryModel>
     
     @AppStorage("unread-only-feed-detail") private var unreadOnly: Bool = true
     
     @State private var markAllAsReadDialogPresented: Bool = false
     
+    private var filteredEntries: [EntryModel] {
+        entries.uniqued(on: \.url).filter { unreadOnly ? $0.read == false : true }
+    }
+    
     init(feed: FeedModel) {
         self.feed = feed
-        self._entries = Query(EntryModel.all(for: feed))
+        self._entries = FetchRequest(fetchRequest: EntryModel.belonging(to: feed))
     }
     
     var body: some View {
@@ -50,7 +54,7 @@ struct FeedDetailScreen: View {
                         FeedEntryRowView(entry: entry)
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                guard let url = URL(string: entry.url) else { return }
+                                guard let url = entry.url else { return }
                                 showSafari(url: url, onDisappear: { entry.read = true })
                             }
                             .entrySwipeActions(context: context, entry: entry)
@@ -60,7 +64,7 @@ struct FeedDetailScreen: View {
                 .listStyle(.plain)
                 .refreshable {
                     do {
-                        try await feedUseCase.addNewEpisodes(feed)
+                        try await feedUseCase.addNewEpisodes(context, feed)
                     } catch {
                         flashClient.present(
                             type: .error,
@@ -72,12 +76,12 @@ struct FeedDetailScreen: View {
         }
         .task {
             do {
-                try await feedUseCase.addNewEpisodes(feed)
+                try await feedUseCase.addNewEpisodes(context, feed)
             } catch {
                 print(error)
             }
         }
-        .navigationTitle(feed.title)
+        .navigationTitle(feed.title ?? "")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack {
@@ -94,10 +98,11 @@ struct FeedDetailScreen: View {
                             Button("Mark all as read...") { markAllAsReadDialogPresented = true }
                                 .disabled(entries.filter { !$0.read }.isEmpty)
                             Button("Copy Feed URL") {
-                                clipboardClient.copy(feed.url)
+                                guard let urlString = feed.url?.absoluteString else { return }
+                                clipboardClient.copy(urlString)
                                 flashClient.present(
                                     type: .info,
-                                    message: "Copied!\n\(feed.url)"
+                                    message: "Copied!\n\(urlString)"
                                 )
                             }
                         }
@@ -117,15 +122,12 @@ struct FeedDetailScreen: View {
                     for entry in entries {
                         entry.read = true
                     }
+                    try? context.saveWithRollback()
                 }
             ) {
                 Text("Confirm")
             }
             Button(role: .cancel, action: {}) { Text("Cancel") }
         }
-    }
-    
-    private var filteredEntries: [EntryModel] {
-        entries.uniqued(on: \.url).filter { unreadOnly ? $0.read == false : true }
     }
 }
