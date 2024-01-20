@@ -182,7 +182,7 @@ let targets: [PackageDescription.Target] = [
             .feedKit,
             .swiftSoup,
             .dependencies,
-            "Models",
+            "Entities",
             "Utilities",
         ],
         path: "Sources/Client/FeedClient",
