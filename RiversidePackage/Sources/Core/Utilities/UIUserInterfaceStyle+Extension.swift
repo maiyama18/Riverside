@@ -1,3 +1,4 @@
+#if os(iOS)
 import UIKit
 
 public extension UIUserInterfaceStyle {
@@ -18,3 +19,4 @@ public extension UIUserInterfaceStyle {
         }
     }
 }
+#endif

@@ -1,5 +1,5 @@
 import CloudSyncState
-import SettingsFeature
+import CloudSyncStatusFeature
 import SwiftUI
 
 struct CloudSyncStateButton: View {
@@ -14,7 +14,7 @@ struct CloudSyncStateButton: View {
             Image(systemName: cloudSyncState.syncing ? "arrow.clockwise.icloud" : "icloud")
         }
         .popover(isPresented: $isPresented) {
-            CloudSyncScreen()
+            CloudSyncStatusScreen()
         }
     }
 }

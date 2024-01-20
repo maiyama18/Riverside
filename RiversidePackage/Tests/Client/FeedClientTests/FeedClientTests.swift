@@ -17,6 +17,7 @@ final class FeedClientTests: XCTestCase {
     private static let jxckHTMLURL = URL(string: "https://blog.jxck.io/")!
     
     // Favicon
+    private static let maiyama4FaviconURL = URL(string: "https://maiyama4.hatenablog.com/icon/favicon")!
     private static let r7kamuraFaviconURL = URL(string: "https://r7kamura.com/favicon.ico")!
     private static let swiftUILabFaviconURL = URL(string: "https://swiftui-lab.com/favicon.ico")!
     
@@ -106,7 +107,11 @@ final class FeedClientTests: XCTestCase {
         try setFeedData(to: &responses, url: Self.jxckHTMLURL, responseType: .html, resourceName: "jxck")
         
         // Favicon
-        for url in [Self.r7kamuraFaviconURL, Self.swiftUILabFaviconURL] {
+        for url in [
+            Self.maiyama4FaviconURL,
+            Self.r7kamuraFaviconURL,
+            Self.swiftUILabFaviconURL,
+        ] {
             responses[url] = .success(
                 .init(
                     statusCode: 200, data: Data(),

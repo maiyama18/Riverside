@@ -67,6 +67,13 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/App/MacApp"
     ),
     .target(
+        name: "CloudSyncStatusFeature",
+        dependencies: [
+            "CloudSyncState",
+        ],
+        path: "Sources/Feature/CloudSyncStatusFeature"
+    ),
+    .target(
         name: "SubscribeFeedFeature",
         dependencies: [
             "FeedClient",
@@ -99,7 +106,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "SettingsFeature",
         dependencies: [
-            "CloudSyncState",
+            "CloudSyncStatusFeature",
             "LicensesFeature",
             "NavigationState",
         ],
@@ -109,6 +116,7 @@ let targets: [PackageDescription.Target] = [
         name: "StreamFeature",
         dependencies: [
             .algorithms,
+            .dependencies,
             "CloudSyncState",
             "FeedUseCase",
             "FlashClient",
@@ -123,12 +131,11 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             .algorithms,
             "ClipboardClient",
-            "CloudSyncState",
+            "CloudSyncStatusFeature",
             "FeedUseCase",
             "FlashClient",
             "LicensesFeature",
             "Models",
-            "SettingsFeature",
             "SubscribeFeedFeature",
             "UIComponents",
             "WebView",
@@ -276,6 +283,10 @@ let package = Package(
         .library(name: "IOSApp", targets: ["IOSApp"]),
         .library(name: "IOSActionExtension", targets: ["IOSActionExtension"]),
         .library(name: "MacApp", targets: ["MacApp"]),
+        .library(
+            name: "AllTests",
+            targets: targets.filter({ $0.isTest }).map(\.name)
+        ),
         .library(
             name: "Features",
             targets: [
