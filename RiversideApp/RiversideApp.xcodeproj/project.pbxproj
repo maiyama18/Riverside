@@ -61,7 +61,7 @@
 		38C00B4F2B41101400029076 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38C00B502B41103200029076 /* RiversideIOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideIOSApp.entitlements; sourceTree = "<group>"; };
 		C827321C2B3805870053842F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		C827322E2B3808690053842F /* RiversideIOSApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RiversideIOSApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C827322E2B3808690053842F /* Riverside.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Riverside.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C82732342B38086A0053842F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -131,7 +131,7 @@
 		C827321A2B3805870053842F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C827322E2B3808690053842F /* RiversideIOSApp.app */,
+				C827322E2B3808690053842F /* Riverside.app */,
 				383776BF2B4812BA0011BD41 /* RiversideIOSActionExtension.appex */,
 				383314752B493EEF00A47514 /* Riverside.app */,
 			);
@@ -219,7 +219,7 @@
 				C827323D2B3808950053842F /* IOSApp */,
 			);
 			productName = RiversideIOSApp;
-			productReference = C827322E2B3808690053842F /* RiversideIOSApp.app */;
+			productReference = C827322E2B3808690053842F /* Riverside.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -605,7 +605,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.muijp.RiversideIOSApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Riverside;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -643,7 +643,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.muijp.RiversideIOSApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Riverside;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
