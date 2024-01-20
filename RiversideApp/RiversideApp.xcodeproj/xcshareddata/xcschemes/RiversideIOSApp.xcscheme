@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C827322D2B3808690053842F"
-               BuildableName = "RiversideIOSApp.app"
+               BuildableName = "Riverside.app"
                BlueprintName = "RiversideIOSApp"
                ReferencedContainer = "container:RiversideApp.xcodeproj">
             </BuildableReference>
@@ -44,7 +44,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C827322D2B3808690053842F"
-            BuildableName = "RiversideIOSApp.app"
+            BuildableName = "Riverside.app"
             BlueprintName = "RiversideIOSApp"
             ReferencedContainer = "container:RiversideApp.xcodeproj">
          </BuildableReference>
@@ -61,7 +61,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C827322D2B3808690053842F"
-            BuildableName = "RiversideIOSApp.app"
+            BuildableName = "Riverside.app"
             BlueprintName = "RiversideIOSApp"
             ReferencedContainer = "container:RiversideApp.xcodeproj">
          </BuildableReference>
