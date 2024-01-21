@@ -3,7 +3,7 @@ import SwiftUI
 
 @MainActor
 public struct FeedEntryRowView: View {
-    private let entry: EntryModel
+    @ObservedObject private var entry: EntryModel
     
     public init(entry: EntryModel) {
         self.entry = entry
@@ -28,5 +28,6 @@ public struct FeedEntryRowView: View {
             }
         }
         .foregroundStyle(entry.read ? .secondary : .primary)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

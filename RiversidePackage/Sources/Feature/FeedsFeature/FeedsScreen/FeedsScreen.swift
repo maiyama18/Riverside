@@ -1,3 +1,4 @@
+import Algorithms
 import CoreData
 import SubscribeFeedFeature
 import CloudSyncState
@@ -32,11 +33,17 @@ public struct FeedsScreen: View {
     @Environment(\.managedObjectContext) private var context
     
     @State private var presentation: Presentation? = nil
+    @State private var unreadCountByFeedURL: [URL?: Int] = [:]
     
     @FetchRequest(fetchRequest: FeedModel.all) private var feeds: FetchedResults<FeedModel>
+    @FetchRequest(fetchRequest: EntryModel.unreads) private var unreadEntries: FetchedResults<EntryModel>
     
     private var sortedFeeds: [FeedModel] {
-        feeds.sorted(by: { $0.unreadCount > $1.unreadCount })
+        feeds.sorted(by: { unreadCount(of: $0) > unreadCount(of: $1) })
+    }
+    
+    func unreadCount(of feed: FeedModel) -> Int {
+        unreadCountByFeedURL[feed.url] ?? 0
     }
     
     public init() {}
@@ -66,7 +73,7 @@ public struct FeedsScreen: View {
                     List {
                         ForEach(sortedFeeds) { feed in
                             NavigationLink(value: FeedsRoute.feedDetail(feed: feed)) {
-                                FeedRowView(feed: feed)
+                                FeedRowView(feed: feed, unreadCount: unreadCount(of: feed))
                                     .contextMenu {
                                         feedMenu(feed: feed)
                                     }
@@ -109,6 +116,13 @@ public struct FeedsScreen: View {
                     FeedDetailScreen(feed: feed)
                 }
             }
+        }
+        .onChange(of: unreadEntries.map { $0 }, initial: true) { _, unreadEntries in
+            self.unreadCountByFeedURL = Dictionary(
+                grouping: unreadEntries.uniqued(on: \.url),
+                by: { $0.feed?.url }
+            )
+            .mapValues(\.count)
         }
         .alert(item: $presentation) { presentation in
             switch presentation {

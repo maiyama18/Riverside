@@ -16,6 +16,13 @@ extension EntryModel {
         return request
     }
     
+    public static var unreads: NSFetchRequest<EntryModel> {
+        let request = EntryModel.fetchRequest()
+        request.predicate = NSPredicate(format: "feed != nil AND read == %@", NSNumber(value: false))
+        request.sortDescriptors = [.init(keyPath: \EntryModel.publishedAt, ascending: false)]
+        return request
+    }
+    
     public static func belonging(to feed: FeedModel) -> NSFetchRequest<EntryModel> {
         let request = EntryModel.fetchRequest()
         if let feedURL = feed.url {

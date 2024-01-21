@@ -5,6 +5,7 @@ import UIComponents
 @MainActor
 struct FeedRowView: View {
     let feed: FeedModel
+    let unreadCount: Int
     
     var body: some View {
         HStack {
@@ -29,7 +30,7 @@ struct FeedRowView: View {
                 }
             }
         }
-        .badge(feed.unreadCount)
+        .badge(unreadCount)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

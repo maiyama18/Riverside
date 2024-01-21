@@ -55,7 +55,13 @@ struct FeedDetailScreen: View {
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 guard let url = entry.url else { return }
-                                showSafari(url: url, onDisappear: { entry.read = true })
+                                showSafari(
+                                    url: url,
+                                    onDisappear: {
+                                        entry.read = true
+                                        try? context.saveWithRollback()
+                                    }
+                                )
                             }
                             .entrySwipeActions(context: context, entry: entry)
                             .entryContextMenu(context: context, entry: entry)
