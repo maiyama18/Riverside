@@ -1,33 +1,36 @@
-@testable import Models
+@testable import Entities
 
 import CustomDump
-import SwiftData
+import CoreData
 import XCTest
 
 final class StreamSectionBuilderTests: XCTestCase {
-    private let modelContainer = try! ModelContainer(
-        for: EntryModel.self,
-        configurations: .init(isStoredInMemoryOnly: true)
-    )
+    private let persistentProvider = PersistentProvider.inMemory
+    private var context: NSManagedObjectContext { persistentProvider.viewContext }
     
     func test() {
         let entry1 = EntryModel(
+            context,
             urlString: "https://example.com/1",
             publishedAtString: "2023-12-31T23:00:00+09:00"
         )
         let entry2 = EntryModel(
+            context,
             urlString: "https://example.com/2",
             publishedAtString: "2024-01-01T01:00:00+09:00"
         )
         let entry3 = EntryModel(
+            context,
             urlString: "https://example.com/3",
             publishedAtString: "2024-01-01T02:00:00+09:00"
         )
         let entry4 = EntryModel(
+            context,
             urlString: "https://example.com/4",
             publishedAtString: "2024-01-01T03:00:00+09:00"
         )
         let entry5 = EntryModel(
+            context,
             urlString: "https://example.com/5",
             publishedAtString: "2024-01-02T23:00:00+09:00"
         )
@@ -64,12 +67,10 @@ final class StreamSectionBuilderTests: XCTestCase {
 }
 
 private extension EntryModel {
-    convenience init(urlString: String, publishedAtString: String) {
-        self.init(
-            url: urlString,
-            title: "Dummy Title",
-            publishedAt: try! Date(publishedAtString, strategy: .iso8601),
-            content: nil
-        )
+    convenience init(_ context: NSManagedObjectContext, urlString: String, publishedAtString: String) {
+        self.init(context: context)
+        
+        self.url = URL(string: urlString)
+        self.publishedAt = try! Date(publishedAtString, strategy: .iso8601)
     }
 }

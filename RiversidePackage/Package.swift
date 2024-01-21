@@ -223,13 +223,6 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Core/Entities"
     ),
     .target(
-        name: "Models",
-        dependencies: [
-            .algorithms,
-        ],
-        path: "Sources/Core/Models"
-    ),
-    .target(
         name: "Utilities",
         path: "Sources/Core/Utilities"
     ),
@@ -270,11 +263,11 @@ let targets: [PackageDescription.Target] = [
         resources: [.process("Resources")]
     ),
     .testTarget(
-        name: "ModelsTests",
+        name: "EntitiesTests",
         dependencies: [
-            "Models",
+            "Entities",
         ],
-        path: "Tests/Core/ModelsTests"
+        path: "Tests/Core/EntitiesTests"
     ),
     .testTarget(
         name: "UtilitiesTests",
@@ -333,7 +326,7 @@ let package = Package(
         ),
         .library(name: "DeleteDuplicatedEntriesUseCase", targets: ["DeleteDuplicatedEntriesUseCase"]),
         .library(name: "FeedClient", targets: ["FeedClient"]),
-        .library(name: "Models", targets: ["Models"]),
+        .library(name: "Entities", targets: ["Entities"]),
         .library(name: "Utilities", targets: ["Utilities"]),
         .library(name: "UIComponents", targets: ["UIComponents"]),
     ],

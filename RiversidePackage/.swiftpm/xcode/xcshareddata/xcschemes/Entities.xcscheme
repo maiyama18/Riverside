@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1510"
+   LastUpgradeVersion = "1520"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Models"
-               BuildableName = "Models"
-               BlueprintName = "Models"
+               BlueprintIdentifier = "Entities"
+               BuildableName = "Entities"
+               BlueprintName = "Entities"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,7 +29,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:Sources/Core/Models/Models.xctestplan"
+            reference = "container:Sources/Core/Entities/Entities.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
@@ -54,9 +54,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "Models"
-            BuildableName = "Models"
-            BlueprintName = "Models"
+            BlueprintIdentifier = "Entities"
+            BuildableName = "Entities"
+            BlueprintName = "Entities"
             ReferencedContainer = "container:">
          </BuildableReference>
       </MacroExpansion>
