@@ -41,6 +41,7 @@ let targets: [PackageDescription.Target] = [
             "AddNewEntriesUseCase",
             "AppAppearanceClient",
             "CloudSyncState",
+            "DeleteDuplicatedEntriesUseCase",
             "Entities",
             "FeedsFeature",
             "FlashClient",
@@ -134,6 +135,7 @@ let targets: [PackageDescription.Target] = [
             "ClipboardClient",
             "CloudSyncStatusFeature",
             "CloudSyncState",
+            "DeleteDuplicatedEntriesUseCase",
             "Entities",
             "AddNewEntriesUseCase",
             "FlashClient",
@@ -151,6 +153,14 @@ let targets: [PackageDescription.Target] = [
             "FeedClient",
         ],
         path: "Sources/UseCase/AddNewEntriesUseCase"
+    ),
+    .target(
+        name: "DeleteDuplicatedEntriesUseCase",
+        dependencies: [
+            "Entities",
+            "FeedClient",
+        ],
+        path: "Sources/UseCase/DeleteDuplicatedEntriesUseCase"
     ),
     .target(
         name: "SubscribeFeedUseCase",
@@ -243,6 +253,14 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Core/TestHelpers"
     ),
     .testTarget(
+        name: "DeleteDuplicatedEntriesUseCaseTests",
+        dependencies: [
+            "DeleteDuplicatedEntriesUseCase",
+            "TestHelpers",
+        ],
+        path: "Tests/UseCase/DeleteDuplicatedEntriesUseCaseTests"
+    ),
+    .testTarget(
         name: "FeedClientTests",
         dependencies: [
             "FeedClient",
@@ -313,6 +331,7 @@ let package = Package(
                 "StreamFeature",
             ]
         ),
+        .library(name: "DeleteDuplicatedEntriesUseCase", targets: ["DeleteDuplicatedEntriesUseCase"]),
         .library(name: "FeedClient", targets: ["FeedClient"]),
         .library(name: "Models", targets: ["Models"]),
         .library(name: "Utilities", targets: ["Utilities"]),

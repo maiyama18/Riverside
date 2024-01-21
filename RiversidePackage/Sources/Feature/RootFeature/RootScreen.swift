@@ -1,8 +1,9 @@
+import AddNewEntriesUseCase
 import Algorithms
 import CoreData
 import Dependencies
+import DeleteDuplicatedEntriesUseCase
 import Entities
-import AddNewEntriesUseCase
 import FlashClient
 import SwiftUI
 
@@ -88,7 +89,7 @@ public struct RootScreen: View {
                 print(error)
             }
         }
-        // TODO: 重複したレコードを削除する
+        .deleteDuplicatedEntriesOnce()
     }
 }
 

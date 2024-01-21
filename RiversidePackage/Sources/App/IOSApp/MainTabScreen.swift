@@ -1,6 +1,7 @@
 import AddNewEntriesUseCase
 import AppAppearanceClient
 import CoreData
+import DeleteDuplicatedEntriesUseCase
 import Dependencies
 import Entities
 import FeedsFeature
@@ -47,7 +48,6 @@ struct MainTabScreen: View {
             .toolbarBackground(.visible, for: .tabBar)
             .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         }
-        // TODO: 重複したレコードを削除する
         .onForeground { @MainActor in
             do {
                 try await addNewEntriesUseCase.executeForAllFeeds(context, false)
@@ -58,5 +58,6 @@ struct MainTabScreen: View {
         .onChange(of: appearance, initial: true) { _, appearance in
             appAppearanceClient.apply(appearance)
         }
+        .deleteDuplicatedEntriesOnce()
     }
 }

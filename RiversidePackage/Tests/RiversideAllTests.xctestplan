@@ -32,6 +32,13 @@
         "identifier" : "UtilitiesTests",
         "name" : "UtilitiesTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "DeleteDuplicatedEntriesUseCaseTests",
+        "name" : "DeleteDuplicatedEntriesUseCaseTests"
+      }
     }
   ],
   "version" : 1
