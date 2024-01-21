@@ -5,6 +5,7 @@ import CoreData
 import Entities
 import XCTest
 
+@MainActor
 final class DeleteDuplicatedEntriesUseCaseTests: XCTestCase {
     private let persistentProvider = PersistentProvider.inMemory
     private var context: NSManagedObjectContext { persistentProvider.viewContext }
