@@ -12,6 +12,8 @@ private struct EntryRowModifier: ViewModifier {
     @Dependency(\.clipboardClient) private var clipboardClient
     @Dependency(\.flashClient) private var flashClient
     
+    @Environment(\.managedObjectContext) private var context
+    
     func body(content: Content) -> some View {
         content
             .contextMenu {
@@ -28,6 +30,7 @@ private struct EntryRowModifier: ViewModifier {
                 
                 Button {
                     entry.read.toggle()
+                    try? context.saveWithRollback()
                 } label: {
                     Text(entry.read ? "Mark as unread" : "Mark as read")
                 }

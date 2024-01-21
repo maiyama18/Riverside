@@ -179,7 +179,7 @@ public struct FeedsScreen: View {
         }
         .tint(.gray)
         
-        if feed.unreadCount > 0 {
+        if unreadCount(of: feed) > 0 {
             Button {
                 presentation = .markAsRead(feed: feed)
             } label: {

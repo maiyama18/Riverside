@@ -79,9 +79,16 @@ struct SidebarListView: View {
     @Environment(\.managedObjectContext) private var context
     
     @FetchRequest(fetchRequest: FeedModel.all) private var feeds: FetchedResults<FeedModel>
+    @FetchRequest(fetchRequest: EntryModel.unreads) private var unreadEntries: FetchedResults<EntryModel>
+    
+    @State private var unreadCountByFeedURL: [URL?: Int] = [:]
     
     private var sortedFeeds: [FeedModel] {
-        feeds.sorted(by: { $0.unreadCount > $1.unreadCount })
+        feeds.sorted(by: { unreadCount(of: $0) > unreadCount(of: $1) })
+    }
+    
+    private func unreadCount(of feed: FeedModel) -> Int {
+        unreadCountByFeedURL[feed.url] ?? 0
     }
     
     var body: some View {
@@ -103,7 +110,7 @@ struct SidebarListView: View {
             List(selection: $selectedFeedID) {
                 Section {
                     Text("All")
-                        .badge(sortedFeeds.map(\.unreadCount).reduce(into: 0) { $0 += $1 })
+                        .badge(sortedFeeds.map({ unreadCount(of: $0) }).reduce(into: 0) { $0 += $1 })
                         .listRow(
                             selected: selectedFeedID == nil,
                             onTapped: { selectedFeedID = nil },
@@ -127,7 +134,7 @@ struct SidebarListView: View {
                             
                             Text(feed.title ?? "")
                         }
-                        .badge(feed.unreadCount)
+                        .badge(unreadCount(of: feed))
                         .listRow(
                             selected: selectedFeedID == feed.id,
                             onTapped: { selectedFeedID = feed.id },
@@ -148,6 +155,13 @@ struct SidebarListView: View {
                 .selectionDisabled()
             }
             .badgeProminence(.decreased)
+            .onChange(of: unreadEntries.map { $0 }, initial: true) { _, unreadEntries in
+                self.unreadCountByFeedURL = Dictionary(
+                    grouping: unreadEntries.uniqued(on: \.url),
+                    by: { $0.feed?.url }
+                )
+                .mapValues(\.count)
+            }
         }
     }
 }

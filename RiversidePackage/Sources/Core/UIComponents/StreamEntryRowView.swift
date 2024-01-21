@@ -3,7 +3,7 @@ import SwiftUI
 
 @MainActor
 public struct StreamEntryRowView: View {
-    private let entry: EntryModel
+    @ObservedObject private var entry: EntryModel
     private let onFeedTapped: (FeedModel) -> Void
     
     public init(entry: EntryModel, onFeedTapped: @escaping (FeedModel) -> Void) {
