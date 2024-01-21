@@ -51,6 +51,8 @@ struct EntryListView: View {
     @Binding var selectedFeedID: ObjectIdentifier?
     @Binding var selectedEntryID: ObjectIdentifier?
     
+    @Environment(\.managedObjectContext) private var context
+    
     private var filteredEntries: [EntryModel] {
         let unreadFilteredEntries = allEntries
             .filter { entry in
@@ -94,6 +96,7 @@ struct EntryListView: View {
                 return
             }
             entry.read = true
+            try? context.saveWithRollback()
         }
     }
 }
