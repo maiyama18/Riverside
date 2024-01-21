@@ -18,11 +18,11 @@ public enum StreamSectionBuilder {
         calendar: Calendar = defaultCalendar
     ) -> [StreamSection] {
         let sections: [StreamSection] = Dictionary(grouping: entries.uniqued(on: \.url)) { entry -> Date in
-            calendar.startOfDay(for: entry.publishedAt)
+            calendar.startOfDay(for: entry.publishedAt ?? .now)
         }.map { (publishedDate, entries) -> StreamSection in
             StreamSection(
                 publishedDate: publishedDate,
-                entries: entries.sorted(by: { $0.publishedAt > $1.publishedAt })
+                entries: entries.sorted(by: { $0.publishedAt ?? .now > $1.publishedAt ?? .now })
             )
         }
         

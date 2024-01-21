@@ -38,11 +38,13 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSApp",
         dependencies: [
+            "AddNewEntriesUseCase",
             "AppAppearanceClient",
             "CloudSyncState",
+            "DeleteDuplicatedEntriesUseCase",
+            "Entities",
             "FeedsFeature",
             "FlashClient",
-            "Models",
             "NavigationState",
             "SettingsFeature",
             "StreamFeature",
@@ -52,8 +54,8 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSActionExtension",
         dependencies: [
-            "FeedUseCase",
-            "Models",
+            "SubscribeFeedUseCase",
+            "Entities",
         ],
         path: "Sources/App/IOSActionExtension"
     ),
@@ -61,7 +63,7 @@ let targets: [PackageDescription.Target] = [
         name: "MacApp",
         dependencies: [
             "FlashClient",
-            "Models",
+            "Entities",
             "RootFeature",
         ],
         path: "Sources/App/MacApp"
@@ -77,9 +79,9 @@ let targets: [PackageDescription.Target] = [
         name: "SubscribeFeedFeature",
         dependencies: [
             "FeedClient",
-            "FeedUseCase",
+            "SubscribeFeedUseCase",
             "FlashClient",
-            "Models",
+            "Entities",
             "Utilities",
             "UIComponents",
         ],
@@ -91,8 +93,8 @@ let targets: [PackageDescription.Target] = [
             "SubscribeFeedFeature",
             "ClipboardClient",
             "CloudSyncState",
-            "FeedUseCase",
-            "Models",
+            "Entities",
+            "AddNewEntriesUseCase",
             "NavigationState",
             "UIComponents",
         ],
@@ -117,10 +119,10 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             .algorithms,
             .dependencies,
+            "AddNewEntriesUseCase",
             "CloudSyncState",
-            "FeedUseCase",
+            "Entities",
             "FlashClient",
-            "Models",
             "NavigationState",
             "UIComponents",
         ],
@@ -132,10 +134,12 @@ let targets: [PackageDescription.Target] = [
             .algorithms,
             "ClipboardClient",
             "CloudSyncStatusFeature",
-            "FeedUseCase",
+            "CloudSyncState",
+            "DeleteDuplicatedEntriesUseCase",
+            "Entities",
+            "AddNewEntriesUseCase",
             "FlashClient",
             "LicensesFeature",
-            "Models",
             "SubscribeFeedFeature",
             "UIComponents",
             "WebView",
@@ -143,12 +147,28 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Feature/RootFeature"
     ),
     .target(
-        name: "FeedUseCase",
+        name: "AddNewEntriesUseCase",
         dependencies: [
+            "Entities",
             "FeedClient",
-            "Models",
         ],
-        path: "Sources/UseCase/FeedUseCase"
+        path: "Sources/UseCase/AddNewEntriesUseCase"
+    ),
+    .target(
+        name: "DeleteDuplicatedEntriesUseCase",
+        dependencies: [
+            "Entities",
+            "FeedClient",
+        ],
+        path: "Sources/UseCase/DeleteDuplicatedEntriesUseCase"
+    ),
+    .target(
+        name: "SubscribeFeedUseCase",
+        dependencies: [
+            "Entities",
+            "FeedClient",
+        ],
+        path: "Sources/UseCase/SubscribeFeedUseCase"
     ),
     .target(
         name: "CloudSyncState",
@@ -157,7 +177,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "NavigationState",
         dependencies: [
-            "Models",
+            "Entities",
         ],
         path: "Sources/State/NavigationState"
     ),
@@ -181,7 +201,7 @@ let targets: [PackageDescription.Target] = [
             .feedKit,
             .swiftSoup,
             .dependencies,
-            "Models",
+            "Entities",
             "Utilities",
         ],
         path: "Sources/Client/FeedClient",
@@ -196,11 +216,11 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Client/FlashClient"
     ),
     .target(
-        name: "Models",
+        name: "Entities",
         dependencies: [
             .algorithms,
         ],
-        path: "Sources/Core/Models"
+        path: "Sources/Core/Entities"
     ),
     .target(
         name: "Utilities",
@@ -210,7 +230,7 @@ let targets: [PackageDescription.Target] = [
         name: "UIComponents",
         dependencies: [
             .nukeUI,
-            "Models",
+            "Entities",
         ],
         path: "Sources/Core/UIComponents"
     ),
@@ -226,6 +246,14 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Core/TestHelpers"
     ),
     .testTarget(
+        name: "DeleteDuplicatedEntriesUseCaseTests",
+        dependencies: [
+            "DeleteDuplicatedEntriesUseCase",
+            "TestHelpers",
+        ],
+        path: "Tests/UseCase/DeleteDuplicatedEntriesUseCaseTests"
+    ),
+    .testTarget(
         name: "FeedClientTests",
         dependencies: [
             "FeedClient",
@@ -235,11 +263,11 @@ let targets: [PackageDescription.Target] = [
         resources: [.process("Resources")]
     ),
     .testTarget(
-        name: "ModelsTests",
+        name: "EntitiesTests",
         dependencies: [
-            "Models",
+            "Entities",
         ],
-        path: "Tests/Core/ModelsTests"
+        path: "Tests/Core/EntitiesTests"
     ),
     .testTarget(
         name: "UtilitiesTests",
@@ -296,8 +324,9 @@ let package = Package(
                 "StreamFeature",
             ]
         ),
+        .library(name: "DeleteDuplicatedEntriesUseCase", targets: ["DeleteDuplicatedEntriesUseCase"]),
         .library(name: "FeedClient", targets: ["FeedClient"]),
-        .library(name: "Models", targets: ["Models"]),
+        .library(name: "Entities", targets: ["Entities"]),
         .library(name: "Utilities", targets: ["Utilities"]),
         .library(name: "UIComponents", targets: ["UIComponents"]),
     ],

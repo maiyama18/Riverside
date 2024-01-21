@@ -1,5 +1,6 @@
+import CoreData
 import Foundation
-import Models
+import Entities
 
 public struct Feed: Sendable {
     public struct Entry: Sendable {
@@ -18,16 +19,29 @@ public struct Feed: Sendable {
 }
 
 public extension Feed {
-    func toModel() -> (FeedModel, [EntryModel]) {
-        let feedModel = FeedModel(url: url.absoluteString, title: title, overview: overview, imageURL: imageURL?.absoluteString)
-        let entryModels = entries.sorted(by: { $0.publishedAt > $1.publishedAt }).map { $0.toModel() }
+    func toModel(context: NSManagedObjectContext) -> (FeedModel, [EntryModel]) {
+        let feedModel = FeedModel(context: context)
+        feedModel.url = url
+        feedModel.title = title
+        feedModel.overview = overview
+        feedModel.imageURL = imageURL
+        
+        let entryModels = entries
+            .sorted(by: { $0.publishedAt > $1.publishedAt })
+            .map { $0.toModel(context: context) }
+        
         return (feedModel, entryModels)
     }
 }
 
 public extension Feed.Entry {
-    func toModel() -> EntryModel {
-        EntryModel(url: url.absoluteString, title: title, publishedAt: publishedAt, content: content)
+    func toModel(context: NSManagedObjectContext) -> EntryModel {
+        let model = EntryModel(context: context)
+        model.url = url
+        model.title = title
+        model.publishedAt = publishedAt
+        model.content = content
+        return model
     }
 }
 

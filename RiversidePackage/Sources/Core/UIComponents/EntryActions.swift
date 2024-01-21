@@ -1,25 +1,26 @@
-import Models
-import SwiftData
+import Entities
+import CoreData
 import SwiftUI
 
 extension View {
-    public func entrySwipeActions(context: ModelContext, entry: EntryModel) -> some View {
+    public func entrySwipeActions(context: NSManagedObjectContext, entry: EntryModel) -> some View {
         swipeActions(edge: .trailing, allowsFullSwipe: false) {
             entryMenu(context: context, entry: entry)
         }
     }
     
-    public func entryContextMenu(context: ModelContext, entry: EntryModel) -> some View {
+    public func entryContextMenu(context: NSManagedObjectContext, entry: EntryModel) -> some View {
         contextMenu {
             entryMenu(context: context, entry: entry)
         }
     }
     
     @ViewBuilder
-    private func entryMenu(context: ModelContext, entry: EntryModel) -> some View {
+    private func entryMenu(context: NSManagedObjectContext, entry: EntryModel) -> some View {
         if entry.read {
             Button {
                 entry.read = false
+                try? context.saveWithRollback()
             } label: {
                 Label {
                     Text("Mark as unread")
@@ -31,6 +32,7 @@ extension View {
         } else {
             Button {
                 entry.read = true
+                try? context.saveWithRollback()
             } label: {
                 Label {
                     Text("Mark as read")
@@ -44,6 +46,7 @@ extension View {
         #if DEBUG
         Button {
             context.delete(entry)
+            try? context.saveWithRollback()
         } label: {
             Label {
                 Text("Delete")

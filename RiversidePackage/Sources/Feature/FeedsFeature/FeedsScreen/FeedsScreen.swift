@@ -1,10 +1,10 @@
+import Algorithms
+import CoreData
 import SubscribeFeedFeature
 import CloudSyncState
 import Dependencies
-import FeedUseCase
-import Models
+import Entities
 import NavigationState
-import SwiftData
 import SwiftUI
 import UIComponents
 import Utilities
@@ -27,18 +27,23 @@ public struct FeedsScreen: View {
     
     @Dependency(\.clipboardClient) private var clipboardClient
     @Dependency(\.flashClient) private var flashClient
-    @Dependency(\.feedUseCase) private var feedUseCase
     
     @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(NavigationState.self) private var navigationState
-    @Environment(\.modelContext) private var context
+    @Environment(\.managedObjectContext) private var context
     
     @State private var presentation: Presentation? = nil
+    @State private var unreadCountByFeedURL: [URL?: Int] = [:]
     
-    @Query(FeedModel.all) private var feeds: [FeedModel]
+    @FetchRequest(fetchRequest: FeedModel.all) private var feeds: FetchedResults<FeedModel>
+    @FetchRequest(fetchRequest: EntryModel.unreads) private var unreadEntries: FetchedResults<EntryModel>
     
     private var sortedFeeds: [FeedModel] {
-        feeds.sorted(by: { $0.unreadCount > $1.unreadCount })
+        feeds.sorted(by: { unreadCount(of: $0) > unreadCount(of: $1) })
+    }
+    
+    func unreadCount(of feed: FeedModel) -> Int {
+        unreadCountByFeedURL[feed.url] ?? 0
     }
     
     public init() {}
@@ -68,7 +73,7 @@ public struct FeedsScreen: View {
                     List {
                         ForEach(sortedFeeds) { feed in
                             NavigationLink(value: FeedsRoute.feedDetail(feed: feed)) {
-                                FeedRowView(feed: feed)
+                                FeedRowView(feed: feed, unreadCount: unreadCount(of: feed))
                                     .contextMenu {
                                         feedMenu(feed: feed)
                                     }
@@ -112,18 +117,18 @@ public struct FeedsScreen: View {
                 }
             }
         }
-        .task {
-            do {
-                try await feedUseCase.addNewEpisodesForAllFeeds(context, false)
-            } catch {
-                print(error)
-            }
+        .onChange(of: unreadEntries.map { $0 }, initial: true) { _, unreadEntries in
+            self.unreadCountByFeedURL = Dictionary(
+                grouping: unreadEntries.uniqued(on: \.url),
+                by: { $0.feed?.url }
+            )
+            .mapValues(\.count)
         }
         .alert(item: $presentation) { presentation in
             switch presentation {
             case .remove(let feed):
                 Alert(
-                    title: Text("Are you sure to remove feed '\(feed.title)'"),
+                    title: Text("Are you sure to remove feed '\(feed.title ?? "")'"),
                     primaryButton: .destructive(Text("Remove")) {
                         context.delete(feed)
                     },
@@ -131,12 +136,13 @@ public struct FeedsScreen: View {
                 )
             case .markAsRead(let feed):
                 Alert(
-                    title: Text("Mark all entries of '\(feed.title)' as read?"),
+                    title: Text("Mark all entries of '\(feed.title ?? "")' as read?"),
                     primaryButton: .default(Text("Confirm")) {
-                        guard let entries = feed.entries else { return }
+                        guard let entries = feed.entries as? Set<EntryModel> else { return }
                         for entry in entries {
                             entry.read = true
                         }
+                        try? context.saveWithRollback()
                     },
                     secondaryButton: .cancel()
                 )
@@ -158,10 +164,11 @@ public struct FeedsScreen: View {
         .tint(.red)
         
         Button {
-            clipboardClient.copy(feed.url)
+            guard let urlString = feed.url?.absoluteString else { return }
+            clipboardClient.copy(urlString)
             flashClient.present(
                 type: .info,
-                message: "Copied feed url!\n\(feed.url)"
+                message: "Copied feed url!\n\(urlString)"
             )
         } label: {
             Label {
@@ -172,7 +179,7 @@ public struct FeedsScreen: View {
         }
         .tint(.gray)
         
-        if feed.unreadCount > 0 {
+        if unreadCount(of: feed) > 0 {
             Button {
                 presentation = .markAsRead(feed: feed)
             } label: {
@@ -191,5 +198,4 @@ public struct FeedsScreen: View {
     FeedsScreen()
         .environment(CloudSyncState())
         .environment(NavigationState())
-        .modelContainer(previewContainer())
 }

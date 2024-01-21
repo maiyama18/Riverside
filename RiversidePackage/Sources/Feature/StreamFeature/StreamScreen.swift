@@ -1,26 +1,26 @@
 import Algorithms
 import CloudSyncState
+import CoreData
 import Dependencies
-import FeedUseCase
+import Entities
+import AddNewEntriesUseCase
 import FlashClient
-import Models
 import NavigationState
-import SwiftData
 import SwiftUI
 import UIComponents
 import Utilities
 
 @MainActor
 public struct StreamScreen: View {
-    @Dependency(\.feedUseCase) private var feedUseCase
+    @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
     @Dependency(\.flashClient) private var flashClient
     
     @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(NavigationState.self) private var navigationState
-    @Environment(\.modelContext) private var context
+    @Environment(\.managedObjectContext) private var context
     
-    @Query(EntryModel.all, animation: .default) var entries: [EntryModel]
-    @Query(FeedModel.all) var feeds: [FeedModel]
+    @FetchRequest(fetchRequest: EntryModel.all) private var entries: FetchedResults<EntryModel>
+    @FetchRequest(fetchRequest: FeedModel.all) private var feeds: FetchedResults<FeedModel>
     
     @AppStorage("unread-only-stream") private var unreadOnly: Bool = true
     
@@ -81,7 +81,7 @@ public struct StreamScreen: View {
                                     .entrySwipeActions(context: context, entry: entry)
                                     .entryContextMenu(context: context, entry: entry)
                                     .onTapGesture {
-                                        guard let url = URL(string: entry.url) else { return }
+                                        guard let url = entry.url else { return }
                                         showSafari(
                                             url: url,
                                             onDisappear: { withAnimation { entry.read = true } }
@@ -97,7 +97,7 @@ public struct StreamScreen: View {
                     .listStyle(.plain)
                     .refreshable {
                         do {
-                            try await feedUseCase.addNewEpisodesForAllFeeds(context, true)
+                            try await addNewEntriesUseCase.executeForAllFeeds(context, true)
                         } catch {
                             flashClient.present(
                                 type: .error,
@@ -136,6 +136,7 @@ public struct StreamScreen: View {
                         for entry in entries {
                             entry.read = true
                         }
+                        try? context.saveWithRollback()
                     }
                 ) {
                     Text("Confirm")
@@ -159,5 +160,4 @@ public struct StreamScreen: View {
     StreamScreen()
         .environment(CloudSyncState())
         .environment(NavigationState())
-        .modelContainer(previewContainer())
 }

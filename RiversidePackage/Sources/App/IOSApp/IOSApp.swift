@@ -1,15 +1,16 @@
 import CloudSyncState
+import CoreData
 import Dependencies
-import Models
+import Entities
 import NavigationState
 import SystemNotification
-import SwiftData
 import SwiftUI
 
 @MainActor
 public struct IOSApp: App {
     private let navigationState = NavigationState()
     private let cloudSyncState = CloudSyncState()
+    private let persistentProvider = PersistentProvider.cloud
     
     @Dependency(\.flashClient) private var flashClient
     
@@ -27,7 +28,7 @@ public struct IOSApp: App {
             MainTabScreen()
                 .environment(cloudSyncState)
                 .environment(navigationState)
-                .modelContainer(for: FeedModel.self)
+                .environment(\.managedObjectContext, persistentProvider.viewContext)
                 .systemNotification(context)
         }
     }

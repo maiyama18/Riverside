@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "EC37F025-978C-4958-A46B-A2B5BF20123E",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "DeleteDuplicatedEntriesUseCaseTests",
+        "name" : "DeleteDuplicatedEntriesUseCaseTests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -1,6 +1,6 @@
+import CoreData
+import Entities
 import Combine
-import Models
-import SwiftData
 import SwiftUI
 
 public struct ActionContainerView: View {
@@ -8,14 +8,11 @@ public struct ActionContainerView: View {
     
     public var body: some View {
         ActionView(model: model)
-            .modelContainer(for: FeedModel.self)
     }
 }
 
 struct ActionView: View {
     let model: ActionModel
-    
-    @Environment(\.modelContext) private var context
     
     var body: some View {
         Group {
@@ -51,7 +48,7 @@ struct ActionView: View {
             }
         }
         .task {
-            await model.onAppear(context: context)
+            await model.subscribeFeed()
         }
     }
 }
@@ -65,7 +62,7 @@ import UniformTypeIdentifiers
             URL(string: "https://invalid.url/")!,
         ],
         id: \.absoluteString
-    ) { url in
+    ) { (url: URL) in
         let item: NSExtensionItem = {
             let provider = NSItemProvider(
                 item: url as any NSSecureCoding,
@@ -77,6 +74,12 @@ import UniformTypeIdentifiers
             return item
         }()
         
-        ActionView(model: .init(inputItems: [item], successCompletion: {}))
+        let model = ActionModel(
+            context: PersistentProvider.inMemory.viewContext,
+            inputItems: [item],
+            successCompletion: {}
+        )
+        
+        ActionView(model: model)
     }
 }

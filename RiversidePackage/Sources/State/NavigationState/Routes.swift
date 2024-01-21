@@ -1,5 +1,4 @@
-import Models
-import SwiftData
+import Entities
 
 public enum FeedsRoute: Hashable {
     case feedDetail(feed: FeedModel)

@@ -1,9 +1,9 @@
-import Models
+import Entities
 import SwiftUI
 
 @MainActor
 public struct FeedEntryRowView: View {
-    private let entry: EntryModel
+    @ObservedObject private var entry: EntryModel
     
     public init(entry: EntryModel) {
         self.entry = entry
@@ -11,10 +11,12 @@ public struct FeedEntryRowView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(entry.publishedAt.formatted(date: .numeric, time: .omitted))
-                .font(.footnote.monospacedDigit())
+            if let publishedAt = entry.publishedAt {
+                Text(publishedAt.formatted(date: .numeric, time: .omitted))
+                    .font(.footnote.monospacedDigit())
+            }
             
-            Text(entry.title)
+            Text(entry.title ?? "")
                 .bold()
                 .lineLimit(2)
             
@@ -26,5 +28,6 @@ public struct FeedEntryRowView: View {
             }
         }
         .foregroundStyle(entry.read ? .secondary : .primary)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
