@@ -2,7 +2,7 @@ import Algorithms
 import CoreData
 import Dependencies
 import Entities
-import FeedUseCase
+import AddNewEntriesUseCase
 import FlashClient
 import SwiftUI
 
@@ -10,7 +10,7 @@ import SwiftUI
 public struct RootScreen: View {
     @AppStorage("unread-only") private var unreadOnly: Bool = true
     
-    @Dependency(\.feedUseCase) private var feedUseCase
+    @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
     @Dependency(\.flashClient) private var flashClient
     
     @Environment(\.managedObjectContext) private var context
@@ -60,7 +60,7 @@ public struct RootScreen: View {
                                 refreshing = true
                                 defer { refreshing = false }
                                 do {
-                                    try await feedUseCase.addNewEpisodesForAllFeeds(context, true)
+                                    try await addNewEntriesUseCase.executeForAllFeeds(context, true)
                                 } catch {
                                     flashClient.present(
                                         type: .error,
@@ -83,7 +83,7 @@ public struct RootScreen: View {
         }
         .onForeground { @MainActor in
             do {
-                try await feedUseCase.addNewEpisodesForAllFeeds(context, false)
+                try await addNewEntriesUseCase.executeForAllFeeds(context, false)
             } catch {
                 print(error)
             }

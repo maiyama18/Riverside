@@ -1,9 +1,9 @@
+import AddNewEntriesUseCase
 import AppAppearanceClient
 import CoreData
 import Dependencies
 import Entities
 import FeedsFeature
-import FeedUseCase
 import NavigationState
 import Utilities
 import SettingsFeature
@@ -15,7 +15,7 @@ struct MainTabScreen: View {
     @AppStorage("appearance") private var appearance: UIUserInterfaceStyle = .unspecified
     
     @Dependency(\.appAppearanceClient) private var appAppearanceClient
-    @Dependency(\.feedUseCase) private var feedUseCase
+    @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
     
     @Environment(NavigationState.self) private var navigationState
     @Environment(\.managedObjectContext) private var context
@@ -50,7 +50,7 @@ struct MainTabScreen: View {
         // TODO: 重複したレコードを削除する
         .onForeground { @MainActor in
             do {
-                try await feedUseCase.addNewEpisodesForAllFeeds(context, false)
+                try await addNewEntriesUseCase.executeForAllFeeds(context, false)
             } catch {
                 print(error)
             }

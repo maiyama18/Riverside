@@ -3,7 +3,7 @@ import CloudSyncState
 import CoreData
 import Dependencies
 import Entities
-import FeedUseCase
+import AddNewEntriesUseCase
 import FlashClient
 import NavigationState
 import SwiftUI
@@ -12,7 +12,7 @@ import Utilities
 
 @MainActor
 public struct StreamScreen: View {
-    @Dependency(\.feedUseCase) private var feedUseCase
+    @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
     @Dependency(\.flashClient) private var flashClient
     
     @Environment(CloudSyncState.self) private var cloudSyncState
@@ -97,7 +97,7 @@ public struct StreamScreen: View {
                     .listStyle(.plain)
                     .refreshable {
                         do {
-                            try await feedUseCase.addNewEpisodesForAllFeeds(context, true)
+                            try await addNewEntriesUseCase.executeForAllFeeds(context, true)
                         } catch {
                             flashClient.present(
                                 type: .error,

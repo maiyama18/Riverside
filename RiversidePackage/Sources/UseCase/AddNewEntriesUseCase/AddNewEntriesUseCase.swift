@@ -6,24 +6,18 @@ import Utilities
 @preconcurrency import CoreData
 import SwiftUI
 
-public struct FeedUseCase: Sendable {
-    public enum SubscribeInput {
-        case url(URL)
-        case feed(Feed)
-    }
-    
-    public var addNewEpisodes: @Sendable @MainActor (_ context: NSManagedObjectContext, _ feed: FeedModel) async throws -> Void
-    public var addNewEpisodesForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool) async throws -> Void
-    public var subscribeFeed: @Sendable @MainActor (_ context: NSManagedObjectContext, _ input: SubscribeInput) async throws -> Feed
+public struct AddNewEntriesUseCase: Sendable {
+    public var execute: @Sendable @MainActor (_ context: NSManagedObjectContext, _ feed: FeedModel) async throws -> Void
+    public var executeForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool) async throws -> Void
 }
 
-extension FeedUseCase {
-    static var live: FeedUseCase {
+extension AddNewEntriesUseCase {
+    static var live: AddNewEntriesUseCase {
         @Dependency(\.feedClient) var feedClient
         
         @Sendable
         @MainActor
-        func addNewEpisodes(context: NSManagedObjectContext, feed: FeedModel) async throws {
+        func addNewEntries(context: NSManagedObjectContext, feed: FeedModel) async throws {
             guard let feedURL = feed.url else {
                 throw NSError(domain: "FeedUseCase", code: -1)
             }
@@ -59,10 +53,10 @@ extension FeedUseCase {
         }
         
         return .init(
-            addNewEpisodes: { context, feed in
-                try await addNewEpisodes(context: context, feed: feed)
+            execute: { context, feed in
+                try await addNewEntries(context: context, feed: feed)
             },
-            addNewEpisodesForAllFeeds: { context, force in
+            executeForAllFeeds: { context, force in
                 if force {
                     deleteLastAddExecutionDate()
                 }
@@ -77,7 +71,7 @@ extension FeedUseCase {
                 await withThrowingTaskGroup(of: Void.self) { group in
                     for feed in feeds {
                         group.addTask {
-                            try await addNewEpisodes(context: context, feed: feed)
+                            try await addNewEntries(context: context, feed: feed)
                         }
                     }
                     do {
@@ -87,43 +81,18 @@ extension FeedUseCase {
                         print(error)
                     }
                 }
-            },
-            subscribeFeed: { context, input in
-                let feed = switch input {
-                case .feed(let feed):
-                    feed
-                case .url(let url):
-                    try await feedClient.fetch(url)
-                }
-                
-                let existingFeedURLs = try context.fetch(FeedModel.all).compactMap(\.url)
-                guard existingFeedURLs.filter({ url in url.isSame(as: feed.url) }).isEmpty else {
-                    throw NSError(domain: "FeedUseCase", code: -2, userInfo: [
-                        NSLocalizedDescriptionKey: "'\(feed.title)' is already subscribed"
-                    ])
-                }
-             
-                let (feedModel, entryModels) = feed.toModel(context: context)
-                for (i, entryModel) in entryModels.enumerated() {
-                    entryModel.read = i >= 3
-                    feedModel.addToEntries(entryModel)
-                }
-                context.insert(feedModel)
-                
-                try context.saveWithRollback()
-                return feed
             }
         )
     }
 }
 
-public extension DependencyValues {
-    var feedUseCase: FeedUseCase {
-        get { self[FeedUseCaseKey.self] }
-        set { self[FeedUseCaseKey.self] = newValue }
-    }
+extension AddNewEntriesUseCase: DependencyKey {
+    public static let liveValue: AddNewEntriesUseCase = .live
 }
 
-private enum FeedUseCaseKey: DependencyKey {
-    static let liveValue: FeedUseCase = .live
+public extension DependencyValues {
+    var addNewEntriesUseCase: AddNewEntriesUseCase {
+        get { self[AddNewEntriesUseCase.self] }
+        set { self[AddNewEntriesUseCase.self] = newValue }
+    }
 }

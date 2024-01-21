@@ -38,6 +38,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSApp",
         dependencies: [
+            "AddNewEntriesUseCase",
             "AppAppearanceClient",
             "CloudSyncState",
             "Entities",
@@ -52,7 +53,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSActionExtension",
         dependencies: [
-            "FeedUseCase",
+            "SubscribeFeedUseCase",
             "Entities",
         ],
         path: "Sources/App/IOSActionExtension"
@@ -77,7 +78,7 @@ let targets: [PackageDescription.Target] = [
         name: "SubscribeFeedFeature",
         dependencies: [
             "FeedClient",
-            "FeedUseCase",
+            "SubscribeFeedUseCase",
             "FlashClient",
             "Entities",
             "Utilities",
@@ -92,7 +93,7 @@ let targets: [PackageDescription.Target] = [
             "ClipboardClient",
             "CloudSyncState",
             "Entities",
-            "FeedUseCase",
+            "AddNewEntriesUseCase",
             "NavigationState",
             "UIComponents",
         ],
@@ -117,9 +118,9 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             .algorithms,
             .dependencies,
+            "AddNewEntriesUseCase",
             "CloudSyncState",
             "Entities",
-            "FeedUseCase",
             "FlashClient",
             "NavigationState",
             "UIComponents",
@@ -134,7 +135,7 @@ let targets: [PackageDescription.Target] = [
             "CloudSyncStatusFeature",
             "CloudSyncState",
             "Entities",
-            "FeedUseCase",
+            "AddNewEntriesUseCase",
             "FlashClient",
             "LicensesFeature",
             "SubscribeFeedFeature",
@@ -144,12 +145,20 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Feature/RootFeature"
     ),
     .target(
-        name: "FeedUseCase",
+        name: "AddNewEntriesUseCase",
         dependencies: [
             "Entities",
             "FeedClient",
         ],
-        path: "Sources/UseCase/FeedUseCase"
+        path: "Sources/UseCase/AddNewEntriesUseCase"
+    ),
+    .target(
+        name: "SubscribeFeedUseCase",
+        dependencies: [
+            "Entities",
+            "FeedClient",
+        ],
+        path: "Sources/UseCase/SubscribeFeedUseCase"
     ),
     .target(
         name: "CloudSyncState",

@@ -3,7 +3,6 @@ import SubscribeFeedFeature
 import CloudSyncState
 import Dependencies
 import Entities
-import FeedUseCase
 import NavigationState
 import SwiftUI
 import UIComponents
@@ -27,7 +26,6 @@ public struct FeedsScreen: View {
     
     @Dependency(\.clipboardClient) private var clipboardClient
     @Dependency(\.flashClient) private var flashClient
-    @Dependency(\.feedUseCase) private var feedUseCase
     
     @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(NavigationState.self) private var navigationState
@@ -110,13 +108,6 @@ public struct FeedsScreen: View {
                 case .feedDetail(let feed):
                     FeedDetailScreen(feed: feed)
                 }
-            }
-        }
-        .task {
-            do {
-                try await feedUseCase.addNewEpisodesForAllFeeds(context, false)
-            } catch {
-                print(error)
             }
         }
         .alert(item: $presentation) { presentation in

@@ -1,7 +1,7 @@
 @preconcurrency import CoreData
 import Dependencies
 import FeedClient
-import FeedUseCase
+import SubscribeFeedUseCase
 import Observation
 import UniformTypeIdentifiers
 
@@ -10,7 +10,7 @@ import UniformTypeIdentifiers
 final class ActionModel {
     var result: Result<Feed, any Error>? = nil
     
-    @ObservationIgnored @Dependency(\.feedUseCase) private var feedUseCase
+    @ObservationIgnored @Dependency(\.subscribeFeedUseCase) private var subscribeFeedUseCase
     
     private let context: NSManagedObjectContext
     private let inputItems: [Any]
@@ -37,7 +37,7 @@ final class ActionModel {
         do {
             let item = try await urlProvider.loadItem(forTypeIdentifier: UTType.url.identifier)
             if let url = item as? URL {
-                let feed = try await feedUseCase.subscribeFeed(context, .url(url))
+                let feed = try await subscribeFeedUseCase.execute(context, .url(url))
                 result = .success(feed)
                 
                 try? await Task.sleep(for: .seconds(1))
