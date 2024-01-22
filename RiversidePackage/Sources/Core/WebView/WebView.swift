@@ -80,6 +80,7 @@ public struct WebView: NSViewRepresentable {
             Task { @MainActor in
                 parent.state.canGoBack = webView.canGoBack
                 parent.state.canGoForward = webView.canGoForward
+                parent.state.url = webView.url
             }
         }
     }
