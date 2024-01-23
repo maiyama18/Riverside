@@ -12,30 +12,9 @@ public final class CloudSyncState {
         case succeeded(date: Date)
         case failed(date: Date, error: any Error)
         
-        public var date: Date? {
-            switch self {
-            case .succeeded(let date), .failed(let date, _):
-                return date
-            case .notStarted, .syncing:
-                return nil
-            }
-        }
-        
         var syncing: Bool {
             if case .syncing = self { return true }
             return false
-        }
-        
-        init(event: NSPersistentCloudKitContainer.Event) {
-            if let endDate = event.endDate {
-                if let error = event.error {
-                    self = .failed(date: endDate, error: error)
-                } else {
-                    self = .succeeded(date: endDate)
-                }
-            } else {
-                self = .syncing
-            }
         }
     }
     
@@ -70,17 +49,16 @@ public final class CloudSyncState {
         }
     }
     
-    public var importStatus: SyncStatus = .notStarted
-    public var exportStatus: SyncStatus = .notStarted
-    
+    public var importStatus: SyncStatus { syncStatus(for: .import) }
+    public var exportStatus: SyncStatus { syncStatus(for: .export) }
+    public var syncing: Bool { importStatus.syncing || exportStatus.syncing }
     public var syncTransactions: [SyncTransaction] = []
     
-    public var syncing: Bool { importStatus.syncing || exportStatus.syncing }
-    
     private var cancellable: AnyCancellable? = nil
+    private var ongoingEvents: Dictionary<UUID, NSPersistentCloudKitContainer.EventType> = [:]
     
-    public init() {
-        cancellable = NotificationCenter.default
+    public init(notificationCenter: NotificationCenter = .default) {
+        cancellable = notificationCenter
             .publisher(for: NSPersistentCloudKitContainer.eventChangedNotification)
             .receive(on: DispatchQueue.main)
             .compactMap { notification in
@@ -91,20 +69,30 @@ public final class CloudSyncState {
             .sink { [weak self] event in
                 guard let self else { return }
                 
-                switch event.type {
-                case .setup:
-                    break
-                case .import:
-                    importStatus = .init(event: event)
-                case .export:
-                    exportStatus = .init(event: event)
-                @unknown default:
-                    break
+                if event.endDate == nil {
+                    ongoingEvents[event.identifier] = event.type
+                } else {
+                    ongoingEvents.removeValue(forKey: event.identifier)
                 }
                 
                 if let transaction = SyncTransaction(event: event) {
                     syncTransactions.append(transaction)
                 }
             }
+    }
+    
+    private func syncStatus(for type: NSPersistentCloudKitContainer.EventType) -> SyncStatus {
+        guard !ongoingEvents.values.contains(type) else {
+            return .syncing
+        }
+        guard let lastTransaction = syncTransactions.last(where: { $0.type == type }) else {
+            return .notStarted
+        }
+        switch lastTransaction.result {
+        case .success:
+            return .succeeded(date: lastTransaction.date)
+        case .failure(let error):
+            return .failed(date: lastTransaction.date, error: error)
+        }
     }
 }
