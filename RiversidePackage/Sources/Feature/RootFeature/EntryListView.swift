@@ -7,7 +7,7 @@ import SwiftUI
 import UIComponents
 
 private struct EntryRowModifier: ViewModifier {
-    let entry: EntryModel
+    @ObservedObject var entry: EntryModel
     
     @Dependency(\.clipboardClient) private var clipboardClient
     @Dependency(\.flashClient) private var flashClient
