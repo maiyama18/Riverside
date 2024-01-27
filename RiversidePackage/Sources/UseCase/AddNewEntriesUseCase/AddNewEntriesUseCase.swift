@@ -76,6 +76,7 @@ extension AddNewEntriesUseCase {
                     }
                     do {
                         try await group.waitForAll()
+                        try context.saveWithRollback()
                         setLastAddExecutionDate(date: .now)
                     } catch {
                         print(error)

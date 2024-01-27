@@ -34,6 +34,10 @@ extension DeleteDuplicatedEntriesUseCase {
                     }
                 }
                 
+                for orphanEntry in try context.fetch(EntryModel.orphans) {
+                    context.delete(orphanEntry)
+                }
+                
                 try context.saveWithRollback()
             }
         )

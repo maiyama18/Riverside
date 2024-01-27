@@ -7,7 +7,7 @@ import SwiftUI
 import UIComponents
 
 private struct EntryRowModifier: ViewModifier {
-    let entry: EntryModel
+    @ObservedObject var entry: EntryModel
     
     @Dependency(\.clipboardClient) private var clipboardClient
     @Dependency(\.flashClient) private var flashClient
@@ -51,6 +51,8 @@ struct EntryListView: View {
     @Binding var selectedFeedID: ObjectIdentifier?
     @Binding var selectedEntryID: ObjectIdentifier?
     
+    @Environment(\.managedObjectContext) private var context
+    
     private var filteredEntries: [EntryModel] {
         let unreadFilteredEntries = allEntries
             .filter { entry in
@@ -62,38 +64,50 @@ struct EntryListView: View {
     }
     
     var body: some View {
-        List(selection: $selectedEntryID) {
-            if selectedFeedID == nil {
-                let sections = StreamSectionBuilder.build(
-                    entries: filteredEntries
-                )
-                ForEach(sections, id: \.publishedDate) { section in
-                    Section {
-                        ForEach(section.entries) { entry in
-                            StreamEntryRowView(
-                                entry: entry,
-                                onFeedTapped: { selectedFeedID = $0.id }
-                            )
-                            .entryRow(entry: entry)
+        if filteredEntries.isEmpty {
+            ContentUnavailableView(
+                label: {
+                    Label(
+                        title: { Text("You've read all entries") },
+                        icon: { Image(systemName: "list.dash") }
+                    )
+                }
+            )
+        } else {
+            List(selection: $selectedEntryID) {
+                if selectedFeedID == nil {
+                    let sections = StreamSectionBuilder.build(
+                        entries: filteredEntries
+                    )
+                    ForEach(sections, id: \.publishedDate) { section in
+                        Section {
+                            ForEach(section.entries) { entry in
+                                StreamEntryRowView(
+                                    entry: entry,
+                                    onFeedTapped: { selectedFeedID = $0.id }
+                                )
+                                .entryRow(entry: entry)
+                            }
+                        } header: {
+                            Text(section.publishedDate.formatted(date: .numeric, time: .omitted))
+                                .foregroundStyle(.orange)
                         }
-                    } header: {
-                        Text(section.publishedDate.formatted(date: .numeric, time: .omitted))
-                            .foregroundStyle(.orange)
+                    }
+                } else {
+                    ForEach(filteredEntries) { entry in
+                        FeedEntryRowView(entry: entry)
+                            .entryRow(entry: entry)
                     }
                 }
-            } else {
-                ForEach(filteredEntries) { entry in
-                    FeedEntryRowView(entry: entry)
-                        .entryRow(entry: entry)
+            }
+            .animation(.default, value: filteredEntries)
+            .onChange(of: selectedEntryID) { _, selectedEntryID in
+                guard let entry = allEntries.first(where: { $0.id == selectedEntryID }) else {
+                    return
                 }
+                entry.read = true
+                try? context.saveWithRollback()
             }
-        }
-        .animation(.default, value: filteredEntries)
-        .onChange(of: selectedEntryID) { _, selectedEntryID in
-            guard let entry = allEntries.first(where: { $0.id == selectedEntryID }) else {
-                return
-            }
-            entry.read = true
         }
     }
 }

@@ -9,6 +9,13 @@ extension FeedModel {
 }
 
 extension EntryModel {
+    public static var orphans: NSFetchRequest<EntryModel> {
+        let request = EntryModel.fetchRequest()
+        request.predicate = NSPredicate(format: "feed == nil")
+        request.sortDescriptors = [.init(keyPath: \EntryModel.publishedAt, ascending: false)]
+        return request
+    }
+    
     public static var all: NSFetchRequest<EntryModel> {
         let request = EntryModel.fetchRequest()
         request.predicate = NSPredicate(format: "feed != nil")
@@ -18,7 +25,7 @@ extension EntryModel {
     
     public static var unreads: NSFetchRequest<EntryModel> {
         let request = EntryModel.fetchRequest()
-        request.predicate = NSPredicate(format: "feed != nil AND read == %@", NSNumber(value: false))
+        request.predicate = NSPredicate(format: "feed != nil AND (read == nil OR read == %@)", NSNumber(value: false))
         request.sortDescriptors = [.init(keyPath: \EntryModel.publishedAt, ascending: false)]
         return request
     }

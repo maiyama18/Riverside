@@ -16,29 +16,41 @@ struct EntryContentView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 8) {
-                Button {
-                    action = .goBack
-                } label: {
-                    Image(systemName: "chevron.left")
+            HStack(spacing: 0) {
+                HStack(spacing: 8) {
+                    Button {
+                        action = .goBack
+                    } label: {
+                        Image(systemName: "chevron.left")
+                    }
+                    .disabled(!state.canGoBack)
+                    
+                    Button {
+                        action = .goForward
+                    } label: {
+                        Image(systemName: "chevron.right")
+                    }
+                    .disabled(!state.canGoForward)
+                    
+                    Button {
+                        action = .refresh
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
                 }
-                .disabled(!state.canGoBack)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
-                Button {
-                    action = .goForward
-                } label: {
-                    Image(systemName: "chevron.right")
-                }
-                .disabled(!state.canGoForward)
-                
-                Button {
-                    action = .refresh
-                } label: {
-                    Image(systemName: "arrow.clockwise")
+                HStack(spacing: 8) {
+                    Button {
+                        guard let url = state.url else { return }
+                        NSWorkspace.shared.open(url)
+                    } label: {
+                        Image(systemName: "globe")
+                    }
+                    .disabled(state.url == nil)
                 }
             }
             .padding(8)
-            .frame(maxWidth: .infinity, alignment: .leading)
             
             WebView(
                 url: entry.url,
