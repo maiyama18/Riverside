@@ -4,7 +4,7 @@ import Dependencies
 import Entities
 import FlashClient
 import LicensesFeature
-import RootFeature
+import MacRootFeature
 import SystemNotification
 import SwiftUI
 

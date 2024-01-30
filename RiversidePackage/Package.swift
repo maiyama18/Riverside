@@ -43,11 +43,11 @@ let targets: [PackageDescription.Target] = [
             "CloudSyncState",
             "DeleteDuplicatedEntriesUseCase",
             "Entities",
-            "FeedsFeature",
+            "IOSFeedsFeature",
             "FlashClient",
             "NavigationState",
-            "SettingsFeature",
-            "StreamFeature",
+            "IOSSettingsFeature",
+            "IOSStreamFeature",
         ],
         path: "Sources/App/IOSApp"
     ),
@@ -64,12 +64,12 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             "FlashClient",
             "Entities",
-            "RootFeature",
+            "MacRootFeature",
         ],
         path: "Sources/App/MacApp"
     ),
     .target(
-        name: "FeedsFeature",
+        name: "IOSFeedsFeature",
         dependencies: [
             "SubscribeFeedFeature",
             "ClipboardClient",
@@ -79,19 +79,19 @@ let targets: [PackageDescription.Target] = [
             "NavigationState",
             "UIComponents",
         ],
-        path: "Sources/Feature/IOS/FeedsFeature"
+        path: "Sources/Feature/IOS/IOSFeedsFeature"
     ),
     .target(
-        name: "SettingsFeature",
+        name: "IOSSettingsFeature",
         dependencies: [
             "CloudSyncStatusFeature",
             "LicensesFeature",
             "NavigationState",
         ],
-        path: "Sources/Feature/IOS/SettingsFeature"
+        path: "Sources/Feature/IOS/IOSSettingsFeature"
     ),
     .target(
-        name: "StreamFeature",
+        name: "IOSStreamFeature",
         dependencies: [
             .algorithms,
             .dependencies,
@@ -102,10 +102,10 @@ let targets: [PackageDescription.Target] = [
             "NavigationState",
             "UIComponents",
         ],
-        path: "Sources/Feature/IOS/StreamFeature"
+        path: "Sources/Feature/IOS/IOSStreamFeature"
     ),
     .target(
-        name: "RootFeature",
+        name: "MacRootFeature",
         dependencies: [
             .algorithms,
             "ClipboardClient",
@@ -120,7 +120,7 @@ let targets: [PackageDescription.Target] = [
             "UIComponents",
             "WebView",
         ],
-        path: "Sources/Feature/Mac/RootFeature"
+        path: "Sources/Feature/Mac/MacRootFeature"
     ),
     .target(
         name: "CloudSyncStatusFeature",
@@ -319,9 +319,9 @@ let package = Package(
             name: "Features",
             targets: [
                 "SubscribeFeedFeature",
-                "FeedsFeature",
-                "SettingsFeature",
-                "StreamFeature",
+                "IOSFeedsFeature",
+                "IOSSettingsFeature",
+                "IOSStreamFeature",
             ]
         ),
         .library(name: "DeleteDuplicatedEntriesUseCase", targets: ["DeleteDuplicatedEntriesUseCase"]),
