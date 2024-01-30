@@ -69,25 +69,6 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/App/MacApp"
     ),
     .target(
-        name: "CloudSyncStatusFeature",
-        dependencies: [
-            "CloudSyncState",
-        ],
-        path: "Sources/Feature/CloudSyncStatusFeature"
-    ),
-    .target(
-        name: "SubscribeFeedFeature",
-        dependencies: [
-            "FeedClient",
-            "SubscribeFeedUseCase",
-            "FlashClient",
-            "Entities",
-            "Utilities",
-            "UIComponents",
-        ],
-        path: "Sources/Feature/SubscribeFeedFeature"
-    ),
-    .target(
         name: "FeedsFeature",
         dependencies: [
             "SubscribeFeedFeature",
@@ -98,12 +79,7 @@ let targets: [PackageDescription.Target] = [
             "NavigationState",
             "UIComponents",
         ],
-        path: "Sources/Feature/FeedsFeature"
-    ),
-    .target(
-        name: "LicensesFeature",
-        path: "Sources/Feature/LicensesFeature",
-        plugins: [.licenses]
+        path: "Sources/Feature/IOS/FeedsFeature"
     ),
     .target(
         name: "SettingsFeature",
@@ -112,7 +88,7 @@ let targets: [PackageDescription.Target] = [
             "LicensesFeature",
             "NavigationState",
         ],
-        path: "Sources/Feature/SettingsFeature"
+        path: "Sources/Feature/IOS/SettingsFeature"
     ),
     .target(
         name: "StreamFeature",
@@ -126,7 +102,7 @@ let targets: [PackageDescription.Target] = [
             "NavigationState",
             "UIComponents",
         ],
-        path: "Sources/Feature/StreamFeature"
+        path: "Sources/Feature/IOS/StreamFeature"
     ),
     .target(
         name: "RootFeature",
@@ -144,7 +120,31 @@ let targets: [PackageDescription.Target] = [
             "UIComponents",
             "WebView",
         ],
-        path: "Sources/Feature/RootFeature"
+        path: "Sources/Feature/Mac/RootFeature"
+    ),
+    .target(
+        name: "CloudSyncStatusFeature",
+        dependencies: [
+            "CloudSyncState",
+        ],
+        path: "Sources/Feature/Shared/CloudSyncStatusFeature"
+    ),
+    .target(
+        name: "SubscribeFeedFeature",
+        dependencies: [
+            "FeedClient",
+            "SubscribeFeedUseCase",
+            "FlashClient",
+            "Entities",
+            "Utilities",
+            "UIComponents",
+        ],
+        path: "Sources/Feature/Shared/SubscribeFeedFeature"
+    ),
+    .target(
+        name: "LicensesFeature",
+        path: "Sources/Feature/Shared/LicensesFeature",
+        plugins: [.licenses]
     ),
     .target(
         name: "AddNewEntriesUseCase",
