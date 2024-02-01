@@ -1,6 +1,7 @@
 import AddNewEntriesUseCase
 import Algorithms
 import CoreData
+import CloudSyncState
 import Dependencies
 import DeleteDuplicatedEntriesUseCase
 import Entities
@@ -15,6 +16,7 @@ public struct RootScreen: View {
     @Dependency(\.flashClient) private var flashClient
     
     @Environment(\.managedObjectContext) private var context
+    @Environment(CloudSyncState.self) private var cloudSyncState
     
     @State private var selectedFeedID: ObjectIdentifier? = nil
     @State private var selectedEntryID: ObjectIdentifier? = nil
@@ -72,7 +74,7 @@ public struct RootScreen: View {
                         } label: {
                             Image(systemName: "arrow.clockwise")
                         }
-                        .disabled(refreshing)
+                        .disabled(refreshing || cloudSyncState.syncing)
                     }
                     
                     Toggle(isOn: $unreadOnly) {
