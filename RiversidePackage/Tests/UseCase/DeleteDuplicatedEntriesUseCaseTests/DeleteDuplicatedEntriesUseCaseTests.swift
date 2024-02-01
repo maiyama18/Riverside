@@ -135,38 +135,65 @@ final class DeleteDuplicatedEntriesUseCaseTests: XCTestCase {
                 .init(
                     context,
                     urlString: "https://feed1.com/1",
-                    publishedAt: Date(timeIntervalSinceReferenceDate: 1)
+                    publishedAt: Date(timeIntervalSinceReferenceDate: 1),
+                    read: false
                 ),
                 .init(
                     context,
                     urlString: "https://feed1.com/1",
-                    publishedAt: Date(timeIntervalSinceReferenceDate: 1)
+                    publishedAt: Date(timeIntervalSinceReferenceDate: 1),
+                    read: true
                 ),
                 .init(
                     context,
                     urlString: "https://feed1.com/1",
-                    publishedAt: Date(timeIntervalSinceReferenceDate: 1)
+                    publishedAt: Date(timeIntervalSinceReferenceDate: 1),
+                    read: false
                 ),
                 .init(
                     context,
                     urlString: "https://feed1.com/2",
-                    publishedAt: Date(timeIntervalSinceReferenceDate: 2)
+                    publishedAt: Date(timeIntervalSinceReferenceDate: 2),
+                    read: false
+                ),
+                .init(
+                    context,
+                    urlString: "https://feed1.com/2",
+                    publishedAt: Date(timeIntervalSinceReferenceDate: 2),
+                    read: false
+                ),
+                .init(
+                    context,
+                    urlString: "https://feed1.com/3",
+                    publishedAt: Date(timeIntervalSinceReferenceDate: 3),
+                    read: true
+                ),
+                .init(
+                    context,
+                    urlString: "https://feed1.com/3",
+                    publishedAt: Date(timeIntervalSinceReferenceDate: 3),
+                    read: true
                 ),
             ]
         )
         try context.saveWithRollback()
         
         XCTAssertNoDifference(try context.fetch(FeedModel.all).count, 1)
-        XCTAssertNoDifference(try context.fetch(EntryModel.all).count, 4)
+        XCTAssertNoDifference(try context.fetch(EntryModel.all).count, 7)
         
         try useCase.execute(context)
         
-        let remainingEntries = try context.fetch(EntryModel.all)
-        XCTAssertNoDifference(remainingEntries.count, 2)
-        XCTAssertNoDifference(
-            Set(remainingEntries.compactMap(\.url).map(\.absoluteString)),
-            Set(["https://feed1.com/1", "https://feed1.com/2"])
-        )
+        let remainingEntries = try context.fetch(EntryModel.all).sorted(by: { $0.url!.absoluteString < $1.url!.absoluteString })
+        XCTAssertNoDifference(remainingEntries.count, 3)
+        let entry1 = remainingEntries[0]
+        XCTAssertNoDifference(entry1.url?.absoluteString, "https://feed1.com/1")
+        XCTAssertNoDifference(entry1.read, true)
+        let entry2 = remainingEntries[1]
+        XCTAssertNoDifference(entry2.url?.absoluteString, "https://feed1.com/2")
+        XCTAssertNoDifference(entry2.read, false)
+        let entry3 = remainingEntries[2]
+        XCTAssertNoDifference(entry3.url?.absoluteString, "https://feed1.com/3")
+        XCTAssertNoDifference(entry3.read, true)
     }
 }
 
@@ -193,6 +220,7 @@ private extension EntryModel {
         _ context: NSManagedObjectContext,
         urlString: String,
         publishedAt: Date,
+        read: Bool = false,
         title: String = "Dummy Entry"
     ) {
         self.init(context: context)
@@ -200,5 +228,6 @@ private extension EntryModel {
         self.url = URL(string: urlString)
         self.publishedAt = publishedAt
         self.title = title
+        self.read = read
     }
 }
