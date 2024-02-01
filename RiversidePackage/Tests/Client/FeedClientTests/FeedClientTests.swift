@@ -23,6 +23,7 @@ final class FeedClientTests: XCTestCase {
     
     // RSS
     private static let maiyama4RSSURL = URL(string: "https://maiyama4.hatenablog.com/rss")!
+    private static let magnoliaURL = URL(string: "https://blog.magnolia.tech/rss")!
     private static let iOSDevWeeklyURL = URL(string: "https://iosdevweekly.com/issues.rss")!
     private static let iOSCodeReviewURL = URL(string: "https://ioscodereview.com/feed.xml/")!
     private static let r7kamuraURL = URL(string: "https://r7kamura.com/feed.xml")!
@@ -122,6 +123,7 @@ final class FeedClientTests: XCTestCase {
         
         // RSS
         try setFeedData(to: &responses, url: Self.maiyama4RSSURL, responseType: .rssFeed, resourceName: "maiyama4_rss")
+        try setFeedData(to: &responses, url: Self.magnoliaURL, responseType: .rssFeed, resourceName: "magnolia")
         try setFeedData(to: &responses, url: Self.iOSDevWeeklyURL, responseType: .rssFeed, resourceName: "iOSDevWeekly")
         try setFeedData(to: &responses, url: Self.iOSCodeReviewURL, responseType: .rssFeed, resourceName: "iOSCodeReview")
         try setFeedData(to: &responses, url: Self.r7kamuraURL, responseType: .rssFeed, resourceName: "r7kamura")
@@ -180,6 +182,21 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(entry.content?.prefix(50), "概要 SwiftUI Advent Calendar 2023 の 21 日目です。 最近趣味で i")
         try XCTAssertEqual(entry.publishedAt, Date("2023-12-27T14:26:25+09:00", strategy: .iso8601))
     }
+    
+    func test_magnolia() async throws {
+        let feed = try await client.fetch(Self.magnoliaURL)
+        XCTAssertEqual(feed.url, Self.magnoliaURL)
+        XCTAssertEqual(feed.title, "Magnolia Tech")
+        XCTAssertEqual(feed.overview, "いつもコードのことばかり考えている人のために。")
+
+        XCTAssertEqual(feed.entries.count, 30)
+        let entry = try XCTUnwrap(feed.entries.first)
+        XCTAssertEqual(entry.url, URL(string: "https://blog.magnolia.tech/entry/2024/01/27/195444"))
+        XCTAssertEqual(entry.title, "Keychron Q60 MAXを買った")
+        XCTAssertEqual(entry.content?.count, 500)
+        XCTAssertEqual(entry.content?.prefix(100), "Keychron Q60 Max QMK/VIA ワイヤレス カスタム メカニカルキーボード（US ANSI 配列） – Keychron Japan 去年は、Keychron Q60はいいぞ！と言い")
+        try XCTAssertEqual(entry.publishedAt, Date("2024-01-27T10:54:44+00:00", strategy: .iso8601))
+   }
 
     func test_iOSDevWeekly() async throws {
         let feed = try await client.fetch(Self.iOSDevWeeklyURL)
@@ -272,7 +289,7 @@ final class FeedClientTests: XCTestCase {
         let entry = try XCTUnwrap(feed.entries.first)
         XCTAssertEqual(entry.url, URL(string: "https://qiita.com/masakihori/items/54d4209a700ec4584083"))
         XCTAssertEqual(entry.title, "[Swift]むりやりPoint-Free Style")
-        XCTAssertEqual(entry.content?.count, 103)
+        XCTAssertEqual(entry.content?.count, 100)
         XCTAssertEqual(entry.content?.prefix(50), "Point-Free Styleとは 関数を渡す関数を使う時にTrailing closureを使わ")
         try XCTAssertEqual(entry.publishedAt, Date("2023-12-30T09:55:43+09:00", strategy: .iso8601))
     }
@@ -304,8 +321,8 @@ final class FeedClientTests: XCTestCase {
         let entry = try XCTUnwrap(feed.entries.first)
         XCTAssertEqual(entry.url, URL(string: "https://note.com/pha/n/n0b28a1a3b1b0"))
         XCTAssertEqual(entry.title, "11月25日（土）～12月1日（金） 調べずに海沿いを")
-        XCTAssertEqual(entry.content?.count, 180)
-        XCTAssertEqual(entry.content?.prefix(50), "11月25日（土）起きると疲れている。Titleに文フリで出した2冊を納品してから、店へ。明日の日記")
+        XCTAssertEqual(entry.content?.count, 184)
+        XCTAssertEqual(entry.content?.prefix(50), "11月25日（土） 起きると疲れている。Titleに文フリで出した2冊を納品してから、店へ。明日の日")
         try XCTAssertEqual(entry.publishedAt, Date("2023-12-22T19:23:55+09:00", strategy: .iso8601))
     }
 
