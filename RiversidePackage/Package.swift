@@ -43,11 +43,11 @@ let targets: [PackageDescription.Target] = [
             "CloudSyncState",
             "DeleteDuplicatedEntriesUseCase",
             "Entities",
-            "FeedsFeature",
+            "IOSFeedsFeature",
             "FlashClient",
             "NavigationState",
-            "SettingsFeature",
-            "StreamFeature",
+            "IOSSettingsFeature",
+            "IOSStreamFeature",
         ],
         path: "Sources/App/IOSApp"
     ),
@@ -64,31 +64,12 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             "FlashClient",
             "Entities",
-            "RootFeature",
+            "MacRootFeature",
         ],
         path: "Sources/App/MacApp"
     ),
     .target(
-        name: "CloudSyncStatusFeature",
-        dependencies: [
-            "CloudSyncState",
-        ],
-        path: "Sources/Feature/CloudSyncStatusFeature"
-    ),
-    .target(
-        name: "SubscribeFeedFeature",
-        dependencies: [
-            "FeedClient",
-            "SubscribeFeedUseCase",
-            "FlashClient",
-            "Entities",
-            "Utilities",
-            "UIComponents",
-        ],
-        path: "Sources/Feature/SubscribeFeedFeature"
-    ),
-    .target(
-        name: "FeedsFeature",
+        name: "IOSFeedsFeature",
         dependencies: [
             "SubscribeFeedFeature",
             "ClipboardClient",
@@ -98,24 +79,19 @@ let targets: [PackageDescription.Target] = [
             "NavigationState",
             "UIComponents",
         ],
-        path: "Sources/Feature/FeedsFeature"
+        path: "Sources/Feature/IOS/IOSFeedsFeature"
     ),
     .target(
-        name: "LicensesFeature",
-        path: "Sources/Feature/LicensesFeature",
-        plugins: [.licenses]
-    ),
-    .target(
-        name: "SettingsFeature",
+        name: "IOSSettingsFeature",
         dependencies: [
             "CloudSyncStatusFeature",
             "LicensesFeature",
             "NavigationState",
         ],
-        path: "Sources/Feature/SettingsFeature"
+        path: "Sources/Feature/IOS/IOSSettingsFeature"
     ),
     .target(
-        name: "StreamFeature",
+        name: "IOSStreamFeature",
         dependencies: [
             .algorithms,
             .dependencies,
@@ -126,10 +102,10 @@ let targets: [PackageDescription.Target] = [
             "NavigationState",
             "UIComponents",
         ],
-        path: "Sources/Feature/StreamFeature"
+        path: "Sources/Feature/IOS/IOSStreamFeature"
     ),
     .target(
-        name: "RootFeature",
+        name: "MacRootFeature",
         dependencies: [
             .algorithms,
             "ClipboardClient",
@@ -144,7 +120,31 @@ let targets: [PackageDescription.Target] = [
             "UIComponents",
             "WebView",
         ],
-        path: "Sources/Feature/RootFeature"
+        path: "Sources/Feature/Mac/MacRootFeature"
+    ),
+    .target(
+        name: "CloudSyncStatusFeature",
+        dependencies: [
+            "CloudSyncState",
+        ],
+        path: "Sources/Feature/Shared/CloudSyncStatusFeature"
+    ),
+    .target(
+        name: "SubscribeFeedFeature",
+        dependencies: [
+            "FeedClient",
+            "SubscribeFeedUseCase",
+            "FlashClient",
+            "Entities",
+            "Utilities",
+            "UIComponents",
+        ],
+        path: "Sources/Feature/Shared/SubscribeFeedFeature"
+    ),
+    .target(
+        name: "LicensesFeature",
+        path: "Sources/Feature/Shared/LicensesFeature",
+        plugins: [.licenses]
     ),
     .target(
         name: "AddNewEntriesUseCase",
@@ -319,9 +319,9 @@ let package = Package(
             name: "Features",
             targets: [
                 "SubscribeFeedFeature",
-                "FeedsFeature",
-                "SettingsFeature",
-                "StreamFeature",
+                "IOSFeedsFeature",
+                "IOSSettingsFeature",
+                "IOSStreamFeature",
             ]
         ),
         .library(name: "DeleteDuplicatedEntriesUseCase", targets: ["DeleteDuplicatedEntriesUseCase"]),

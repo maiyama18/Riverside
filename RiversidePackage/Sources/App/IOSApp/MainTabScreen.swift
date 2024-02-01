@@ -4,11 +4,11 @@ import CoreData
 import DeleteDuplicatedEntriesUseCase
 import Dependencies
 import Entities
-import FeedsFeature
+import IOSFeedsFeature
 import NavigationState
 import Utilities
-import SettingsFeature
-import StreamFeature
+import IOSSettingsFeature
+import IOSStreamFeature
 import SwiftUI
 
 @MainActor
