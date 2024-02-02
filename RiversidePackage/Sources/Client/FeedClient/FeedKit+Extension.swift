@@ -1,5 +1,6 @@
 import FeedKit
 import Foundation
+import SwiftSoup
 
 extension FeedParser {
     func parseFeed() async throws -> FeedKit.Feed {
@@ -90,7 +91,7 @@ extension FeedKit.Feed {
     }
 
     private func sanitizeEntryContent(_ string: String) -> String {
-        let encoded = (try? encodeHTML(string)) ?? string
+        let encoded = (try? htmlText(string)) ?? string
         let replaced = encoded
             .replacingOccurrences(of: "\u{FFFC}", with: "")
             .replacing(/<[^>]+>/, with: "")
@@ -99,15 +100,8 @@ extension FeedKit.Feed {
         return String(replaced.prefix(500))
     }
     
-    private func encodeHTML(_ string: String) throws -> String {
-        guard let data = string.data(using: .utf8) else { throw NSError(domain: "EncodeHTML", code: -1) }
-        
-        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
-            .documentType: NSAttributedString.DocumentType.html,
-            .characterEncoding: String.Encoding.utf8.rawValue
-        ]
-            
-        let attributedString = try NSAttributedString(data: data, options: options, documentAttributes: nil)
-        return attributedString.string
+    private func htmlText(_ string: String) throws -> String {
+        let html = try SwiftSoup.parse(string)
+        return try html.text()
     }
 }
