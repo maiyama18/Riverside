@@ -223,6 +223,13 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Core/Entities"
     ),
     .target(
+        name: "Logging",
+        dependencies: [
+            .dependencies,
+        ],
+        path: "Sources/Core/Logging"
+    ),
+    .target(
         name: "Utilities",
         path: "Sources/Core/Utilities"
     ),
@@ -295,6 +302,11 @@ let targets: [PackageDescription.Target] = [
     if target.isTest {
         var dependencies = target.dependencies
         dependencies.append(.customDump)
+        target.dependencies = dependencies
+    }
+    if target.name != "Logging" {
+        var dependencies = target.dependencies
+        dependencies.append("Logging")
         target.dependencies = dependencies
     }
     
