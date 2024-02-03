@@ -4,6 +4,7 @@ import Dependencies
 import Entities
 import FlashClient
 import LicensesFeature
+import Logging
 import MacRootFeature
 import SystemNotification
 import SwiftUI
@@ -14,6 +15,7 @@ public struct MacApp: App {
     private let persistentProvider: PersistentProvider = .cloud
     
     @Dependency(\.flashClient) private var flashClient
+    @Dependency(\.logger[.app]) private var logger
     
     @Environment(\.openWindow) private var openWindow
     
@@ -24,6 +26,8 @@ public struct MacApp: App {
         self._context = .init(wrappedValue: context)
         
         flashClient.injectContext(context)
+        
+        logger.notice("app started")
     }
     
     public var body: some Scene {

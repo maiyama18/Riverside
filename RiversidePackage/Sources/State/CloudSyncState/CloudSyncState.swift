@@ -1,6 +1,8 @@
 import CoreData
 import Combine
+import Dependencies
 import Foundation
+import Logging
 import Observation
 
 @Observable
@@ -57,6 +59,9 @@ public final class CloudSyncState {
     private var cancellable: AnyCancellable? = nil
     private var ongoingEvents: Dictionary<UUID, NSPersistentCloudKitContainer.EventType> = [:]
     
+    @ObservationIgnored
+    @Dependency(\.logger[.iCloud]) private var logger
+    
     public init(notificationCenter: NotificationCenter = .default) {
         cancellable = notificationCenter
             .publisher(for: NSPersistentCloudKitContainer.eventChangedNotification)
@@ -68,6 +73,14 @@ public final class CloudSyncState {
             }
             .sink { [weak self] event in
                 guard let self else { return }
+                
+                let eventType: String = switch event.type {
+                case .setup: "Setup"
+                case .import: "Import"
+                case .export: "Export"
+                @unknown default: "Unknown"
+                }
+                logger.notice("\(eventType)(\(event.identifier)) \(event.endDate == nil ? "started" : "ended")")
                 
                 if event.endDate == nil {
                     ongoingEvents[event.identifier] = event.type

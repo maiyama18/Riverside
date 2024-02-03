@@ -1,6 +1,7 @@
 import CoreData
 import Dependencies
 import Entities
+import Logging
 
 public struct DeleteDuplicatedEntriesUseCase: Sendable {
     public var execute: @Sendable (_ context: NSManagedObjectContext) throws -> Void
@@ -8,7 +9,9 @@ public struct DeleteDuplicatedEntriesUseCase: Sendable {
 
 extension DeleteDuplicatedEntriesUseCase {
     static var live: DeleteDuplicatedEntriesUseCase {
-        .init(
+        @Dependency(\.logger[.feedModel]) var logger
+        
+        return .init(
             execute: { context in
                 let allFeeds = try context.fetch(FeedModel.all)
                 let duplicatedFeedsList = allFeeds
@@ -17,6 +20,7 @@ extension DeleteDuplicatedEntriesUseCase {
                     .filter { $0.count > 1 }
                     .map { $0.sorted(by: { ($0.entries?.count ?? 0) > ($1.entries?.count ?? 0) }) }
                 for duplicatedFeeds in duplicatedFeedsList {
+                    logger.notice("deleting duplicated feeds: \(duplicatedFeeds.first?.url?.absoluteString ?? "") \(duplicatedFeeds.count) records")
                     for duplicatedFeed in duplicatedFeeds.dropFirst() {
                         context.delete(duplicatedFeed)
                     }
@@ -29,12 +33,14 @@ extension DeleteDuplicatedEntriesUseCase {
                     .filter { $0.count > 1 }
                     .map { $0.sorted(by: { ($0.read ? 1 : 0) > ($1.read ? 1 : 0) }) }
                 for duplicatedEntries in duplicatedEntriesList {
+                    logger.notice("deleting duplicated entries: \(duplicatedEntries.first?.url?.absoluteString ?? "") \(duplicatedEntries.count) records")
                     for duplicatedEntry in duplicatedEntries.dropFirst() {
                         context.delete(duplicatedEntry)
                     }
                 }
                 
                 for orphanEntry in try context.fetch(EntryModel.orphans) {
+                    logger.notice("deleting orphan entries: \(orphanEntry.url?.absoluteString ?? "")")
                     context.delete(orphanEntry)
                 }
                 
