@@ -40,8 +40,10 @@ public struct SettingsScreen: View {
                         Text("Cloud Sync Status")
                     }
                     
-                    NavigationLink(value: SettingsRoute.log) {
-                        Text("Debug Log")
+                    if !Bundle.main.isProduction {
+                        NavigationLink(value: SettingsRoute.log) {
+                            Text("Debug Log")
+                        }
                     }
                 }
                 

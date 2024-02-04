@@ -9,6 +9,7 @@ import LogFeature
 import MacRootFeature
 import SystemNotification
 import SwiftUI
+import Utilities
 
 @MainActor
 public struct MacApp: App {
@@ -45,8 +46,10 @@ public struct MacApp: App {
                     openWindow(id: "window-licenses")
                 }
                 
-                Button("Debug Log") {
-                    openWindow(id: "window-debug-log")
+                if !Bundle.main.isProduction {
+                    Button("Debug Log") {
+                        openWindow(id: "window-debug-log")
+                    }
                 }
             }
         }
