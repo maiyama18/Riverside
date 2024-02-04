@@ -1,6 +1,7 @@
 import CloudSyncStatusFeature
 import Dependencies
 import LicensesFeature
+import LogFeature
 import NavigationState
 import SwiftUI
 import Utilities
@@ -35,7 +36,13 @@ public struct SettingsScreen: View {
                 }
                 
                 Section {
-                    NavigationLink(value: SettingsRoute.cloudSyncStatus) { Text("Cloud Sync Status") }
+                    NavigationLink(value: SettingsRoute.cloudSyncStatus) {
+                        Text("Cloud Sync Status")
+                    }
+                    
+                    NavigationLink(value: SettingsRoute.log) {
+                        Text("Debug Log")
+                    }
                 }
                 
                 Section {
@@ -62,6 +69,8 @@ public struct SettingsScreen: View {
                 switch route {
                 case .cloudSyncStatus:
                     CloudSyncStatusScreen()
+                case .log:
+                    LogScreen()
                 }
             }
             .sheet(item: $navigationState.settingsPresentation) { presentation in

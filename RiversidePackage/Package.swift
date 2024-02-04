@@ -65,6 +65,7 @@ let targets: [PackageDescription.Target] = [
             "FlashClient",
             "Entities",
             "MacRootFeature",
+            "LogFeature",
         ],
         path: "Sources/App/MacApp"
     ),
@@ -86,6 +87,7 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             "CloudSyncStatusFeature",
             "LicensesFeature",
+            "LogFeature",
             "NavigationState",
         ],
         path: "Sources/Feature/IOS/IOSSettingsFeature"
@@ -128,6 +130,13 @@ let targets: [PackageDescription.Target] = [
             "CloudSyncState",
         ],
         path: "Sources/Feature/Shared/CloudSyncStatusFeature"
+    ),
+    .target(
+        name: "LogFeature",
+        dependencies: [
+            "FlashClient",
+        ],
+        path: "Sources/Feature/Shared/LogFeature"
     ),
     .target(
         name: "SubscribeFeedFeature",

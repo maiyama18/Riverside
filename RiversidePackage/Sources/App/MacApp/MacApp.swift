@@ -5,6 +5,7 @@ import Entities
 import FlashClient
 import LicensesFeature
 import Logging
+import LogFeature
 import MacRootFeature
 import SystemNotification
 import SwiftUI
@@ -43,11 +44,18 @@ public struct MacApp: App {
                 Button("Licenses") {
                     openWindow(id: "window-licenses")
                 }
+                
+                Button("Debug Log") {
+                    openWindow(id: "window-debug-log")
+                }
             }
         }
         
         Window(Text("Licenses"), id: "window-licenses") {
             LicensesScreen()
+        }
+        Window(Text("Debug Log"), id: "window-debug-log") {
+            LogScreen()
         }
     }
 }
