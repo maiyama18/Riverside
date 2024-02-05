@@ -1,6 +1,7 @@
 import Dependencies
 import FeedClient
 import Foundation
+import Logging
 import Utilities
 @preconcurrency import Entities
 @preconcurrency import CoreData
@@ -14,6 +15,7 @@ public struct AddNewEntriesUseCase: Sendable {
 extension AddNewEntriesUseCase {
     static var live: AddNewEntriesUseCase {
         @Dependency(\.feedClient) var feedClient
+        @Dependency(\.logger[.feedModel]) var logger
         
         @Sendable
         @MainActor
@@ -29,12 +31,11 @@ extension AddNewEntriesUseCase {
             let latestEntryPublishedAt = existingEntries.compactMap(\.publishedAt).max() ?? Date(timeIntervalSince1970: 0)
             
             let newEntries = fetchedEntries.filter { $0.publishedAt > latestEntryPublishedAt }
-            
-            for newEntry in newEntries {
-                if !existingEntryURLs.compactMap({ $0 }).contains(where: { $0.isSame(as: newEntry.url) }) {
-                    feed.addToEntries(newEntry.toModel(context: context))
-                }
+            let addedEntries = newEntries.filter { newEntry in !existingEntryURLs.contains(where: { $0.isSame(as: newEntry.url) }) }
+            for entry in addedEntries {
+                feed.addToEntries(entry.toModel(context: context))
             }
+            logger.notice("fetched entries for '\(feed.title ?? "")': all \(fetchedEntries.count) entries, new \(fetchedEntries.count), added: \(addedEntries.count)")
         }
         
         @Sendable
@@ -64,6 +65,7 @@ extension AddNewEntriesUseCase {
                 if let lastExecutionDate = getLastAddExecutionDate(),
                    // 10 min
                    Date.now.timeIntervalSince(lastExecutionDate) < 60 * 10 {
+                    logger.notice("skipping add new entries")
                     return
                 }
                 
@@ -79,7 +81,7 @@ extension AddNewEntriesUseCase {
                         try context.saveWithRollback()
                         setLastAddExecutionDate(date: .now)
                     } catch {
-                        print(error)
+                        logger.notice("failed to save new entries: \(error, privacy: .public)")
                     }
                 }
             }

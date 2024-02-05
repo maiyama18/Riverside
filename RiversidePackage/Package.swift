@@ -65,6 +65,7 @@ let targets: [PackageDescription.Target] = [
             "FlashClient",
             "Entities",
             "MacRootFeature",
+            "LogFeature",
         ],
         path: "Sources/App/MacApp"
     ),
@@ -86,6 +87,7 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             "CloudSyncStatusFeature",
             "LicensesFeature",
+            "LogFeature",
             "NavigationState",
         ],
         path: "Sources/Feature/IOS/IOSSettingsFeature"
@@ -128,6 +130,13 @@ let targets: [PackageDescription.Target] = [
             "CloudSyncState",
         ],
         path: "Sources/Feature/Shared/CloudSyncStatusFeature"
+    ),
+    .target(
+        name: "LogFeature",
+        dependencies: [
+            "FlashClient",
+        ],
+        path: "Sources/Feature/Shared/LogFeature"
     ),
     .target(
         name: "SubscribeFeedFeature",
@@ -223,6 +232,13 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Core/Entities"
     ),
     .target(
+        name: "Logging",
+        dependencies: [
+            .dependencies,
+        ],
+        path: "Sources/Core/Logging"
+    ),
+    .target(
         name: "Utilities",
         path: "Sources/Core/Utilities"
     ),
@@ -295,6 +311,11 @@ let targets: [PackageDescription.Target] = [
     if target.isTest {
         var dependencies = target.dependencies
         dependencies.append(.customDump)
+        target.dependencies = dependencies
+    }
+    if target.name != "Logging" {
+        var dependencies = target.dependencies
+        dependencies.append("Logging")
         target.dependencies = dependencies
     }
     

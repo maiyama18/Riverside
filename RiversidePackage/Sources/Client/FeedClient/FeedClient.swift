@@ -1,6 +1,7 @@
 import Dependencies
 import FeedKit
 import Foundation
+import Logging
 import SwiftSoup
 import Utilities
 
@@ -14,6 +15,8 @@ extension FeedClient {
             case html
             case feed
         }
+        
+        @Dependency(\.logger[.feedModel]) var logger
         
         @Sendable
         func fetchDataAndContentType(url: URL) async throws -> (Data, ContentType) {
@@ -135,28 +138,33 @@ extension FeedClient {
         return FeedClient(
             fetch: { url in
                 let (data, contentType) = try await fetchDataAndContentType(url: url)
-                switch contentType {
-                case .html:
-                    let feedURL = try extractFeedURL(data: data).insertBaseURLIfNeeded(referenceURL: url)
-                    let (feedData, feedContentType) = try await fetchDataAndContentType(url: feedURL)
-                    guard feedContentType == .feed else { throw NSError(domain: "FeedClient", code: -4) }
-                    let rawFeed = try await FeedParser(data: feedData).parseFeed()
-                    var feed = rawFeed.convert(url: feedURL)
-                    if feed.imageURL != nil {
-                        return feed
-                    } else {
-                        feed.imageURL = await imageURL(of: feed, htmlData: data)
-                        return feed
-                    }
-                case .feed:
-                    let rawFeed = try await FeedParser(data: data).parseFeed()
-                    var feed = rawFeed.convert(url: url)
-                    if feed.imageURL != nil {
-                        return feed
-                    } else {
-                        feed.imageURL = await imageURL(of: feed, htmlData: nil)
-                        return feed
-                    }
+                do {
+                    let feed = try await {
+                        switch contentType {
+                        case .html:
+                            let feedURL = try extractFeedURL(data: data).insertBaseURLIfNeeded(referenceURL: url)
+                            let (feedData, feedContentType) = try await fetchDataAndContentType(url: feedURL)
+                            guard feedContentType == .feed else { throw NSError(domain: "FeedClient", code: -4) }
+                            let rawFeed = try await FeedParser(data: feedData).parseFeed()
+                            var feed = rawFeed.convert(url: feedURL)
+                            if feed.imageURL == nil {
+                                feed.imageURL = await imageURL(of: feed, htmlData: data)
+                            }
+                            return feed
+                        case .feed:
+                            let rawFeed = try await FeedParser(data: data).parseFeed()
+                            var feed = rawFeed.convert(url: url)
+                            if feed.imageURL == nil {
+                                feed.imageURL = await imageURL(of: feed, htmlData: nil)
+                            }
+                            return feed
+                        }
+                    }()
+                    logger.notice("fetched feed from \(url, privacy: .public): \(feed.title, privacy: .public), \(feed.entries.count) entries (latest: '\(feed.entries.first?.title ?? "", privacy: .public)')")
+                    return feed
+                } catch {
+                    logger.warning("failed to fetch feed \(url, privacy: .public): \(error, privacy: .public)")
+                    throw error
                 }
             }
         )
