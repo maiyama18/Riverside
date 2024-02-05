@@ -83,9 +83,7 @@ struct FeedDetailScreen: View {
         .task {
             do {
                 try await addNewEntriesUseCase.execute(context, feed)
-            } catch {
-                print(error)
-            }
+            } catch {}
         }
         .navigationTitle(feed.title ?? "")
         .toolbar {

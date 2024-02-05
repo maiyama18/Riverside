@@ -87,9 +87,7 @@ public struct RootScreen: View {
         .onForeground { @MainActor in
             do {
                 try await addNewEntriesUseCase.executeForAllFeeds(context, false)
-            } catch {
-                print(error)
-            }
+            } catch {}
         }
         .deleteDuplicatedEntriesOnce()
     }
