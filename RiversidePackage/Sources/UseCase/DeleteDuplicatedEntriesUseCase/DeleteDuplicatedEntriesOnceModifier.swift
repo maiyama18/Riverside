@@ -23,9 +23,7 @@ struct DeleteDuplicatedEntriesOnceModifier: ViewModifier {
                 
                 do {
                     try deleteDuplicatedEntriesUseCase.execute(context)
-                } catch {
-                    print(error)
-                }
+                } catch {}
             }
     }
 }

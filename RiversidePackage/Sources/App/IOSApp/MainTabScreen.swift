@@ -51,9 +51,7 @@ struct MainTabScreen: View {
         .onForeground { @MainActor in
             do {
                 try await addNewEntriesUseCase.executeForAllFeeds(context, false)
-            } catch {
-                print(error)
-            }
+            } catch {}
         }
         .onChange(of: appearance, initial: true) { _, appearance in
             appAppearanceClient.apply(appearance)
