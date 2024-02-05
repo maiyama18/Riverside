@@ -65,10 +65,11 @@ extension AddNewEntriesUseCase {
                 if let lastExecutionDate = getLastAddExecutionDate(),
                    // 10 min
                    Date.now.timeIntervalSince(lastExecutionDate) < 60 * 10 {
-                    logger.notice("skipping add new entries")
+                    logger.notice("skipping add new entries. last execution date: \(lastExecutionDate)")
                     return
                 }
                 
+                logger.notice("starting add new entries")
                 let feeds = try context.fetch(FeedModel.all)
                 await withThrowingTaskGroup(of: Void.self) { group in
                     for feed in feeds {

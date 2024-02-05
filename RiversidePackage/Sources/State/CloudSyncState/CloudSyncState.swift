@@ -80,7 +80,7 @@ public final class CloudSyncState {
                 case .export: "Export"
                 @unknown default: "Unknown"
                 }
-                logger.notice("\(eventType)(\(event.identifier)) \(event.endDate == nil ? "started" : "ended")")
+                logger.notice("\(eventType, privacy: .public)(\(event.identifier, privacy: .public)) \(event.endDate == nil ? "started" : "ended", privacy: .public)")
                 
                 if event.endDate == nil {
                     ongoingEvents[event.identifier] = event.type

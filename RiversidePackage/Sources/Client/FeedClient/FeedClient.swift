@@ -103,7 +103,7 @@ extension FeedClient {
                         return imageURL
                     }
                 } catch {
-                    print(error)
+                    logger.error("failed to fetch favicon: \(error, privacy: .public)")
                 }
                 return await defaultURLOrNil(originalURL: pageURL)
             }
