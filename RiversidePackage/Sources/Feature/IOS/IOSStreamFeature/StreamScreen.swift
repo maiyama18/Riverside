@@ -84,7 +84,12 @@ public struct StreamScreen: View {
                                         guard let url = entry.url else { return }
                                         showSafari(
                                             url: url,
-                                            onDisappear: { withAnimation { entry.read = true } }
+                                            onDisappear: {
+                                                withAnimation {
+                                                    entry.read = true
+                                                    try? context.saveWithRollback()
+                                                }
+                                            }
                                         )
                                     }
                                 }
