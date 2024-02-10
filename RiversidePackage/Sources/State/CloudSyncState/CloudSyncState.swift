@@ -72,6 +72,7 @@ public final class CloudSyncState {
             }
             .map { CloudSyncEvent(event: $0) }
     ) {
+        logger.notice("CloudSyncState init")
         Task {
             for await event in publisher.buffer(size: .max, prefetch: .byRequest, whenFull: .dropOldest).values {
                 let eventType: String = switch event.type {
