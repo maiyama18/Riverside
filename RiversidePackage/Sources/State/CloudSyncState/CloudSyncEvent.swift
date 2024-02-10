@@ -1,6 +1,6 @@
 import CoreData
 
-public struct CloudSyncEvent {
+public struct CloudSyncEvent: Sendable {
     public let id: UUID
     public let type: NSPersistentCloudKitContainer.EventType
     public let endDate: Date?

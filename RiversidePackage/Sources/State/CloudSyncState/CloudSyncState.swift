@@ -1,4 +1,5 @@
 import CoreData
+import CombineSchedulers
 import Combine
 import Dependencies
 import Foundation
@@ -56,7 +57,6 @@ public final class CloudSyncState {
     public var syncing: Bool { importStatus.syncing || exportStatus.syncing }
     public var syncTransactions: [SyncTransaction] = []
     
-    private var cancellable: AnyCancellable? = nil
     private var ongoingEvents: Dictionary<UUID, NSPersistentCloudKitContainer.EventType> = [:]
     
     @ObservationIgnored
@@ -72,11 +72,8 @@ public final class CloudSyncState {
             }
             .map { CloudSyncEvent(event: $0) }
     ) {
-        cancellable = publisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] event in
-                guard let self else { return }
-                
+        Task {
+            for await event in publisher.buffer(size: .max, prefetch: .byRequest, whenFull: .dropOldest).values {
                 let eventType: String = switch event.type {
                 case .setup: "Setup"
                 case .import: "Import"
@@ -95,6 +92,7 @@ public final class CloudSyncState {
                     syncTransactions.append(transaction)
                 }
             }
+        }
     }
     
     private func syncStatus(for type: NSPersistentCloudKitContainer.EventType) -> SyncStatus {
