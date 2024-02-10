@@ -33,11 +33,11 @@ public final class CloudSyncState {
             self.result = result
         }
         
-        init?(event: NSPersistentCloudKitContainer.Event) {
+        init?(event: CloudSyncEvent) {
             guard let endDate = event.endDate else { return nil }
             
             self.init(
-                id: event.identifier,
+                id: event.id,
                 type: event.type,
                 date: endDate,
                 result: {
@@ -62,15 +62,18 @@ public final class CloudSyncState {
     @ObservationIgnored
     @Dependency(\.logger[.iCloud]) private var logger
     
-    public init(notificationCenter: NotificationCenter = .default) {
-        cancellable = notificationCenter
+    public init(
+        publisher: some Publisher<CloudSyncEvent, Never> = NotificationCenter.default
             .publisher(for: NSPersistentCloudKitContainer.eventChangedNotification)
-            .receive(on: DispatchQueue.main)
             .compactMap { notification in
                 notification.userInfo?[
                     NSPersistentCloudKitContainer.eventNotificationUserInfoKey
                 ] as? NSPersistentCloudKitContainer.Event
             }
+            .map { CloudSyncEvent(event: $0) }
+    ) {
+        cancellable = publisher
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 guard let self else { return }
                 
@@ -80,12 +83,12 @@ public final class CloudSyncState {
                 case .export: "Export"
                 @unknown default: "Unknown"
                 }
-                logger.notice("\(eventType, privacy: .public)(\(event.identifier, privacy: .public)) \(event.endDate == nil ? "started" : "ended", privacy: .public)")
+                logger.notice("\(eventType, privacy: .public)(\(event.id, privacy: .public)) \(event.endDate == nil ? "started" : "ended", privacy: .public)")
                 
                 if event.endDate == nil {
-                    ongoingEvents[event.identifier] = event.type
+                    ongoingEvents[event.id] = event.type
                 } else {
-                    ongoingEvents.removeValue(forKey: event.identifier)
+                    ongoingEvents.removeValue(forKey: event.id)
                 }
                 
                 if let transaction = SyncTransaction(event: event) {
