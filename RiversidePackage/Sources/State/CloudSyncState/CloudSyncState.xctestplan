@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "29CC733D-C092-479D-8FE6-1C3A42C24AA8",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "CloudSyncStateTests",
+        "name" : "CloudSyncStateTests"
+      }
+    }
+  ],
+  "version" : 1
+}

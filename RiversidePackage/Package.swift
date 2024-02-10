@@ -181,6 +181,9 @@ let targets: [PackageDescription.Target] = [
     ),
     .target(
         name: "CloudSyncState",
+        dependencies: [
+            .dependencies,
+        ],
         path: "Sources/State/CloudSyncState"
     ),
     .target(
@@ -265,15 +268,20 @@ let targets: [PackageDescription.Target] = [
         name: "DeleteDuplicatedEntriesUseCaseTests",
         dependencies: [
             "DeleteDuplicatedEntriesUseCase",
-            "TestHelpers",
         ],
         path: "Tests/UseCase/DeleteDuplicatedEntriesUseCaseTests"
+    ),
+    .testTarget(
+        name: "CloudSyncStateTests",
+        dependencies: [
+            "CloudSyncState",
+        ],
+        path: "Tests/State/CloudSyncStateTests"
     ),
     .testTarget(
         name: "FeedClientTests",
         dependencies: [
             "FeedClient",
-            "TestHelpers",
         ],
         path: "Tests/Client/FeedClientTests",
         resources: [.process("Resources")]
@@ -310,7 +318,7 @@ let targets: [PackageDescription.Target] = [
     
     if target.isTest {
         var dependencies = target.dependencies
-        dependencies.append(.customDump)
+        dependencies.append(contentsOf: [.customDump, "TestHelpers"])
         target.dependencies = dependencies
     }
     if target.name != "Logging" {
@@ -345,6 +353,7 @@ let package = Package(
                 "IOSStreamFeature",
             ]
         ),
+        .library(name: "CloudSyncState", targets: ["CloudSyncState"]),
         .library(name: "DeleteDuplicatedEntriesUseCase", targets: ["DeleteDuplicatedEntriesUseCase"]),
         .library(name: "FeedClient", targets: ["FeedClient"]),
         .library(name: "Entities", targets: ["Entities"]),
