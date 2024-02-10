@@ -1,5 +1,6 @@
 import CoreData
 import Dependencies
+import DeleteDuplicatedEntriesUseCase
 import SwiftUI
 
 public extension View {

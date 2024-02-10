@@ -162,6 +162,7 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             "AddNewEntriesUseCase",
             "CloudSyncState",
+            "DeleteDuplicatedEntriesUseCase",
         ],
         path: "Sources/Feature/Shared/ViewModifiers"
     ),

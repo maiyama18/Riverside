@@ -2,7 +2,6 @@ import AddNewEntriesUseCase
 import AppAppearanceClient
 import CoreData
 import CloudSyncState
-import DeleteDuplicatedEntriesUseCase
 import Dependencies
 import Entities
 import IOSFeedsFeature
