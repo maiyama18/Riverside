@@ -48,6 +48,7 @@ let targets: [PackageDescription.Target] = [
             "NavigationState",
             "IOSSettingsFeature",
             "IOSStreamFeature",
+            "ViewModifiers",
         ],
         path: "Sources/App/IOSApp"
     ),
@@ -121,6 +122,7 @@ let targets: [PackageDescription.Target] = [
             "SubscribeFeedFeature",
             "UIComponents",
             "WebView",
+            "ViewModifiers",
         ],
         path: "Sources/Feature/Mac/MacRootFeature"
     ),
@@ -154,6 +156,14 @@ let targets: [PackageDescription.Target] = [
         name: "LicensesFeature",
         path: "Sources/Feature/Shared/LicensesFeature",
         plugins: [.licenses]
+    ),
+    .target(
+        name: "ViewModifiers",
+        dependencies: [
+            "AddNewEntriesUseCase",
+            "CloudSyncState",
+        ],
+        path: "Sources/Feature/Shared/ViewModifiers"
     ),
     .target(
         name: "AddNewEntriesUseCase",

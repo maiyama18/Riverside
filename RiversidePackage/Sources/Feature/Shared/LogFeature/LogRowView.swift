@@ -14,11 +14,13 @@ extension LogCategory {
     var color: Color {
         switch self {
         case .app:
-            return .indigo
+            .indigo
+        case .feature:
+            .pink
         case .iCloud:
-            return .red
+            .blue
         case .feedModel:
-            return .green
+            .green
         }
     }
 }
@@ -27,19 +29,19 @@ extension OSLogEntryLog.Level {
     var color: Color {
         switch self {
         case .undefined:
-            return .clear
+            .clear
         case .debug:
-            return .clear
+            .clear
         case .info:
-            return .clear
+            .clear
         case .notice:
-            return .gray
+            .gray
         case .error:
-            return .yellow
+            .yellow
         case .fault:
-            return .red
+            .red
         @unknown default:
-            return .clear
+            .clear
         }
     }
 }

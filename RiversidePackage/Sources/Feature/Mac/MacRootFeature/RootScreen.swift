@@ -7,6 +7,7 @@ import DeleteDuplicatedEntriesUseCase
 import Entities
 import FlashClient
 import SwiftUI
+import ViewModifiers
 
 @MainActor
 public struct RootScreen: View {
@@ -84,11 +85,7 @@ public struct RootScreen: View {
                 }
             }
         }
-        .onForeground { @MainActor in
-            do {
-                try await addNewEntriesUseCase.executeForAllFeeds(context, false)
-            } catch {}
-        }
+        .addNewEntriesForAllFeeds()
         .deleteDuplicatedEntriesOnce()
     }
 }
