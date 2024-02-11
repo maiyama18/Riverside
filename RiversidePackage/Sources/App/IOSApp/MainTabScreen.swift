@@ -53,7 +53,7 @@ struct MainTabScreen: View {
         .onChange(of: appearance, initial: true) { _, appearance in
             appAppearanceClient.apply(appearance)
         }
-        .addNewEntriesForAllFeeds(loading: $loadingAllFeedsOnForeground)
+        .addNewEntriesForAllFeedsOnForeground(loading: $loadingAllFeedsOnForeground)
         .deleteDuplicatedEntriesOnce()
     }
 }

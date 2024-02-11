@@ -7,12 +7,12 @@ import SwiftUI
 extension View {
     /// iCloud 同期が落ち着いたタイミングで、すべてのフィードを更新する。
     /// Foreground になって以降１回のみ実行する。
-    public func addNewEntriesForAllFeeds(loading: Binding<Bool>) -> some View {
-        modifier(AddNewEntriesForAllFeedsModifier(loading: loading))
+    public func addNewEntriesForAllFeedsOnForeground(loading: Binding<Bool>) -> some View {
+        modifier(AddNewEntriesForAllFeedsOnForegroundModifier(loading: loading))
     }
 }
 
-struct AddNewEntriesForAllFeedsModifier: ViewModifier {
+struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
     @Binding var loading: Bool
     
     @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase

@@ -95,7 +95,7 @@ public struct RootScreen: View {
                 }
             }
         }
-        .addNewEntriesForAllFeeds(loading: $loadingAllFeedsOnForeground)
+        .addNewEntriesForAllFeedsOnForeground(loading: $loadingAllFeedsOnForeground)
         .deleteDuplicatedEntriesOnce()
     }
 }
