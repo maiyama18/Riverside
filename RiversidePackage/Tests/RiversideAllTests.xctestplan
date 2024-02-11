@@ -22,13 +22,6 @@
     {
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "ModelsTests",
-        "name" : "ModelsTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:",
         "identifier" : "UtilitiesTests",
         "name" : "UtilitiesTests"
       }
@@ -38,6 +31,20 @@
         "containerPath" : "container:",
         "identifier" : "DeleteDuplicatedEntriesUseCaseTests",
         "name" : "DeleteDuplicatedEntriesUseCaseTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "CloudSyncStateTests",
+        "name" : "CloudSyncStateTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "EntitiesTests",
+        "name" : "EntitiesTests"
       }
     }
   ],

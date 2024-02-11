@@ -1,7 +1,7 @@
 import AddNewEntriesUseCase
 import AppAppearanceClient
 import CoreData
-import DeleteDuplicatedEntriesUseCase
+import CloudSyncState
 import Dependencies
 import Entities
 import IOSFeedsFeature
@@ -10,16 +10,15 @@ import Utilities
 import IOSSettingsFeature
 import IOSStreamFeature
 import SwiftUI
+import ViewModifiers
 
 @MainActor
 struct MainTabScreen: View {
     @AppStorage("appearance") private var appearance: UIUserInterfaceStyle = .unspecified
     
     @Dependency(\.appAppearanceClient) private var appAppearanceClient
-    @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
     
     @Environment(NavigationState.self) private var navigationState
-    @Environment(\.managedObjectContext) private var context
 
     var body: some View {
         @Bindable var navigationState = navigationState
@@ -48,14 +47,11 @@ struct MainTabScreen: View {
             .toolbarBackground(.visible, for: .tabBar)
             .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         }
-        .onForeground { @MainActor in
-            do {
-                try await addNewEntriesUseCase.executeForAllFeeds(context, false)
-            } catch {}
-        }
         .onChange(of: appearance, initial: true) { _, appearance in
             appAppearanceClient.apply(appearance)
         }
+        .addNewEntriesForAllFeeds()
         .deleteDuplicatedEntriesOnce()
     }
 }
+
