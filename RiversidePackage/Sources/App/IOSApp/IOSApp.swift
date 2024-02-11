@@ -1,10 +1,10 @@
 import CloudSyncState
-import CoreData
 import Dependencies
 import Entities
 import Logging
 import NavigationState
 import SystemNotification
+import IOSMainTabFeature
 import SwiftUI
 
 @MainActor

@@ -1,19 +1,16 @@
-import AddNewEntriesUseCase
 import AppAppearanceClient
 import CoreData
-import CloudSyncState
 import Dependencies
-import Entities
-import IOSFeedsFeature
 import NavigationState
 import Utilities
+import IOSFeedsFeature
 import IOSSettingsFeature
 import IOSStreamFeature
 import SwiftUI
 import ViewModifiers
 
 @MainActor
-struct MainTabScreen: View {
+public struct MainTabScreen: View {
     @AppStorage("appearance") private var appearance: UIUserInterfaceStyle = .unspecified
     
     @Dependency(\.appAppearanceClient) private var appAppearanceClient
@@ -21,8 +18,10 @@ struct MainTabScreen: View {
     @Environment(NavigationState.self) private var navigationState
     
     @State private var loadingAllFeedsOnForeground: Bool = false
+    
+    public init() {}
 
-    var body: some View {
+    public var body: some View {
         @Bindable var navigationState = navigationState
         
         TabView(selection: $navigationState.mainTab) {
