@@ -37,7 +37,7 @@ public struct LogScreen: View {
         Group {
             if loading {
                 ProgressView()
-                    .scaleEffect(2)
+                    .controlSize(.extraLarge)
             } else {
                 VStack(alignment: .leading, spacing: 0) {
                     Picker(selection: $searchScope) {
