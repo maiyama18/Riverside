@@ -96,7 +96,7 @@ public struct RootScreen: View {
             }
         }
         .addNewEntriesForAllFeedsOnForeground(loading: $loadingAllFeedsOnForeground)
-        .deleteDuplicatedEntriesOnce()
+        .deleteDuplicatedEntriesOnBackground()
         .environment(\.loadingAllFeedsOnForeground, loadingAllFeedsOnForeground)
     }
 }
