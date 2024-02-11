@@ -19,6 +19,8 @@ struct MainTabScreen: View {
     @Dependency(\.appAppearanceClient) private var appAppearanceClient
     
     @Environment(NavigationState.self) private var navigationState
+    
+    @State private var loadingAllFeedsOnForeground: Bool = false
 
     var body: some View {
         @Bindable var navigationState = navigationState
@@ -47,10 +49,11 @@ struct MainTabScreen: View {
             .toolbarBackground(.visible, for: .tabBar)
             .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         }
+        .environment(\.loadingAllFeedsOnForeground, loadingAllFeedsOnForeground)
         .onChange(of: appearance, initial: true) { _, appearance in
             appAppearanceClient.apply(appearance)
         }
-        .addNewEntriesForAllFeeds()
+        .addNewEntriesForAllFeeds(loading: $loadingAllFeedsOnForeground)
         .deleteDuplicatedEntriesOnce()
     }
 }
