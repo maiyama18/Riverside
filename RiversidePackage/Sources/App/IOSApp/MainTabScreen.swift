@@ -49,12 +49,12 @@ struct MainTabScreen: View {
             .toolbarBackground(.visible, for: .tabBar)
             .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         }
-        .environment(\.loadingAllFeedsOnForeground, loadingAllFeedsOnForeground)
         .onChange(of: appearance, initial: true) { _, appearance in
             appAppearanceClient.apply(appearance)
         }
         .addNewEntriesForAllFeedsOnForeground(loading: $loadingAllFeedsOnForeground)
-        .deleteDuplicatedEntriesOnce()
+        .deleteDuplicatedEntriesOnBackground()
+        .environment(\.loadingAllFeedsOnForeground, loadingAllFeedsOnForeground)
     }
 }
 
