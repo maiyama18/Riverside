@@ -18,6 +18,7 @@ public struct StreamScreen: View {
     @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(NavigationState.self) private var navigationState
     @Environment(\.managedObjectContext) private var context
+    @Environment(\.loadingAllFeedsOnForeground) private var loadingAllFeedsOnForeground
     
     @FetchRequest(fetchRequest: EntryModel.all) private var entries: FetchedResults<EntryModel>
     @FetchRequest(fetchRequest: FeedModel.all) private var feeds: FetchedResults<FeedModel>
@@ -117,7 +118,7 @@ public struct StreamScreen: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack {
-                        if cloudSyncState.syncing {
+                        if cloudSyncState.syncing || loadingAllFeedsOnForeground {
                             ProgressView()
                         }
                         

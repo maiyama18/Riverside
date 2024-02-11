@@ -15,12 +15,13 @@ public struct RootScreen: View {
     @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
     @Dependency(\.flashClient) private var flashClient
     
-    @Environment(\.managedObjectContext) private var context
     @Environment(CloudSyncState.self) private var cloudSyncState
+    @Environment(\.managedObjectContext) private var context
     
     @State private var selectedFeedID: ObjectIdentifier? = nil
     @State private var selectedEntryID: ObjectIdentifier? = nil
     @State private var refreshing: Bool = false
+    @State private var loadingAllFeedsOnForeground: Bool = false
     
     @FetchRequest(fetchRequest: EntryModel.all) private var entries: FetchedResults<EntryModel>
     
@@ -58,6 +59,7 @@ public struct RootScreen: View {
                         
                         CloudSyncStateButton()
                         
+                        let loading = refreshing || cloudSyncState.syncing || loadingAllFeedsOnForeground
                         Button {
                             Task {
                                 refreshing = true
@@ -72,9 +74,18 @@ public struct RootScreen: View {
                                 }
                             }
                         } label: {
-                            Image(systemName: "arrow.clockwise")
+                            if loading {
+                                Image(systemName: "arrow.clockwise")
+                                    .hidden()
+                                    .overlay {
+                                        ProgressView()
+                                            .controlSize(.small)
+                                    }
+                            } else {
+                                Image(systemName: "arrow.clockwise")
+                            }
                         }
-                        .disabled(refreshing || cloudSyncState.syncing)
+                        .disabled(loading)
                     }
                     
                     Toggle(isOn: $unreadOnly) {
@@ -84,8 +95,9 @@ public struct RootScreen: View {
                 }
             }
         }
-        .addNewEntriesForAllFeeds()
+        .addNewEntriesForAllFeedsOnForeground(loading: $loadingAllFeedsOnForeground)
         .deleteDuplicatedEntriesOnce()
+        .environment(\.loadingAllFeedsOnForeground, loadingAllFeedsOnForeground)
     }
 }
 
