@@ -71,19 +71,21 @@ extension AddNewEntriesUseCase {
                 
                 logger.notice("starting add new entries")
                 let feeds = try context.fetch(FeedModel.all)
-                await withThrowingTaskGroup(of: Void.self) { group in
+                await withTaskGroup(of: Void.self) { group in
                     for feed in feeds {
                         group.addTask {
-                            try await addNewEntries(context: context, feed: feed)
+                            do {
+                                try await addNewEntries(context: context, feed: feed)
+                            } catch {
+                                logger.notice("failed to save new entries: \(error, privacy: .public)")
+                            }
                         }
                     }
                     do {
-                        try await group.waitForAll()
+                        await group.waitForAll()
                         try context.saveWithRollback()
                         setLastAddExecutionDate(date: .now)
-                    } catch {
-                        logger.notice("failed to save new entries: \(error, privacy: .public)")
-                    }
+                    } catch {}
                 }
             }
         )
