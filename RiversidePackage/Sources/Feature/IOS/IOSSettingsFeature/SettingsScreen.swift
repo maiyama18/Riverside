@@ -1,5 +1,6 @@
 import CloudSyncStatusFeature
 import Dependencies
+import Entities
 import LicensesFeature
 import LogFeature
 import NavigationState
@@ -11,7 +12,11 @@ public struct SettingsScreen: View {
     
     @Environment(NavigationState.self) private var navigationState
     
-    public init() {}
+    private let persistentProvider: PersistentProvider
+    
+    public init(persistentProvider: PersistentProvider = .cloud) {
+        self.persistentProvider = persistentProvider
+    }
     
     public var body: some View {
         @Bindable var navigationState = navigationState
@@ -36,6 +41,19 @@ public struct SettingsScreen: View {
                 }
                 
                 Section {
+                    if let databaseSize = persistentProvider.databaseSize {
+                        HStack {
+                            Text("Storage")
+                                .font(.callout)
+                            
+                            Spacer()
+                            
+                            Text(ByteFormatter.format(databaseSize))
+                                .font(.callout.monospacedDigit())
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    
                     NavigationLink(value: SettingsRoute.cloudSyncStatus) {
                         Text("Cloud Sync Status")
                     }
@@ -92,5 +110,5 @@ public struct SettingsScreen: View {
 }
 
 #Preview {
-    SettingsScreen()
+    SettingsScreen(persistentProvider: .inMemory)
 }
