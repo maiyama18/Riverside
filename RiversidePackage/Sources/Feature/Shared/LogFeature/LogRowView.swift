@@ -15,6 +15,8 @@ extension LogCategory {
         switch self {
         case .app:
             .indigo
+        case .appExtension:
+            .teal
         case .feature:
             .pink
         case .iCloud:
