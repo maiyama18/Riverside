@@ -41,6 +41,12 @@ public final class PersistentProvider {
     public var viewContext: NSManagedObjectContext { persistentContainer.viewContext }
     public var managedObjectModel: NSManagedObjectModel { persistentContainer.managedObjectModel }
     
+    public var databaseSize: Int? {
+        let storeURL = Self.storeURL()
+        let attributes = try? FileManager.default.attributesOfItem(atPath: storeURL.path)
+        return attributes?[.size] as? Int
+    }
+    
     private let persistentContainer: NSPersistentContainer
     
     private init(persistentContainer: NSPersistentContainer) {

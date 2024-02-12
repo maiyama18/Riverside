@@ -38,7 +38,7 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
                 defer { loading = false }
                 
                 do {
-                    try await Task.sleep(for: .seconds(3))
+                    try await Task.sleep(for: .seconds(1.5))
                     logger.notice("addNewEntriesForAllFeeds started")
                     try await addNewEntriesUseCase.executeForAllFeeds(context, false)
                     addNewEntriesExecutedSinceLastBecomeForeground = true

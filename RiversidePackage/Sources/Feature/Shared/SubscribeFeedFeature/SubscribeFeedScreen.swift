@@ -9,6 +9,12 @@ import Utilities
 
 @MainActor
 public struct SubscribeFeedScreen: View {
+    enum FetchState<T: Sendable>: Sendable {
+        case fetching
+        case fetched(T)
+        case failed(any Error)
+    }
+
     @State private var text: String = ""
     @State private var feedState: FetchState<Feed?> = .fetched(nil)
     

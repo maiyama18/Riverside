@@ -38,17 +38,9 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSApp",
         dependencies: [
-            "AddNewEntriesUseCase",
-            "AppAppearanceClient",
-            "CloudSyncState",
-            "DeleteDuplicatedEntriesUseCase",
-            "Entities",
-            "IOSFeedsFeature",
             "FlashClient",
             "NavigationState",
-            "IOSSettingsFeature",
-            "IOSStreamFeature",
-            "ViewModifiers",
+            "IOSMainTabFeature",
         ],
         path: "Sources/App/IOSApp"
     ),
@@ -69,6 +61,19 @@ let targets: [PackageDescription.Target] = [
             "LogFeature",
         ],
         path: "Sources/App/MacApp"
+    ),
+    .target(
+        name: "IOSMainTabFeature",
+        dependencies: [
+            "AppAppearanceClient",
+            "FlashClient",
+            "NavigationState",
+            "IOSFeedsFeature",
+            "IOSSettingsFeature",
+            "IOSStreamFeature",
+            "ViewModifiers",
+        ],
+        path: "Sources/Feature/IOS/IOSMainTabFeature"
     ),
     .target(
         name: "IOSFeedsFeature",
