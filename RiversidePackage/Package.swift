@@ -200,7 +200,6 @@ let targets: [PackageDescription.Target] = [
         name: "BackgroundRefreshUseCase",
         dependencies: [
             "Entities",
-            "FeedClient",
         ],
         path: "Sources/UseCase/BackgroundRefreshUseCase"
     ),

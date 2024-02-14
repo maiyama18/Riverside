@@ -1,7 +1,7 @@
 import BackgroundRefreshUseCase
 import CloudSyncState
 import Dependencies
-import Entities
+@preconcurrency import Entities
 import Logging
 import NavigationState
 import SystemNotification
@@ -42,7 +42,8 @@ public struct IOSApp: App {
                 }
         }
         .backgroundTask(.appRefresh(backgroundRefreshUseCase.taskIdentifier)) {
-            await backgroundRefreshUseCase.execute()
+            let context = persistentProvider.backgroundContext
+            await backgroundRefreshUseCase.execute(context)
         }
     }
 }
