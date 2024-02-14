@@ -1,4 +1,4 @@
-import BackgroundTasks
+import BackgroundRefreshUseCase
 import CloudSyncState
 import Dependencies
 import Entities
@@ -15,6 +15,7 @@ public struct IOSApp: App {
     private let cloudSyncState = CloudSyncState()
     private let persistentProvider = PersistentProvider.cloud
     
+    @Dependency(\.backgroundRefreshUseCase) private var backgroundRefreshUseCase
     @Dependency(\.flashClient) private var flashClient
     @Dependency(\.logger[.app]) private var logger
     
@@ -37,34 +38,11 @@ public struct IOSApp: App {
                 .environment(\.managedObjectContext, persistentProvider.viewContext)
                 .systemNotification(context)
                 .onBackground {
-                    scheduleBackgroundRefresh()
+                    await backgroundRefreshUseCase.schedule()
                 }
         }
-        .backgroundTask(.appRefresh("com.muijp.RiversideIOSApp.refreshTask")) {
-            await executeBackgroundRefresh()
-        }
-    }
-    
-    nonisolated private func scheduleBackgroundRefresh() {
-        @Dependency(\.logger[.app]) var logger
-        
-        let request = BGAppRefreshTaskRequest(identifier: "com.muijp.RiversideIOSApp.refreshTask")
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 30 * 60)
-        
-        do {
-            try BGTaskScheduler.shared.submit(request)
-            logger.error("scheduled background task")
-        } catch {
-            logger.error("failed to schedule background task: \(error, privacy: .public)")
-        }
-    }
-    
-    nonisolated private func executeBackgroundRefresh() async {
-        @Dependency(\.logger[.app]) var logger
-        
-        for i in 1...5 {
-            logger.notice("background print \(i)")
-            try? await Task.sleep(for: .seconds(1))
+        .backgroundTask(.appRefresh(backgroundRefreshUseCase.taskIdentifier)) {
+            await backgroundRefreshUseCase.execute()
         }
     }
 }

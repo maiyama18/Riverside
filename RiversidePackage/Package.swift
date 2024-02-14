@@ -66,6 +66,7 @@ let targets: [PackageDescription.Target] = [
         name: "IOSMainTabFeature",
         dependencies: [
             "AppAppearanceClient",
+            "BackgroundRefreshUseCase",
             "FlashClient",
             "NavigationState",
             "IOSFeedsFeature",
@@ -194,6 +195,14 @@ let targets: [PackageDescription.Target] = [
             "FeedClient",
         ],
         path: "Sources/UseCase/SubscribeFeedUseCase"
+    ),
+    .target(
+        name: "BackgroundRefreshUseCase",
+        dependencies: [
+            "Entities",
+            "FeedClient",
+        ],
+        path: "Sources/UseCase/BackgroundRefreshUseCase"
     ),
     .target(
         name: "CloudSyncState",
