@@ -17,6 +17,8 @@ extension LogCategory {
             .indigo
         case .appExtension:
             .teal
+        case .background:
+            .black
         case .feature:
             .pink
         case .iCloud:
