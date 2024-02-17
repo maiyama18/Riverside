@@ -43,7 +43,7 @@ public struct IOSApp: App {
         }
         .backgroundTask(.appRefresh(backgroundRefreshUseCase.taskIdentifier)) {
             let context = persistentProvider.backgroundContext
-            await backgroundRefreshUseCase.execute(context)
+            await backgroundRefreshUseCase.execute(context, cloudSyncState.eventDebouncedPublisher)
         }
     }
 }

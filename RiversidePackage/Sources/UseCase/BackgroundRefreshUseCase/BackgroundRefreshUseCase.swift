@@ -1,18 +1,25 @@
+import AddNewEntriesUseCase
 import BackgroundTasks
-import CoreData
+@preconcurrency import CoreData
+import Combine
 import Dependencies
 import Entities
 import Logging
+import Utilities
 
 public struct BackgroundRefreshUseCase: Sendable {
     public var taskIdentifier: String
     public var schedule: @Sendable () -> Void
-    public var execute: @Sendable (_ context: NSManagedObjectContext) async -> Void
+    public var execute: @Sendable (
+        _ context: NSManagedObjectContext,
+        _ iCloudEventDebouncedPublisher: any Publisher<Void, Never>
+    ) async -> Void
 }
 
 extension BackgroundRefreshUseCase {
     public static func live(taskIdentifier: String) -> BackgroundRefreshUseCase {
         @Dependency(\.logger[.background]) var logger
+        @Dependency(\.addNewEntriesUseCase) var addNewEntriesUseCase
         
         @Sendable
         func schedule() {
@@ -30,7 +37,7 @@ extension BackgroundRefreshUseCase {
         return BackgroundRefreshUseCase(
             taskIdentifier: taskIdentifier,
             schedule: schedule,
-            execute: { context in
+            execute: { context, iCloudEventDebouncedPublisher in
                 schedule()
                 
                 let history = BackgroundRefreshHistoryModel(context: context)
@@ -40,6 +47,15 @@ extension BackgroundRefreshUseCase {
                     logger.notice("saved refresh history")
                 } catch {
                     logger.error("failed to save refresh history: \(error, privacy: .public)")
+                }
+                
+                await iCloudEventDebouncedPublisher.nextValue()
+                
+                do {
+                    try await addNewEntriesUseCase.executeForAllFeeds(context, false)
+                    logger.notice("complete executeForAllFeeds")
+                } catch {
+                    logger.error("failed to execute executeForAllFeeds: \(error, privacy: .public)")
                 }
             }
         )

@@ -199,6 +199,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "BackgroundRefreshUseCase",
         dependencies: [
+            "AddNewEntriesUseCase",
             "Entities",
         ],
         path: "Sources/UseCase/BackgroundRefreshUseCase"
