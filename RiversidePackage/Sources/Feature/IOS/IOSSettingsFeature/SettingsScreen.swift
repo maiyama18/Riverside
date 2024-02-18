@@ -10,10 +10,14 @@ import Utilities
 
 public struct SettingsScreen: View {
     @AppStorage("appearance") private var appearance: UIUserInterfaceStyle = .unspecified
+    @AppStorage("background-refresh-enabled") private var backgroundRefreshEnabled: Bool = true
+    @AppStorage("background-refresh-push-notification-enabled") private var backgroundRefreshPushNotificationEnabled: Bool = false
     
     @Dependency(\.localPushNotificationClient) private var localPushNotificationClient
     
     @Environment(NavigationState.self) private var navigationState
+    
+    @State private var notificationSettingsAlertPresented: Bool = false
     
     private let persistentProvider: PersistentProvider
     
@@ -26,6 +30,55 @@ public struct SettingsScreen: View {
         
         NavigationStack(path: $navigationState.settingsPath) {
             List {
+                Section {
+                    HStack {
+                        Text("Refresh")
+                            .font(.callout)
+                        
+                        Spacer()
+                        
+                        Toggle(isOn: $backgroundRefreshEnabled) { Text("") }
+                    }
+                    
+                    if backgroundRefreshEnabled {
+                        HStack {
+                            Text("Push Notifications")
+                                .font(.callout)
+                            
+                            Spacer()
+                            
+                            Toggle(isOn: $backgroundRefreshPushNotificationEnabled) { Text("") }
+                        }
+                        .onChange(of: backgroundRefreshPushNotificationEnabled, initial: false) { _, notificationEnabled in
+                            if notificationEnabled {
+                                Task {
+                                    let permission = await localPushNotificationClient.getPermission()
+                                    if permission != .authorized {
+                                        backgroundRefreshPushNotificationEnabled = false
+                                        notificationSettingsAlertPresented = true
+                                    }
+                                }
+                            }
+                        }
+                        .alert(
+                            "No permission",
+                            isPresented: $notificationSettingsAlertPresented,
+                            actions: {
+                                Button("Open settings") {
+                                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                                }
+                                Button("Cancel", role: .cancel) {}
+                            },
+                            message: {
+                                Text("Enable notifications in settings to receive background refresh notifications.")
+                            }
+                        )
+                    }
+                } header: {
+                    Text("Background")
+                }
+                .tint(.accentColor)
+                
                 Section {
                     HStack {
                         Text("Appearance")
@@ -79,6 +132,8 @@ public struct SettingsScreen: View {
                     Button("Licenses") {
                         navigationState.settingsPresentation = .licenses
                     }
+                } header: {
+                    Text("About App")
                 }
                 
                 if !Bundle.main.isProduction {

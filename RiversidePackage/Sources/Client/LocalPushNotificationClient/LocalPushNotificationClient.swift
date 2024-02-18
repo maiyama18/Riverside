@@ -3,6 +3,7 @@ import Logging
 import UserNotifications
 
 public struct LocalPushNotificationClient : Sendable {
+    public var getPermission: @Sendable () async -> UNAuthorizationStatus
     public var requestPermission: @Sendable (_ delegate: any UNUserNotificationCenterDelegate) -> Void
     public var send: @Sendable (_ title: String, _ body: String?) -> Void
 }
@@ -12,6 +13,12 @@ extension LocalPushNotificationClient {
         @Dependency(\.logger[.app]) var logger
         
         return .init(
+            getPermission: {
+                let center = UNUserNotificationCenter.current()
+                return await withCheckedContinuation { continuation in
+                    center.getNotificationSettings { continuation.resume(returning: $0.authorizationStatus) }
+                }
+            },
             requestPermission: { delegate in
                 let center = UNUserNotificationCenter.current()
                 center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
