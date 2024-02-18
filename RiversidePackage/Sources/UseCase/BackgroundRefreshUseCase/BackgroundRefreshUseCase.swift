@@ -4,6 +4,7 @@ import BackgroundTasks
 import Combine
 import Dependencies
 import Entities
+import LocalPushNotificationClient
 import Logging
 import Utilities
 
@@ -18,8 +19,9 @@ public struct BackgroundRefreshUseCase: Sendable {
 
 extension BackgroundRefreshUseCase {
     public static func live(taskIdentifier: String) -> BackgroundRefreshUseCase {
-        @Dependency(\.logger[.background]) var logger
         @Dependency(\.addNewEntriesUseCase) var addNewEntriesUseCase
+        @Dependency(\.localPushNotificationClient) var localPushNotificationClient
+        @Dependency(\.logger[.background]) var logger
         
         @Sendable
         func schedule() {
@@ -52,8 +54,22 @@ extension BackgroundRefreshUseCase {
                 await iCloudEventDebouncedPublisher.nextValue()
                 
                 do {
-                    try await addNewEntriesUseCase.executeForAllFeeds(context, false)
-                    logger.notice("complete executeForAllFeeds")
+                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, false)
+                    if addedEntries.count > 0 {
+                        var addedEntryStrings = addedEntries.prefix(2).map {
+                            let title = $0.title.count > 20 ? $0.title.prefix(20) + "..." : $0.title
+                            return "'\(title)' / '\($0.feedTitle)'"
+                        }
+                        if addedEntries.count > 2 {
+                            addedEntryStrings.append("...")
+                        }
+                        
+                        localPushNotificationClient.send(
+                            "\(addedEntries.count) new entries",
+                            addedEntryStrings.joined(separator: "\n")
+                        )
+                    }
+                    logger.notice("complete executeForAllFeeds: \(addedEntries.count) entries added")
                 } catch {
                     logger.error("failed to execute executeForAllFeeds: \(error, privacy: .public)")
                 }

@@ -203,6 +203,7 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             "AddNewEntriesUseCase",
             "Entities",
+            "LocalPushNotificationClient",
         ],
         path: "Sources/UseCase/BackgroundRefreshUseCase"
     ),

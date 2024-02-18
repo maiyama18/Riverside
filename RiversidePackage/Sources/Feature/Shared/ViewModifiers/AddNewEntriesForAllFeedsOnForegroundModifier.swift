@@ -40,7 +40,7 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
                 do {
                     try await Task.sleep(for: .seconds(1.5))
                     logger.notice("addNewEntriesForAllFeeds started")
-                    try await addNewEntriesUseCase.executeForAllFeeds(context, false)
+                    _ = try await addNewEntriesUseCase.executeForAllFeeds(context, false)
                     addNewEntriesExecutedSinceLastBecomeForeground = true
                     logger.notice("addNewEntriesForAllFeeds finished")
                 } catch {

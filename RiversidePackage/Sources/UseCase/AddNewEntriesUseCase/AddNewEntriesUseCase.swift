@@ -8,8 +8,8 @@ import Utilities
 import SwiftUI
 
 public struct AddNewEntriesUseCase: Sendable {
-    public var execute: @Sendable @MainActor (_ context: NSManagedObjectContext, _ feed: FeedModel) async throws -> Void
-    public var executeForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool) async throws -> Void
+    public var execute: @Sendable @MainActor (_ context: NSManagedObjectContext, _ feed: FeedModel) async throws -> [EntryInformation]
+    public var executeForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool) async throws -> [EntryInformation]
 }
 
 extension AddNewEntriesUseCase {
@@ -19,11 +19,12 @@ extension AddNewEntriesUseCase {
         
         @Sendable
         @MainActor
-        func addNewEntries(context: NSManagedObjectContext, feed: FeedModel) async throws {
+        func addNewEntries(context: NSManagedObjectContext, feed: FeedModel) async throws -> [EntryInformation] {
             guard let feedURL = feed.url else {
                 throw NSError(domain: "FeedUseCase", code: -1)
             }
-            let fetchedEntries = try await feedClient.fetch(feedURL).entries
+            let fetchedFeed = try await feedClient.fetch(feedURL)
+            let fetchedEntries = fetchedFeed.entries
             
             let existingEntries = feed.entries as? Set<EntryModel> ?? []
             let existingEntryURLs = existingEntries.compactMap(\.url)
@@ -36,6 +37,7 @@ extension AddNewEntriesUseCase {
                 feed.addToEntries(entry.toModel(context: context))
             }
             logger.notice("fetched entries for '\(feed.title ?? "", privacy: .public)': all \(fetchedEntries.count) entries, new \(newEntries.count), added: \(addedEntries.count)")
+            return addedEntries.map { EntryInformation(title: $0.title, feedTitle: fetchedFeed.title) }
         }
         
         @Sendable
@@ -66,26 +68,33 @@ extension AddNewEntriesUseCase {
                    // 10 min
                    Date.now.timeIntervalSince(lastExecutionDate) < 60 * 10 {
                     logger.notice("skipping add new entries. last execution date: \(lastExecutionDate)")
-                    return
+                    return []
                 }
                 
                 logger.notice("starting add new entries")
                 let feeds = try context.fetch(FeedModel.all)
-                await withTaskGroup(of: Void.self) { group in
+                return await withTaskGroup(of: [EntryInformation].self) { group in
                     for feed in feeds {
                         group.addTask {
                             do {
-                                try await addNewEntries(context: context, feed: feed)
+                                return try await addNewEntries(context: context, feed: feed)
                             } catch {
                                 logger.notice("failed to save new entries: \(error, privacy: .public)")
+                                return []
                             }
                         }
                     }
                     do {
-                        await group.waitForAll()
+                        var allEntries: [EntryInformation] = []
+                        for await entries in group {
+                            allEntries.append(contentsOf: entries)
+                        }
                         try context.saveWithRollback()
                         setLastAddExecutionDate(date: .now)
-                    } catch {}
+                        return allEntries
+                    } catch {
+                        return []
+                    }
                 }
             }
         )
