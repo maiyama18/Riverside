@@ -15,6 +15,8 @@ public struct IOSApp: App {
     private let cloudSyncState = CloudSyncState()
     private let persistentProvider = PersistentProvider.cloud
     
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    
     @Dependency(\.backgroundRefreshUseCase) private var backgroundRefreshUseCase
     @Dependency(\.flashClient) private var flashClient
     @Dependency(\.logger[.app]) private var logger

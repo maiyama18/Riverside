@@ -2,6 +2,7 @@ import CloudSyncStatusFeature
 import Dependencies
 import Entities
 import LicensesFeature
+import LocalPushNotificationClient
 import LogFeature
 import NavigationState
 import SwiftUI
@@ -9,6 +10,8 @@ import Utilities
 
 public struct SettingsScreen: View {
     @AppStorage("appearance") private var appearance: UIUserInterfaceStyle = .unspecified
+    
+    @Dependency(\.localPushNotificationClient) private var localPushNotificationClient
     
     @Environment(NavigationState.self) private var navigationState
     
@@ -57,12 +60,6 @@ public struct SettingsScreen: View {
                     NavigationLink(value: SettingsRoute.cloudSyncStatus) {
                         Text("Cloud Sync Status")
                     }
-                    
-                    if !Bundle.main.isProduction {
-                        NavigationLink(value: SettingsRoute.log) {
-                            Text("Debug Log")
-                        }
-                    }
                 }
                 
                 Section {
@@ -81,6 +78,18 @@ public struct SettingsScreen: View {
                     
                     Button("Licenses") {
                         navigationState.settingsPresentation = .licenses
+                    }
+                }
+                
+                if !Bundle.main.isProduction {
+                    Section {
+                        NavigationLink(value: SettingsRoute.log) {
+                            Text("Debug Log")
+                        }
+                        
+                        Button("Local Push") {
+                            localPushNotificationClient.send("Test title", "test body test body test body test body")
+                        }
                     }
                 }
             }
