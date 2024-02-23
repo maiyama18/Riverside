@@ -10,7 +10,19 @@ struct Provider: TimelineProvider {
     @Dependency(\.logger[.widget]) private var logger
     
     func placeholder(in context: Context) -> Entry {
-        Entry(date: Date(), result: .success([]))
+        Entry(
+            date: Date(),
+            result: .success(
+                (1...10).map { i in
+                    .init(
+                        id: "\(i)",
+                        title: "Dummy Entry Title \(i)",
+                        feedTitle: "Dummy Feed",
+                        publishedAt: .now
+                    )
+                }
+            )
+        )
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {

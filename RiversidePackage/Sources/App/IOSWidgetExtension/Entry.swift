@@ -12,10 +12,19 @@ struct Item: Identifiable {
     let feedTitle: String
     let publishedAt: Date
     
+    init(id: String, title: String, feedTitle: String, publishedAt: Date) {
+        self.id = id
+        self.title = title
+        self.feedTitle = feedTitle
+        self.publishedAt = publishedAt
+    }
+    
     init(model: EntryModel) {
-        self.id = model.url?.absoluteString ?? UUID().uuidString
-        self.title = model.title ?? ""
-        self.feedTitle = model.feed?.title ?? ""
-        self.publishedAt = model.publishedAt ?? .now
+        self.init(
+            id: model.url?.absoluteString ?? UUID().uuidString,
+            title: model.title ?? "",
+            feedTitle: model.feed?.title ?? "",
+            publishedAt: model.publishedAt ?? .now
+        )
     }
 }
