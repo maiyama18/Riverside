@@ -274,9 +274,17 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Client/LocalPushNotificationClient"
     ),
     .target(
+        name: "AppConfig",
+        dependencies: [
+            .dependencies,
+        ],
+        path: "Sources/Core/AppConfig"
+    ),
+    .target(
         name: "Entities",
         dependencies: [
             .algorithms,
+            "AppConfig",
         ],
         path: "Sources/Core/Entities"
     ),

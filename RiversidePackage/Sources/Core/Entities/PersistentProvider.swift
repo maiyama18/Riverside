@@ -1,3 +1,4 @@
+import AppConfig
 import CoreData
 import Dependencies
 import Logging
@@ -19,10 +20,13 @@ public final class PersistentProvider {
     )
     
     private static func storeURL() -> URL {
-        // TODO: storeURL を DI するようにする
-        let storeDirectory = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.muijp.RiversideIOS"
-        )!
+        @Dependency(\.appConfig) var appConfig
+        
+        let storeDirectory = if let appGroup = appConfig.appGroup {
+            FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)!
+        } else {
+            NSPersistentCloudKitContainer.defaultDirectoryURL()
+        }
         return storeDirectory.appendingPathComponent("Synced.sqlite")
     }
     
