@@ -25,48 +25,61 @@ struct WidgetView: View {
                 switch entry.result {
                 case .success(let items):
                     if items.isEmpty {
-                        VStack(spacing: 8) {
-                            Image(systemName: "list.dash")
-                                .font(.system(size: 24))
-                            
-                            Text("No unread entry")
-                                .font(.system(size: 12))
-                                .multilineTextAlignment(.center)
-                        }
-                        .foregroundColor(.secondary)
+                        labelView(
+                            iconSystemName: "list.dash",
+                            iconColor: .secondary,
+                            message: "No unread entry"
+                        )
                     } else {
-                        VStack(spacing: 6) {
-                            ForEach(items.prefix(2)) { item in
-                                VStack(spacing: 2) {
-                                    Text(item.feedTitle)
-                                        .foregroundStyle(.secondary)
-                                        .font(.system(size: 9))
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    
-                                    Text(item.title)
-                                        .lineLimit(2)
-                                        .font(.system(size: 12, weight: .bold))
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                }
+                        ViewThatFits(in: .vertical) {
+                            ForEach((1...10).reversed(), id: \.self) { n in
+                                itemsView(items: items, visibleCount: n)
                             }
                         }
                     }
                 case .failure:
-                    VStack(spacing: 8) {
-                        Image(systemName: "xmark.circle")
-                            .font(.system(size: 24))
-                            .foregroundColor(.red)
-                        
-                        Text("Something went wrong")
-                            .font(.system(size: 12))
-                            .multilineTextAlignment(.center)
-                    }
+                    labelView(
+                        iconSystemName: "xmark.circle",
+                        iconColor: .red,
+                        message: "Something went wrong"
+                    )
                 }
             }
             .frame(maxHeight: .infinity)
         }
         .containerBackground(for: .widget) {
             Color(.systemBackground)
+        }
+    }
+    
+    func itemsView(items: [Item], visibleCount: Int) -> some View {
+        VStack(spacing: 4) {
+            ForEach(items.prefix(visibleCount)) { item in
+                VStack(spacing: 2) {
+                    Text(item.feedTitle)
+                        .foregroundStyle(.secondary)
+                        .font(.system(size: 9))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Text(item.title)
+                        .lineLimit(2)
+                        .font(.system(size: 12, weight: .bold))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        }
+    }
+    
+    func labelView(iconSystemName: String, iconColor: Color, message: String) -> some View {
+        VStack(spacing: 8) {
+            Image(systemName: iconSystemName)
+                .font(.system(size: 24))
+                .foregroundStyle(iconColor)
+            
+            Text(message)
+                .font(.system(size: 12))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
         }
     }
 }
