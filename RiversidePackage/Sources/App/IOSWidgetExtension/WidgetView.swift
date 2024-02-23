@@ -59,7 +59,7 @@ struct WidgetView: View {
                 .foregroundStyle(iconColor)
             
             Text(message)
-                .font(.system(size: 12))
+                .font(.system(size: 13))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
@@ -88,12 +88,12 @@ struct ItemsView: View {
                     Text(item.feedTitle)
                         .lineLimit(1)
                         .foregroundStyle(.secondary)
-                        .font(.system(size: 9))
+                        .font(.system(size: 10))
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text(item.title)
                         .lineLimit(titleLineLimit)
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 13, weight: .bold))
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
