@@ -54,6 +54,16 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/App/IOSActionExtension"
     ),
     .target(
+        name: "IOSWidgetExtension",
+        dependencies: [
+            "Entities",
+        ],
+        path: "Sources/App/IOSWidgetExtension",
+        resources: [
+            .process("Resources"),
+        ]
+    ),
+    .target(
         name: "MacApp",
         dependencies: [
             "FlashClient",
@@ -264,9 +274,17 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Client/LocalPushNotificationClient"
     ),
     .target(
+        name: "AppConfig",
+        dependencies: [
+            .dependencies,
+        ],
+        path: "Sources/Core/AppConfig"
+    ),
+    .target(
         name: "Entities",
         dependencies: [
             .algorithms,
+            "AppConfig",
         ],
         path: "Sources/Core/Entities"
     ),
@@ -375,6 +393,7 @@ let package = Package(
     products: [
         .library(name: "IOSApp", targets: ["IOSApp"]),
         .library(name: "IOSActionExtension", targets: ["IOSActionExtension"]),
+        .library(name: "IOSWidgetExtension", targets: ["IOSWidgetExtension"]),
         .library(name: "MacApp", targets: ["MacApp"]),
         .library(
             name: "AllTests",

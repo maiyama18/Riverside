@@ -1,4 +1,7 @@
+import AppConfig
 import CoreData
+import Dependencies
+import Logging
 
 public final class PersistentProvider {
     public static let cloud: PersistentProvider = .init(
@@ -17,11 +20,19 @@ public final class PersistentProvider {
     )
     
     private static func storeURL() -> URL {
-        let storeDirectory = NSPersistentCloudKitContainer.defaultDirectoryURL()
+        @Dependency(\.appConfig) var appConfig
+        
+        let storeDirectory = if let appGroup = appConfig.appGroup {
+            FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)!
+        } else {
+            NSPersistentCloudKitContainer.defaultDirectoryURL()
+        }
         return storeDirectory.appendingPathComponent("Synced.sqlite")
     }
     
     private static func makePersistentCloudKitContainer(containerIdentifier: String) -> NSPersistentContainer {
+        @Dependency(\.logger[.iCloud]) var logger
+        
         let model = NSManagedObjectModel(contentsOf: Bundle.module.url(forResource: "Model", withExtension: "momd")!)!
         let container = NSPersistentCloudKitContainer(name: "Model", managedObjectModel: model)
         
@@ -34,6 +45,8 @@ public final class PersistentProvider {
         container.persistentStoreDescriptions = [description]
         
         container.viewContext.automaticallyMergesChangesFromParent = true
+        
+        logger.notice("initialized CloudKitContainer: \(containerIdentifier, privacy: .public) at \(storeURL, privacy: .public)")
         
         return container
     }

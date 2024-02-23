@@ -16,6 +16,12 @@
 		383776C62B4812BA0011BD41 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383776C52B4812BA0011BD41 /* ActionViewController.swift */; };
 		383776C92B4812BA0011BD41 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 383776C72B4812BA0011BD41 /* MainInterface.storyboard */; };
 		383776CD2B4812BA0011BD41 /* RiversideIOSActionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 383776BF2B4812BA0011BD41 /* RiversideIOSActionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		385651E32B88594E0067C316 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 385651CC2B88591D0067C316 /* WidgetKit.framework */; };
+		385651E42B88594E0067C316 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 385651CE2B88591D0067C316 /* SwiftUI.framework */; };
+		385651E72B88594E0067C316 /* RiversideIOSWidgetExtensionBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 385651E62B88594E0067C316 /* RiversideIOSWidgetExtensionBundle.swift */; };
+		385651EB2B88594F0067C316 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 385651EA2B88594F0067C316 /* Assets.xcassets */; };
+		385651EF2B88594F0067C316 /* RiversideIOSWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 385651E22B88594E0067C316 /* RiversideIOSWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		385651F52B8869B50067C316 /* IOSWidgetExtension in Frameworks */ = {isa = PBXBuildFile; productRef = 385651F42B8869B50067C316 /* IOSWidgetExtension */; };
 		C82732352B38086A0053842F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C82732342B38086A0053842F /* Assets.xcassets */; };
 		C827323E2B3808950053842F /* IOSApp in Frameworks */ = {isa = PBXBuildFile; productRef = C827323D2B3808950053842F /* IOSApp */; };
 		C827323F2B38095E0053842F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = C827321C2B3805870053842F /* main.swift */; };
@@ -29,6 +35,13 @@
 			remoteGlobalIDString = 383776BE2B4812BA0011BD41;
 			remoteInfo = RiversideIOSActionExtension;
 		};
+		385651ED2B88594F0067C316 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C82732112B3805870053842F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 385651E12B88594E0067C316;
+			remoteInfo = RiversideIOSWidgetExtensionExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +51,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				385651EF2B88594F0067C316 /* RiversideIOSWidgetExtension.appex in Embed Foundation Extensions */,
 				383776CD2B4812BA0011BD41 /* RiversideIOSActionExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -57,6 +71,13 @@
 		383776C52B4812BA0011BD41 /* ActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
 		383776C82B4812BA0011BD41 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		383776CA2B4812BA0011BD41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		385651CC2B88591D0067C316 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		385651CE2B88591D0067C316 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		385651E22B88594E0067C316 /* RiversideIOSWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RiversideIOSWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		385651E62B88594E0067C316 /* RiversideIOSWidgetExtensionBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiversideIOSWidgetExtensionBundle.swift; sourceTree = "<group>"; };
+		385651EA2B88594F0067C316 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		385651EC2B88594F0067C316 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		385651F32B885AF10067C316 /* RiversideIOSWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideIOSWidgetExtension.entitlements; sourceTree = "<group>"; };
 		387B06072B4C3F440075EBC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38C00B4F2B41101400029076 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38C00B502B41103200029076 /* RiversideIOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideIOSApp.entitlements; sourceTree = "<group>"; };
@@ -80,6 +101,16 @@
 			files = (
 				382A2BF52B48661B00C9F8FE /* IOSActionExtension in Frameworks */,
 				383776C12B4812BA0011BD41 /* UniformTypeIdentifiers.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		385651DF2B88594E0067C316 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				385651E42B88594E0067C316 /* SwiftUI.framework in Frameworks */,
+				385651F52B8869B50067C316 /* IOSWidgetExtension in Frameworks */,
+				385651E32B88594E0067C316 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,12 +148,24 @@
 			path = RiversideIOSActionExtension;
 			sourceTree = "<group>";
 		};
+		385651E52B88594E0067C316 /* RiversideIOSWidgetExtension */ = {
+			isa = PBXGroup;
+			children = (
+				385651F32B885AF10067C316 /* RiversideIOSWidgetExtension.entitlements */,
+				385651E62B88594E0067C316 /* RiversideIOSWidgetExtensionBundle.swift */,
+				385651EA2B88594F0067C316 /* Assets.xcassets */,
+				385651EC2B88594F0067C316 /* Info.plist */,
+			);
+			path = RiversideIOSWidgetExtension;
+			sourceTree = "<group>";
+		};
 		C82732102B3805870053842F = {
 			isa = PBXGroup;
 			children = (
 				C827322F2B3808690053842F /* RiversideIOSApp */,
 				383776C22B4812BA0011BD41 /* RiversideIOSActionExtension */,
 				383314762B493EEF00A47514 /* RiversideMacApp */,
+				385651E52B88594E0067C316 /* RiversideIOSWidgetExtension */,
 				C827321A2B3805870053842F /* Products */,
 				C827323C2B3808950053842F /* Frameworks */,
 			);
@@ -134,6 +177,7 @@
 				C827322E2B3808690053842F /* Riverside.app */,
 				383776BF2B4812BA0011BD41 /* RiversideIOSActionExtension.appex */,
 				383314752B493EEF00A47514 /* Riverside.app */,
+				385651E22B88594E0067C316 /* RiversideIOSWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -153,6 +197,8 @@
 			isa = PBXGroup;
 			children = (
 				383776C02B4812BA0011BD41 /* UniformTypeIdentifiers.framework */,
+				385651CC2B88591D0067C316 /* WidgetKit.framework */,
+				385651CE2B88591D0067C316 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -200,6 +246,26 @@
 			productReference = 383776BF2B4812BA0011BD41 /* RiversideIOSActionExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		385651E12B88594E0067C316 /* RiversideIOSWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 385651F02B88594F0067C316 /* Build configuration list for PBXNativeTarget "RiversideIOSWidgetExtension" */;
+			buildPhases = (
+				385651DE2B88594E0067C316 /* Sources */,
+				385651DF2B88594E0067C316 /* Frameworks */,
+				385651E02B88594E0067C316 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RiversideIOSWidgetExtension;
+			packageProductDependencies = (
+				385651F42B8869B50067C316 /* IOSWidgetExtension */,
+			);
+			productName = RiversideIOSWidgetExtensionExtension;
+			productReference = 385651E22B88594E0067C316 /* RiversideIOSWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		C827322D2B3808690053842F /* RiversideIOSApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C82732392B38086A0053842F /* Build configuration list for PBXNativeTarget "RiversideIOSApp" */;
@@ -213,6 +279,7 @@
 			);
 			dependencies = (
 				383776CC2B4812BA0011BD41 /* PBXTargetDependency */,
+				385651EE2B88594F0067C316 /* PBXTargetDependency */,
 			);
 			name = RiversideIOSApp;
 			packageProductDependencies = (
@@ -229,7 +296,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1510;
+				LastSwiftUpdateCheck = 1520;
 				LastUpgradeCheck = 1510;
 				TargetAttributes = {
 					383314742B493EEF00A47514 = {
@@ -237,6 +304,9 @@
 					};
 					383776BE2B4812BA0011BD41 = {
 						CreatedOnToolsVersion = 15.1;
+					};
+					385651E12B88594E0067C316 = {
+						CreatedOnToolsVersion = 15.2;
 					};
 					C827322D2B3808690053842F = {
 						CreatedOnToolsVersion = 15.1;
@@ -259,6 +329,7 @@
 				C827322D2B3808690053842F /* RiversideIOSApp */,
 				383776BE2B4812BA0011BD41 /* RiversideIOSActionExtension */,
 				383314742B493EEF00A47514 /* RiversideMacApp */,
+				385651E12B88594E0067C316 /* RiversideIOSWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -278,6 +349,14 @@
 			files = (
 				383776C42B4812BA0011BD41 /* Media.xcassets in Resources */,
 				383776C92B4812BA0011BD41 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		385651E02B88594E0067C316 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				385651EB2B88594F0067C316 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +387,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		385651DE2B88594E0067C316 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				385651E72B88594E0067C316 /* RiversideIOSWidgetExtensionBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C827322A2B3808690053842F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -323,6 +410,11 @@
 			isa = PBXTargetDependency;
 			target = 383776BE2B4812BA0011BD41 /* RiversideIOSActionExtension */;
 			targetProxy = 383776CB2B4812BA0011BD41 /* PBXContainerItemProxy */;
+		};
+		385651EE2B88594F0067C316 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 385651E12B88594E0067C316 /* RiversideIOSWidgetExtension */;
+			targetProxy = 385651ED2B88594F0067C316 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -450,6 +542,64 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.muijp.RiversideIOSApp.RiversideIOSActionExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		385651F12B88594F0067C316 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = RiversideIOSWidgetExtension/RiversideIOSWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = 56T4RFDKJR;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RiversideIOSWidgetExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RiversideIOSWidgetExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.muijp.RiversideIOSApp.RiversideIOSWidgetExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		385651F22B88594F0067C316 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = RiversideIOSWidgetExtension/RiversideIOSWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = 56T4RFDKJR;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RiversideIOSWidgetExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RiversideIOSWidgetExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.muijp.RiversideIOSApp.RiversideIOSWidgetExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -674,6 +824,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		385651F02B88594F0067C316 /* Build configuration list for PBXNativeTarget "RiversideIOSWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				385651F12B88594F0067C316 /* Debug */,
+				385651F22B88594F0067C316 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C82732142B3805870053842F /* Build configuration list for PBXProject "RiversideApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -702,6 +861,10 @@
 		382A2BF42B48661B00C9F8FE /* IOSActionExtension */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = IOSActionExtension;
+		};
+		385651F42B8869B50067C316 /* IOSWidgetExtension */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = IOSWidgetExtension;
 		};
 		C827323D2B3808950053842F /* IOSApp */ = {
 			isa = XCSwiftPackageProductDependency;

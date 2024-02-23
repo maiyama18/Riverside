@@ -5,4 +5,5 @@ public enum LogCategory: String, CaseIterable, Sendable {
     case feature
     case iCloud
     case feedModel
+    case widget
 }
