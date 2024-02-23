@@ -1,11 +1,13 @@
+import BackgroundRefreshUseCase
 import CloudSyncState
 import Dependencies
-import Entities
+@preconcurrency import Entities
 import Logging
 import NavigationState
 import SystemNotification
 import IOSMainTabFeature
 import SwiftUI
+import ViewModifiers
 
 @MainActor
 public struct IOSApp: App {
@@ -13,6 +15,9 @@ public struct IOSApp: App {
     private let cloudSyncState = CloudSyncState()
     private let persistentProvider = PersistentProvider.cloud
     
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    
+    @Dependency(\.backgroundRefreshUseCase) private var backgroundRefreshUseCase
     @Dependency(\.flashClient) private var flashClient
     @Dependency(\.logger[.app]) private var logger
     
@@ -34,6 +39,13 @@ public struct IOSApp: App {
                 .environment(navigationState)
                 .environment(\.managedObjectContext, persistentProvider.viewContext)
                 .systemNotification(context)
+                .onBackground {
+                    await backgroundRefreshUseCase.schedule()
+                }
+        }
+        .backgroundTask(.appRefresh(backgroundRefreshUseCase.taskIdentifier)) {
+            let context = persistentProvider.backgroundContext
+            await backgroundRefreshUseCase.execute(context, cloudSyncState.eventDebouncedPublisher)
         }
     }
 }

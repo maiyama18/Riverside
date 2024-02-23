@@ -41,6 +41,7 @@ let targets: [PackageDescription.Target] = [
             "FlashClient",
             "NavigationState",
             "IOSMainTabFeature",
+            "LocalPushNotificationClient",
         ],
         path: "Sources/App/IOSApp"
     ),
@@ -66,6 +67,7 @@ let targets: [PackageDescription.Target] = [
         name: "IOSMainTabFeature",
         dependencies: [
             "AppAppearanceClient",
+            "BackgroundRefreshUseCase",
             "FlashClient",
             "NavigationState",
             "IOSFeedsFeature",
@@ -93,8 +95,10 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             "CloudSyncStatusFeature",
             "LicensesFeature",
+            "LocalPushNotificationClient",
             "LogFeature",
             "NavigationState",
+            "Utilities",
         ],
         path: "Sources/Feature/IOS/IOSSettingsFeature"
     ),
@@ -196,6 +200,15 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/UseCase/SubscribeFeedUseCase"
     ),
     .target(
+        name: "BackgroundRefreshUseCase",
+        dependencies: [
+            "AddNewEntriesUseCase",
+            "Entities",
+            "LocalPushNotificationClient",
+        ],
+        path: "Sources/UseCase/BackgroundRefreshUseCase"
+    ),
+    .target(
         name: "CloudSyncState",
         dependencies: [
             .dependencies,
@@ -242,6 +255,13 @@ let targets: [PackageDescription.Target] = [
             .systemNotification,
         ],
         path: "Sources/Client/FlashClient"
+    ),
+    .target(
+        name: "LocalPushNotificationClient",
+        dependencies: [
+            .dependencies,
+        ],
+        path: "Sources/Client/LocalPushNotificationClient"
     ),
     .target(
         name: "Entities",

@@ -39,6 +39,7 @@ public final class PersistentProvider {
     }
     
     public var viewContext: NSManagedObjectContext { persistentContainer.viewContext }
+    public var backgroundContext: NSManagedObjectContext { persistentContainer.newBackgroundContext() }
     public var managedObjectModel: NSManagedObjectModel { persistentContainer.managedObjectModel }
     
     public var databaseSize: Int? {

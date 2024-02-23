@@ -103,7 +103,7 @@ public struct StreamScreen: View {
                     .listStyle(.plain)
                     .refreshable {
                         do {
-                            try await addNewEntriesUseCase.executeForAllFeeds(context, true)
+                            _ = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
                         } catch {
                             flashClient.present(
                                 type: .error,

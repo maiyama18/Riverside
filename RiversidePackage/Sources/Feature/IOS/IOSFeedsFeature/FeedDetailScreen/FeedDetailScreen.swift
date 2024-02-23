@@ -70,7 +70,7 @@ struct FeedDetailScreen: View {
                 .listStyle(.plain)
                 .refreshable {
                     do {
-                        try await addNewEntriesUseCase.execute(context, feed)
+                        _ = try await addNewEntriesUseCase.execute(context, feed)
                     } catch {
                         flashClient.present(
                             type: .error,
@@ -82,7 +82,7 @@ struct FeedDetailScreen: View {
         }
         .task {
             do {
-                try await addNewEntriesUseCase.execute(context, feed)
+                _ = try await addNewEntriesUseCase.execute(context, feed)
             } catch {}
         }
         .navigationTitle(feed.title ?? "")

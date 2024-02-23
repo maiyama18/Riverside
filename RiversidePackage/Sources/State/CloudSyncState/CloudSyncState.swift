@@ -55,7 +55,10 @@ public final class CloudSyncState {
     public var exportStatus: SyncStatus { syncStatus(for: .export) }
     public var syncing: Bool { importStatus.syncing || exportStatus.syncing }
     public var syncTransactions: [SyncTransaction] = []
+    public var eventDebouncedPublisher: some Publisher<Void, Never> { eventDebouncedSubject }
     
+    private let eventDebouncedSubject: PassthroughSubject<Void, Never> = .init()
+    private var eventDebouncedTask: Task<Void, any Error>? = nil
     private var ongoingEvents: Dictionary<UUID, NSPersistentCloudKitContainer.EventType> = [:]
     
     @ObservationIgnored
@@ -90,6 +93,14 @@ public final class CloudSyncState {
                 
                 if let transaction = SyncTransaction(event: event) {
                     syncTransactions.append(transaction)
+                }
+                
+                eventDebouncedTask?.cancel()
+                eventDebouncedTask = Task {
+                    try await Task.sleep(for: .seconds(2))
+                    guard !syncing else { return }
+                    eventDebouncedSubject.send(())
+                    logger.notice("event debounced")
                 }
             }
         }
