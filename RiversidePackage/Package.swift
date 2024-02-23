@@ -58,7 +58,10 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             "Entities",
         ],
-        path: "Sources/App/IOSWidgetExtension"
+        path: "Sources/App/IOSWidgetExtension",
+        resources: [
+            .process("Resources"),
+        ]
     ),
     .target(
         name: "MacApp",
