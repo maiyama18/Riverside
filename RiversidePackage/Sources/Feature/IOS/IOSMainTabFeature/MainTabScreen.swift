@@ -1,6 +1,7 @@
 import AppAppearanceClient
 import CoreData
 import Dependencies
+import Entities
 import NavigationState
 import Utilities
 import IOSFeedsFeature
@@ -8,6 +9,7 @@ import IOSSettingsFeature
 import IOSStreamFeature
 import SwiftUI
 import ViewModifiers
+import WidgetKit
 
 @MainActor
 public struct MainTabScreen: View {
@@ -16,6 +18,8 @@ public struct MainTabScreen: View {
     @Dependency(\.appAppearanceClient) private var appAppearanceClient
     
     @Environment(NavigationState.self) private var navigationState
+    
+    @FetchRequest(fetchRequest: EntryModel.unreads) private var unreadEntries: FetchedResults<EntryModel>
     
     @State private var loadingAllFeedsOnForeground: Bool = false
     
@@ -50,6 +54,9 @@ public struct MainTabScreen: View {
         }
         .onChange(of: appearance, initial: true) { _, appearance in
             appAppearanceClient.apply(appearance)
+        }
+        .onChange(of: unreadEntries.map(\.url), initial: false) { _, _ in
+            WidgetCenter.shared.reloadAllTimelines()
         }
         .addNewEntriesForAllFeedsOnForeground(loading: $loadingAllFeedsOnForeground)
         .deleteDuplicatedEntriesOnBackground()
