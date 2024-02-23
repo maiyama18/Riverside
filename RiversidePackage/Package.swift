@@ -98,6 +98,7 @@ let targets: [PackageDescription.Target] = [
             "LocalPushNotificationClient",
             "LogFeature",
             "NavigationState",
+            "Utilities",
         ],
         path: "Sources/Feature/IOS/IOSSettingsFeature"
     ),
