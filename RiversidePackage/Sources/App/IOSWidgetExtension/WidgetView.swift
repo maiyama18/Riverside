@@ -9,7 +9,7 @@ struct WidgetView: View {
             HStack {
                 Image(.logo)
                     .resizable()
-                    .frame(width: 24, height: 24)
+                    .frame(width: 20, height: 20)
                     .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
                 
                 if case .success(let items) = entry.result, !items.isEmpty {
@@ -33,7 +33,7 @@ struct WidgetView: View {
                     } else {
                         ViewThatFits(in: .vertical) {
                             ForEach((1...10).reversed(), id: \.self) { n in
-                                itemsView(items: items, visibleCount: n)
+                                ItemsView(items: items, visibleCount: n)
                             }
                         }
                     }
@@ -52,24 +52,6 @@ struct WidgetView: View {
         }
     }
     
-    func itemsView(items: [Item], visibleCount: Int) -> some View {
-        VStack(spacing: 4) {
-            ForEach(items.prefix(visibleCount)) { item in
-                VStack(spacing: 2) {
-                    Text(item.feedTitle)
-                        .foregroundStyle(.secondary)
-                        .font(.system(size: 9))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    Text(item.title)
-                        .lineLimit(2)
-                        .font(.system(size: 12, weight: .bold))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
-        }
-    }
-    
     func labelView(iconSystemName: String, iconColor: Color, message: String) -> some View {
         VStack(spacing: 8) {
             Image(systemName: iconSystemName)
@@ -83,3 +65,39 @@ struct WidgetView: View {
         }
     }
 }
+
+struct ItemsView: View {
+    let items: [Item]
+    let visibleCount: Int
+    
+    @Environment(\.widgetFamily) private var family
+    
+    private var titleLineLimit: Int {
+        switch family {
+        case .accessoryRectangular, .systemSmall:
+            2
+        default:
+            1
+        }
+    }
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            ForEach(items.prefix(visibleCount)) { item in
+                VStack(spacing: 0) {
+                    Text(item.feedTitle)
+                        .lineLimit(1)
+                        .foregroundStyle(.secondary)
+                        .font(.system(size: 9))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Text(item.title)
+                        .lineLimit(titleLineLimit)
+                        .font(.system(size: 12, weight: .bold))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        }
+    }
+}
+
