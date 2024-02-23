@@ -82,6 +82,7 @@
 		385651E82B88594E0067C316 /* RiversideIOSWidgetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiversideIOSWidgetExtension.swift; sourceTree = "<group>"; };
 		385651EA2B88594F0067C316 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		385651EC2B88594F0067C316 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		385651F32B885AF10067C316 /* RiversideIOSWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideIOSWidgetExtension.entitlements; sourceTree = "<group>"; };
 		387B06072B4C3F440075EBC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38C00B4F2B41101400029076 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38C00B502B41103200029076 /* RiversideIOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideIOSApp.entitlements; sourceTree = "<group>"; };
@@ -165,6 +166,7 @@
 		385651E52B88594E0067C316 /* RiversideIOSWidgetExtension */ = {
 			isa = PBXGroup;
 			children = (
+				385651F32B885AF10067C316 /* RiversideIOSWidgetExtension.entitlements */,
 				385651E62B88594E0067C316 /* RiversideIOSWidgetExtensionBundle.swift */,
 				385651E82B88594E0067C316 /* RiversideIOSWidgetExtension.swift */,
 				385651EA2B88594F0067C316 /* Assets.xcassets */,
@@ -568,6 +570,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = RiversideIOSWidgetExtension/RiversideIOSWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 56T4RFDKJR;
@@ -596,6 +599,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = RiversideIOSWidgetExtension/RiversideIOSWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 56T4RFDKJR;
