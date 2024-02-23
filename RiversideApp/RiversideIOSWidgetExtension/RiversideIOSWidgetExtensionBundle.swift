@@ -1,17 +1,11 @@
-//
-//  RiversideIOSWidgetExtensionBundle.swift
-//  RiversideIOSWidgetExtensionExtension
-//
-//  Created by maiyama18 on 2024/02/23
-//  
-//
-
-import WidgetKit
+import IOSWidgetExtension
 import SwiftUI
+import WidgetKit
 
 @main
 struct RiversideIOSWidgetExtensionBundle: WidgetBundle {
     var body: some Widget {
-        RiversideIOSWidgetExtension()
+        RiversideRecentWidget()
     }
 }
+

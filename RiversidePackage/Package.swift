@@ -54,6 +54,13 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/App/IOSActionExtension"
     ),
     .target(
+        name: "IOSWidgetExtension",
+        dependencies: [
+            "Entities",
+        ],
+        path: "Sources/App/IOSWidgetExtension"
+    ),
+    .target(
         name: "MacApp",
         dependencies: [
             "FlashClient",
@@ -375,6 +382,7 @@ let package = Package(
     products: [
         .library(name: "IOSApp", targets: ["IOSApp"]),
         .library(name: "IOSActionExtension", targets: ["IOSActionExtension"]),
+        .library(name: "IOSWidgetExtension", targets: ["IOSWidgetExtension"]),
         .library(name: "MacApp", targets: ["MacApp"]),
         .library(
             name: "AllTests",
