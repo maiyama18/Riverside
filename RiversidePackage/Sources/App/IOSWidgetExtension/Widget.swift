@@ -23,6 +23,13 @@ struct RiversideRecentWidgetConfiguration: WidgetConfiguration {
         }
         .configurationDisplayName("Recent")
         .description("Recent unread entries")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
+        .supportedFamilies([
+            .systemSmall,
+            .systemMedium,
+            .systemLarge,
+            .systemExtraLarge,
+            .accessoryRectangular,
+            .accessoryInline,
+        ])
     }
 }
