@@ -25,6 +25,8 @@ extension LogCategory {
             .blue
         case .feedModel:
             .green
+        case .widget:
+            .orange
         }
     }
 }

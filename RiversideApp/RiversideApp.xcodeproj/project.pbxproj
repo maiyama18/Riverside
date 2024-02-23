@@ -73,10 +73,6 @@
 		383776CA2B4812BA0011BD41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		385651CC2B88591D0067C316 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		385651CE2B88591D0067C316 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		385651D12B88591D0067C316 /* RiversideIOSWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiversideIOSWidgetBundle.swift; sourceTree = "<group>"; };
-		385651D32B88591D0067C316 /* RiversideIOSWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiversideIOSWidget.swift; sourceTree = "<group>"; };
-		385651D52B88591E0067C316 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		385651D72B88591E0067C316 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		385651E22B88594E0067C316 /* RiversideIOSWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RiversideIOSWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		385651E62B88594E0067C316 /* RiversideIOSWidgetExtensionBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiversideIOSWidgetExtensionBundle.swift; sourceTree = "<group>"; };
 		385651EA2B88594F0067C316 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -152,17 +148,6 @@
 			path = RiversideIOSActionExtension;
 			sourceTree = "<group>";
 		};
-		385651D02B88591D0067C316 /* RiversideIOSWidget */ = {
-			isa = PBXGroup;
-			children = (
-				385651D12B88591D0067C316 /* RiversideIOSWidgetBundle.swift */,
-				385651D32B88591D0067C316 /* RiversideIOSWidget.swift */,
-				385651D52B88591E0067C316 /* Assets.xcassets */,
-				385651D72B88591E0067C316 /* Info.plist */,
-			);
-			path = RiversideIOSWidget;
-			sourceTree = "<group>";
-		};
 		385651E52B88594E0067C316 /* RiversideIOSWidgetExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -180,7 +165,6 @@
 				C827322F2B3808690053842F /* RiversideIOSApp */,
 				383776C22B4812BA0011BD41 /* RiversideIOSActionExtension */,
 				383314762B493EEF00A47514 /* RiversideMacApp */,
-				385651D02B88591D0067C316 /* RiversideIOSWidget */,
 				385651E52B88594E0067C316 /* RiversideIOSWidgetExtension */,
 				C827321A2B3805870053842F /* Products */,
 				C827323C2B3808950053842F /* Frameworks */,

@@ -1,3 +1,4 @@
+import Entities
 import SwiftUI
 import WidgetKit
 
@@ -11,9 +12,13 @@ public struct RiversideRecentWidget: Widget {
 
 struct RiversideRecentWidgetConfiguration: WidgetConfiguration {
     private let kind: String = "RiversideWidget"
+    private let persistentProvider: PersistentProvider = .cloud
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
+        StaticConfiguration(
+            kind: kind,
+            provider: Provider(managedObjectContext: persistentProvider.viewContext)
+        ) { entry in
             WidgetView(entry: entry)
         }
         .configurationDisplayName("Recent")
