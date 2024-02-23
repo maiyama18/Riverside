@@ -56,16 +56,17 @@ extension BackgroundRefreshUseCase {
                 do {
                     let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, false)
                     if addedEntries.count > 0 {
-                        var addedEntryStrings = addedEntries.prefix(2).map {
+                        let visibleEntryCount = 3
+                        var addedEntryStrings = addedEntries.prefix(visibleEntryCount).map {
                             let title = $0.title.count > 20 ? $0.title.prefix(20) + "..." : $0.title
-                            return "'\(title)' / '\($0.feedTitle)'"
+                            return "\(title) | \($0.feedTitle)"
                         }
-                        if addedEntries.count > 2 {
-                            addedEntryStrings.append("...")
+                        if addedEntries.count > visibleEntryCount {
+                            addedEntryStrings.append("and more!")
                         }
                         
                         localPushNotificationClient.send(
-                            "\(addedEntries.count) new entries",
+                            "\(addedEntries.count) new entries published",
                             addedEntryStrings.joined(separator: "\n")
                         )
                     }
