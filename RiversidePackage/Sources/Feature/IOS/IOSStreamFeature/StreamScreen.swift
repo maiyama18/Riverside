@@ -48,19 +48,22 @@ public struct StreamScreen: View {
                                 )
                             },
                             actions: {
-                                Button {
-                                    navigationState.routeToSubscribeFeed()
-                                } label: {
-                                    Text("Add feed")
-                                }
-                                
-                                Button {
-                                    Task {
-                                        await forceRefresh()
+                                VStack(spacing: 12) {
+                                    Button {
+                                        navigationState.routeToSubscribeFeed()
+                                    } label: {
+                                        Text("Add feed")
                                     }
-                                } label: {
-                                    Text("Refresh")
+                                    
+                                    Button {
+                                        Task {
+                                            await forceRefresh()
+                                        }
+                                    } label: {
+                                        Text("Refresh")
+                                    }
                                 }
+                                .padding(.top, 12)
                             }
                         )
                     } else {
@@ -79,6 +82,7 @@ public struct StreamScreen: View {
                                 } label: {
                                     Text("Refresh")
                                 }
+                                .padding(.top, 12)
                             }
                         )
                     }
