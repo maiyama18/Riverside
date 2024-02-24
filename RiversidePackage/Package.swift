@@ -156,6 +156,7 @@ let targets: [PackageDescription.Target] = [
         name: "LogFeature",
         dependencies: [
             "FlashClient",
+            "Utilities",
         ],
         path: "Sources/Feature/Shared/LogFeature"
     ),
