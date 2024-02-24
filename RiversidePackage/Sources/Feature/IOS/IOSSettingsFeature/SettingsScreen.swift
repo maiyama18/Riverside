@@ -142,6 +142,10 @@ public struct SettingsScreen: View {
                             Text("Debug Log")
                         }
                         
+                        NavigationLink(value: SettingsRoute.refreshHistory) {
+                            Text("Refresh History")
+                        }
+                        
                         NavigationLink(value: SettingsRoute.localPushTesting) {
                             Text("Local Push")
                         }
@@ -157,6 +161,8 @@ public struct SettingsScreen: View {
                     LogScreen()
                 case .localPushTesting:
                     LocalPushTestingScreen()
+                case .refreshHistory:
+                    RefreshHistoryScreen()
                 }
             }
             .sheet(item: $navigationState.settingsPresentation) { presentation in

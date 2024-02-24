@@ -1,14 +1,7 @@
 import SwiftUI
 import Logging
 import OSLog
-
-let logDateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "MM-dd HH:mm:ss.SSS"
-    formatter.calendar = Calendar(identifier: .gregorian)
-    formatter.locale = Locale(identifier: "en_US")
-    return formatter
-}()
+import Utilities
 
 extension LogCategory {
     var color: Color {
@@ -62,7 +55,7 @@ struct LogRowView: View {
                     .foregroundColor(entry.level.color)
                     .font(.caption2)
                 
-                Text(logDateFormatter.string(from: entry.date))
+                Text(DateFormatter.log.string(from: entry.date))
                 
                 Text(entry.category.rawValue)
                     .foregroundStyle(.white)
