@@ -149,31 +149,27 @@ struct AccessoryRectangularWidgetView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
                     }
                 } else {
-                    VStack(alignment: .leading) {
-                        Text("Riverside")
-                            .font(.system(size: 13, weight: .bold))
-                        
-                        Text("No unread entry")
-                            .font(.system(size: 13))
-                            .frame(maxHeight: .infinity, alignment: .bottomLeading)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    singleMessageView(message: "No unread entry")
                 }
             case .failure:
-                VStack(alignment: .leading) {
-                    Text("Riverside")
-                        .font(.system(size: 13, weight: .bold))
-                    
-                    Text("Something went wrong")
-                        .font(.system(size: 13))
-                        .frame(maxHeight: .infinity, alignment: .bottomLeading)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                singleMessageView(message: "Something went wrong")
             }
         }
         .containerBackground(for: .widget) {
             Color.clear
         }
+    }
+    
+    func singleMessageView(message: String) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Riverside")
+                .font(.system(size: 13, weight: .bold))
+            
+            Text(message)
+                .font(.system(size: 13))
+                .frame(maxHeight: .infinity, alignment: .leading)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
