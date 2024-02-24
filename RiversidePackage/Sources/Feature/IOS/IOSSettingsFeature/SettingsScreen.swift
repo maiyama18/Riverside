@@ -142,8 +142,8 @@ public struct SettingsScreen: View {
                             Text("Debug Log")
                         }
                         
-                        Button("Local Push") {
-                            localPushNotificationClient.send("Test title", "test body test body test body test body")
+                        NavigationLink(value: SettingsRoute.localPushTesting) {
+                            Text("Local Push")
                         }
                     }
                 }
@@ -155,6 +155,8 @@ public struct SettingsScreen: View {
                     CloudSyncStatusScreen()
                 case .log:
                     LogScreen()
+                case .localPushTesting:
+                    LocalPushTestingScreen()
                 }
             }
             .sheet(item: $navigationState.settingsPresentation) { presentation in
