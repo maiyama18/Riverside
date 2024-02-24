@@ -18,7 +18,7 @@ public struct SubscribeFeedUseCase: Sendable {
 extension SubscribeFeedUseCase {
     static var live: SubscribeFeedUseCase {
         .init(
-            execute: { context, input in
+            execute: { @MainActor context, input in
                 @Dependency(\.feedClient) var feedClient
                 
                 let feed = switch input {
