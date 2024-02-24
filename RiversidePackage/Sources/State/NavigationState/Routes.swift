@@ -7,4 +7,6 @@ public enum FeedsRoute: Hashable {
 public enum SettingsRoute: Hashable {
     case cloudSyncStatus
     case log
+    case localPushTesting
+    case refreshHistory
 }

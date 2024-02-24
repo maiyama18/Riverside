@@ -39,3 +39,11 @@ extension EntryModel {
         return request
     }
 }
+
+extension BackgroundRefreshHistoryModel {
+    public static var all: NSFetchRequest<BackgroundRefreshHistoryModel> {
+        let request = BackgroundRefreshHistoryModel.fetchRequest()
+        request.sortDescriptors = [.init(keyPath: \BackgroundRefreshHistoryModel.startedAt, ascending: false)]
+        return request
+    }
+}

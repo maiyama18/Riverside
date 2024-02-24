@@ -48,11 +48,22 @@ public struct StreamScreen: View {
                                 )
                             },
                             actions: {
-                                Button {
-                                    navigationState.routeToSubscribeFeed()
-                                } label: {
-                                    Text("Add feed")
+                                VStack(spacing: 12) {
+                                    Button {
+                                        navigationState.routeToSubscribeFeed()
+                                    } label: {
+                                        Text("Add feed")
+                                    }
+                                    
+                                    Button {
+                                        Task {
+                                            await forceRefresh()
+                                        }
+                                    } label: {
+                                        Text("Refresh")
+                                    }
                                 }
+                                .padding(.top, 12)
                             }
                         )
                     } else {
@@ -62,6 +73,16 @@ public struct StreamScreen: View {
                                     title: { Text("You've read all entries") },
                                     icon: { Image(systemName: "list.dash") }
                                 )
+                            },
+                            actions: {
+                                Button {
+                                    Task {
+                                        await forceRefresh()
+                                    }
+                                } label: {
+                                    Text("Refresh")
+                                }
+                                .padding(.top, 12)
                             }
                         )
                     }
@@ -102,14 +123,7 @@ public struct StreamScreen: View {
                     }
                     .listStyle(.plain)
                     .refreshable {
-                        do {
-                            _ = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
-                        } catch {
-                            flashClient.present(
-                                type: .error,
-                                message: "Failed to refresh feeds: \(error.localizedDescription)"
-                            )
-                        }
+                        await forceRefresh()
                     }
                 }
             }
@@ -159,6 +173,17 @@ public struct StreamScreen: View {
     private var navigationTitle: String {
         let unreadCount = uniquedEntries.filter { !$0.read }.count
         return unreadCount == 0 ? "Stream" : "Stream (\(unreadCount))"
+    }
+    
+    private func forceRefresh() async {
+        do {
+            _ = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
+        } catch {
+            flashClient.present(
+                type: .error,
+                message: "Failed to refresh feeds: \(error.localizedDescription)"
+            )
+        }
     }
 }
 

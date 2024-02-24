@@ -30,6 +30,7 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
                 addNewEntriesExecutedSinceLastBecomeForeground = false
             }
             .task(id: cloudSyncState.syncing) {
+                try? await Task.sleep(for: .seconds(0.1))
                 guard scenePhase == .active,
                       !cloudSyncState.syncing,
                       !addNewEntriesExecutedSinceLastBecomeForeground else { return }
