@@ -62,6 +62,7 @@ public struct StreamScreen: View {
                                     } label: {
                                         Text("Refresh")
                                     }
+                                    .disabled(!cloudSyncState.syncing)
                                 }
                                 .padding(.top, 12)
                             }
@@ -82,6 +83,7 @@ public struct StreamScreen: View {
                                 } label: {
                                     Text("Refresh")
                                 }
+                                .disabled(!cloudSyncState.syncing)
                                 .padding(.top, 12)
                             }
                         )
@@ -176,6 +178,10 @@ public struct StreamScreen: View {
     }
     
     private func forceRefresh() async {
+        guard !cloudSyncState.syncing else {
+            return
+        }
+
         do {
             _ = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
         } catch {
