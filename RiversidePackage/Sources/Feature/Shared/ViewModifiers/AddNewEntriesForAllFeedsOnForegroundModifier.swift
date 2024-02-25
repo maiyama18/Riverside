@@ -1,6 +1,7 @@
 import AddNewEntriesUseCase
 import CloudSyncState
 import Dependencies
+import Entities
 import Logging
 import SwiftUI
 
@@ -20,36 +21,29 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
     
     @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(\.managedObjectContext) private var context
-    @Environment(\.scenePhase) private var scenePhase
-    
-    @State private var addNewEntriesExecutedSinceLastBecomeForeground: Bool = false
     
     func body(content: Content) -> some View {
         content
             .onForeground { @MainActor in
-                addNewEntriesExecutedSinceLastBecomeForeground = false
-            }
-            .task(id: cloudSyncState.syncing) {
-                try? await Task.sleep(for: .seconds(0.1))
-                guard scenePhase == .active,
-                      !cloudSyncState.syncing,
-                      !addNewEntriesExecutedSinceLastBecomeForeground else { return }
-                
                 loading = true
                 defer { loading = false }
                 
+                let history = BackgroundRefreshHistoryModel(context: context)
+                history.startedAt = .now
                 do {
-                    try await Task.sleep(for: .seconds(1.5))
-                    logger.notice("addNewEntriesForAllFeeds started")
-                    _ = try await addNewEntriesUseCase.executeForAllFeeds(context, false)
-                    addNewEntriesExecutedSinceLastBecomeForeground = true
-                    logger.notice("addNewEntriesForAllFeeds finished")
+                    try context.saveWithRollback()
+                    logger.notice("saved foreground refresh history")
                 } catch {
-                    if Task.isCancelled {
-                        logger.notice("addNewEntriesForAllFeeds task cancelled")
-                    } else {
-                        logger.error("addNewEntriesForAllFeeds failed: \(error)")
-                    }
+                    logger.error("failed to save refresh history: \(error, privacy: .public)")
+                }
+                
+                await cloudSyncState.eventDebouncedPublisher.nextValue()
+                
+                do {
+                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
+                    logger.notice("complete foreground refresh: \(addedEntries.count) entries added")
+                } catch {
+                    logger.error("failed to foreground refresh: \(error, privacy: .public)")
                 }
             }
     }
