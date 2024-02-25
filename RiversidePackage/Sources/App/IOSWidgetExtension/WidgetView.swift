@@ -131,6 +131,7 @@ struct SystemWidgetView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
+        .frame(maxWidth: .infinity)
     }
     
     func itemsView(items: [Item], itemCount: Int, itemTitleLineLimit: Int) -> some View {
