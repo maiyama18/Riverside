@@ -54,7 +54,7 @@ extension BackgroundRefreshUseCase {
                 await iCloudEventDebouncedPublisher.nextValue()
                 
                 do {
-                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, false)
+                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
                     if addedEntries.count > 0 {
                         let visibleEntryCount = 3
                         var addedEntryStrings = addedEntries.prefix(visibleEntryCount).map {
