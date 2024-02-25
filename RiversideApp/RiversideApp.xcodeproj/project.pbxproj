@@ -78,6 +78,7 @@
 		385651EA2B88594F0067C316 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		385651EC2B88594F0067C316 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		385651F32B885AF10067C316 /* RiversideIOSWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideIOSWidgetExtension.entitlements; sourceTree = "<group>"; };
+		3872D74E2B8B15CE0003C11C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		387B06072B4C3F440075EBC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38C00B4F2B41101400029076 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38C00B502B41103200029076 /* RiversideIOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RiversideIOSApp.entitlements; sourceTree = "<group>"; };
@@ -189,6 +190,7 @@
 				38C00B4F2B41101400029076 /* Info.plist */,
 				C827321C2B3805870053842F /* main.swift */,
 				C82732342B38086A0053842F /* Assets.xcassets */,
+				3872D74E2B8B15CE0003C11C /* PrivacyInfo.xcprivacy */,
 			);
 			path = RiversideIOSApp;
 			sourceTree = "<group>";
