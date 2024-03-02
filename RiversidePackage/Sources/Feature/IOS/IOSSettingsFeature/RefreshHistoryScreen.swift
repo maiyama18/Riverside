@@ -9,15 +9,45 @@ struct RefreshHistoryScreen: View {
     var body: some View {
         List {
             ForEach(refreshHistories, id: \.id) { history in
-                if let startedAt = history.startedAt {
-                    Text(DateFormatter.log.string(from: startedAt))
-                } else {
-                    Text("nil")
-                }
+                row(history: history)
             }
-            .font(.callout)
         }
         .navigationTitle("Background Refresh History")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    @ViewBuilder
+    private func row(history: BackgroundRefreshHistoryModel) -> some View {
+        if let addedEntryTitles = history.addedEntryTitles,
+           !addedEntryTitles.isEmpty {
+            DisclosureGroup {
+                ForEach(addedEntryTitles, id: \.self) { title in
+                    Text(title)
+                        .font(.caption)
+                }
+            } label: {
+                rowLabel(history: history)
+            }
+        } else {
+            rowLabel(history: history)
+        }
+    }
+    
+    func rowLabel(history: BackgroundRefreshHistoryModel) -> some View {
+        VStack(alignment: .leading) {
+            Text(history.startedAt.map { DateFormatter.log.string(from: $0) } ?? "nil")
+                .font(.callout)
+            
+            if let finishedAt = history.finishedAt {
+                Text("-" + DateFormatter.log.string(from: finishedAt))
+            }
+            if let errorMessage = history.errorMessage {
+                Text(errorMessage)
+                    .foregroundStyle(.red)
+            } else {
+                Text("\(history.addedEntryTitles?.count ?? 0) entries added")
+            }
+        }
+        .font(.caption)
     }
 }
