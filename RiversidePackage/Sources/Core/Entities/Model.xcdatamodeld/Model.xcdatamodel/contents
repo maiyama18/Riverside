@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23A344" minimumToolsVersion="Xcode 15.0" sourceLanguage="Swift" usedWithCloudKit="YES" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="BackgroundRefreshHistoryModel" representedClassName="BackgroundRefreshHistoryModel" syncable="YES" codeGenerationType="class">
+        <attribute name="addedEntryTitles" optional="YES" attributeType="Transformable" customClassName="[String]"/>
+        <attribute name="errorMessage" optional="YES" attributeType="String"/>
+        <attribute name="finishedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="startedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="EntryModel" representedClassName="EntryModel" syncable="YES" codeGenerationType="class">

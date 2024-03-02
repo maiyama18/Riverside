@@ -55,6 +55,7 @@ extension BackgroundRefreshUseCase {
                 
                 do {
                     let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
+                    history.addedEntryTitles = addedEntries.map(\.title)
                     if addedEntries.count > 0 {
                         let visibleEntryCount = 3
                         var addedEntryStrings = addedEntries.prefix(visibleEntryCount).map {
@@ -70,9 +71,18 @@ extension BackgroundRefreshUseCase {
                             addedEntryStrings.joined(separator: "\n")
                         )
                     }
-                    logger.notice("complete background refresh: \(addedEntries.count) entries added")
+                    logger.notice("complete executeForAllFeeds: \(addedEntries.count) entries added")
                 } catch {
-                    logger.error("failed to background refresh: \(error, privacy: .public)")
+                    history.errorMessage = error.localizedDescription
+                    logger.error("failed to execute executeForAllFeeds: \(error, privacy: .public)")
+                }
+            
+                history.finishedAt = .now
+                do {
+                    try context.saveWithRollback()
+                    logger.notice("saved background refresh history")
+                } catch {
+                    logger.error("failed to save refresh history: \(error, privacy: .public)")
                 }
             }
         )
