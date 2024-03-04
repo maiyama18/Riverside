@@ -91,7 +91,7 @@ public struct FeedsScreen: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack {
-                        if cloudSyncState.syncing || loadingAllFeedsOnForeground {
+                        if loadingAllFeedsOnForeground {
                             ProgressView()
                         }
                         
@@ -99,6 +99,15 @@ public struct FeedsScreen: View {
                             navigationState.feedsPresentation = .subscribeFeed
                         } label: {
                             Image(systemName: "plus")
+                        }
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    if cloudSyncState.syncing {
+                        VStack {
+                            Image(systemName: "arrow.clockwise.icloud")
+                                .opacity(0.5)
                         }
                     }
                 }

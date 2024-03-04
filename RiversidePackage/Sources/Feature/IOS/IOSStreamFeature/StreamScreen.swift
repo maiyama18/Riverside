@@ -134,7 +134,7 @@ public struct StreamScreen: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack {
-                        if cloudSyncState.syncing || loadingAllFeedsOnForeground {
+                        if loadingAllFeedsOnForeground {
                             ProgressView()
                         }
                         
@@ -144,6 +144,15 @@ public struct StreamScreen: View {
                                 .disabled(entries.filter { !$0.read }.isEmpty)
                         } label: {
                             Image(systemName: "ellipsis")
+                        }
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    if cloudSyncState.syncing {
+                        VStack {
+                            Image(systemName: "arrow.clockwise.icloud")
+                                .opacity(0.5)
                         }
                     }
                 }
