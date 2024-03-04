@@ -6,6 +6,7 @@ import Dependencies
 import Entities
 import AddNewEntriesUseCase
 import FlashClient
+import IOSSafariFeature
 import NavigationState
 import SwiftUI
 import Utilities

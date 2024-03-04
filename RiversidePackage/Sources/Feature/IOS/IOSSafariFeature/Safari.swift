@@ -1,4 +1,3 @@
-#if os(iOS)
 import UIKit
 import SafariServices
 
@@ -30,4 +29,3 @@ extension UIApplication {
             .first?.keyWindow
     }
 }
-#endif
