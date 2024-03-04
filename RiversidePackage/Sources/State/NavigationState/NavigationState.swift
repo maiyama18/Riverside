@@ -17,6 +17,11 @@ public final class NavigationState {
         public var id: String { self.rawValue }
     }
     
+    public struct SafariContent {
+        public let url: URL
+        public let onDisappear: () -> Void
+    }
+    
     public init() {}
     
     // MARK: - Properties
@@ -25,6 +30,19 @@ public final class NavigationState {
     
     public var feedsPath: [FeedsRoute] = []
     public var feedsPresentation: FeedsPresentation? = nil
+    
+    public var settingsPath: [SettingsRoute] = []
+    public var settingsPresentation: SettingsPresentation? = nil
+    
+    public var safariContent: SafariContent? = nil {
+        didSet {
+            if let safariContent {
+                showSafari(url: safariContent.url, onDisappear: safariContent.onDisappear)
+            } else {
+                dismissSafari()
+            }
+        }
+    }
     
     // MARK: - Methods
     
@@ -41,6 +59,11 @@ public final class NavigationState {
         feedsPath.append(.feedDetail(feed: feed))
     }
     
-    public var settingsPath: [SettingsRoute] = []
-    public var settingsPresentation: SettingsPresentation? = nil
+    public func routeToSafari(url: URL, onDisappear: @escaping () -> Void) {
+        safariContent = SafariContent(url: url, onDisappear: onDisappear)
+    }
+    
+    public func dismissSafariIfNeeded() {
+        safariContent = nil
+    }
 }

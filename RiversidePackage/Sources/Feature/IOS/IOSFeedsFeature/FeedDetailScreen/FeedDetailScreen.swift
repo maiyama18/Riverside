@@ -20,6 +20,7 @@ struct FeedDetailScreen: View {
     @Dependency(\.flashClient) private var flashClient
     
     @Environment(CloudSyncState.self) private var cloudSyncState
+    @Environment(NavigationState.self) private var navigationState
     @Environment(\.managedObjectContext) private var context
     
     @FetchRequest private var entries: FetchedResults<EntryModel>
@@ -55,11 +56,13 @@ struct FeedDetailScreen: View {
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 guard let url = entry.url else { return }
-                                showSafari(
+                                navigationState.routeToSafari(
                                     url: url,
                                     onDisappear: {
-                                        entry.read = true
-                                        try? context.saveWithRollback()
+                                        withAnimation {
+                                            entry.read = true
+                                            try? context.saveWithRollback()
+                                        }
                                     }
                                 )
                             }
@@ -123,10 +126,12 @@ struct FeedDetailScreen: View {
             Button(
                 role: .destructive,
                 action: {
-                    for entry in entries {
-                        entry.read = true
+                    withAnimation {
+                        for entry in entries {
+                            entry.read = true
+                        }
+                        try? context.saveWithRollback()
                     }
-                    try? context.saveWithRollback()
                 }
             ) {
                 Text("Confirm")

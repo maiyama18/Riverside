@@ -90,6 +90,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSFeedsFeature",
         dependencies: [
+            .algorithms,
             "SubscribeFeedFeature",
             "ClipboardClient",
             "CloudSyncState",

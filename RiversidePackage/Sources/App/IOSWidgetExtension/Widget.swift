@@ -20,6 +20,7 @@ struct RiversideRecentWidgetConfiguration: WidgetConfiguration {
             provider: Provider(managedObjectContext: persistentProvider.viewContext)
         ) { entry in
             WidgetView(entry: entry)
+                .widgetURL(URL(string: "riverside://stream")!)
         }
         .configurationDisplayName("Recent")
         .description("Recent unread entries")
