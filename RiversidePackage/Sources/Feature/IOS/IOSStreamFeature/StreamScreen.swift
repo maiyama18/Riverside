@@ -107,7 +107,7 @@ public struct StreamScreen: View {
                                     .entryContextMenu(context: context, entry: entry)
                                     .onTapGesture {
                                         guard let url = entry.url else { return }
-                                        showSafari(
+                                        navigationState.routeToSafari(
                                             url: url,
                                             onDisappear: {
                                                 withAnimation {
@@ -156,10 +156,12 @@ public struct StreamScreen: View {
                 Button(
                     role: .destructive,
                     action: {
-                        for entry in entries {
-                            entry.read = true
+                        withAnimation {
+                            for entry in entries {
+                                entry.read = true
+                            }
+                            try? context.saveWithRollback()
                         }
-                        try? context.saveWithRollback()
                     }
                 ) {
                     Text("Confirm")
@@ -182,7 +184,7 @@ public struct StreamScreen: View {
         guard !cloudSyncState.syncing else {
             return
         }
-
+        
         do {
             _ = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
         } catch {

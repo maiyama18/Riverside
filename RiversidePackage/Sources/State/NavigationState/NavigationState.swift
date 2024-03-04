@@ -26,6 +26,11 @@ public final class NavigationState {
     public var feedsPath: [FeedsRoute] = []
     public var feedsPresentation: FeedsPresentation? = nil
     
+    public var settingsPath: [SettingsRoute] = []
+    public var settingsPresentation: SettingsPresentation? = nil
+    
+    public var safariContent: SafariContent? = nil
+    
     // MARK: - Methods
     
     public func routeToSubscribeFeed() {
@@ -41,6 +46,7 @@ public final class NavigationState {
         feedsPath.append(.feedDetail(feed: feed))
     }
     
-    public var settingsPath: [SettingsRoute] = []
-    public var settingsPresentation: SettingsPresentation? = nil
+    public func routeToSafari(url: URL, onDisappear: @escaping () -> Void) {
+        safariContent = SafariContent(url: url, onDisappear: onDisappear)
+    }
 }
