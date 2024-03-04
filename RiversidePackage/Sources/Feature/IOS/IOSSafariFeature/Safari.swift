@@ -7,6 +7,15 @@ public func showSafari(url: URL, onDisappear: @escaping () -> Void = {}) {
     UIApplication.shared.firstKeyWindow?.rootViewController?.present(safari, animated: true)
 }
 
+@MainActor
+public func dismissSafari() {
+    guard let rootViewController = UIApplication.shared.firstKeyWindow?.rootViewController,
+          let safariViewController = rootViewController.presentedViewController as? SafariViewController else {
+        return
+    }
+    safariViewController.dismiss(animated: true)
+}
+
 final class SafariViewController: SFSafariViewController {
     private let onDisappear: () -> Void
     
