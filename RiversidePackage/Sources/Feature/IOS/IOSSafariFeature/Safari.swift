@@ -24,8 +24,8 @@ final class SafariViewController: SFSafariViewController {
         super.init(url: url, configuration: .init())
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         onDisappear()
     }
 }
