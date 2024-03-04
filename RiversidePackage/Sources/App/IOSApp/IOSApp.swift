@@ -42,6 +42,19 @@ public struct IOSApp: App {
                 .onBackground {
                     await backgroundRefreshUseCase.schedule()
                 }
+                .onOpenURL { url in
+                    guard url.scheme == "riverside" else { return }
+                    switch url.host() {
+                    case "stream":
+                        Task {
+                            try? await Task.sleep(for: .seconds(0.5))
+                            navigationState.dismissSafariIfNeeded()
+                            navigationState.mainTab = .stream
+                        }
+                    default:
+                        break
+                    }
+                }
         }
         .backgroundTask(.appRefresh(backgroundRefreshUseCase.taskIdentifier)) {
             let context = persistentProvider.backgroundContext

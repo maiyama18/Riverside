@@ -90,20 +90,16 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSFeedsFeature",
         dependencies: [
+            .algorithms,
             "SubscribeFeedFeature",
             "ClipboardClient",
             "CloudSyncState",
             "Entities",
-            "IOSSafariFeature",
             "AddNewEntriesUseCase",
             "NavigationState",
             "UIComponents",
         ],
         path: "Sources/Feature/IOS/IOSFeedsFeature"
-    ),
-    .target(
-        name: "IOSSafariFeature",
-        path: "Sources/Feature/IOS/IOSSafariFeature"
     ),
     .target(
         name: "IOSSettingsFeature",
@@ -126,7 +122,6 @@ let targets: [PackageDescription.Target] = [
             "CloudSyncState",
             "Entities",
             "FlashClient",
-            "IOSSafariFeature",
             "NavigationState",
             "UIComponents",
         ],

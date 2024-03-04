@@ -5,7 +5,6 @@ import Entities
 import NavigationState
 import Utilities
 import IOSFeedsFeature
-import IOSSafariFeature
 import IOSSettingsFeature
 import IOSStreamFeature
 import SwiftUI
@@ -58,13 +57,6 @@ public struct MainTabScreen: View {
         }
         .onChange(of: unreadEntries.map(\.url), initial: false) { _, _ in
             WidgetCenter.shared.reloadAllTimelines()
-        }
-        .onChange(of: navigationState.safariContent, initial: false) { _, safariContent in
-            if let safariContent {
-                showSafari(url: safariContent.url, onDisappear: safariContent.onDisappear)
-            } else {
-                dismissSafari()
-            }
         }
         .addNewEntriesForAllFeedsOnForeground(loading: $loadingAllFeedsOnForeground)
         .deleteDuplicatedEntriesOnBackground()
