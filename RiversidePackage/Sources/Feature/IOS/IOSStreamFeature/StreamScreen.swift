@@ -83,7 +83,7 @@ public struct StreamScreen: View {
                                 } label: {
                                     Text("Refresh")
                                 }
-                                .disabled(!cloudSyncState.syncing)
+                                .disabled(cloudSyncState.syncing || loadingAllFeedsOnForeground)
                                 .padding(.top, 12)
                             }
                         )
