@@ -4,6 +4,7 @@ import Dependencies
 import Entities
 import Logging
 import SwiftUI
+import Utilities
 
 extension View {
     /// iCloud 同期が落ち着いたタイミングで、すべてのフィードを更新する。
@@ -37,7 +38,9 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
                     logger.error("failed to save refresh history: \(error, privacy: .public)")
                 }
                 
-                await cloudSyncState.eventDebouncedPublisher.nextValue()
+                await withTimeout(for: .seconds(5)) { [eventDebouncedPublisher = cloudSyncState.eventDebouncedPublisher] in
+                    await eventDebouncedPublisher.nextValue()
+                }
                 
                 do {
                     let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
