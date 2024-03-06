@@ -38,7 +38,13 @@ extension AddNewEntriesUseCase {
                 feed.addToEntries(entry.toModel(context: context))
             }
             logger.notice("fetched entries for '\(feed.title ?? "", privacy: .public)': all \(fetchedEntries.count) entries, new \(newEntries.count), added: \(addedEntries.count)")
-            return addedEntries.map { EntryInformation(title: $0.title, feedTitle: fetchedFeed.title) }
+            return addedEntries.map {
+                EntryInformation(
+                    title: $0.title,
+                    feedTitle: fetchedFeed.title,
+                    publishedAt: $0.publishedAt
+                )
+            }
         }
         
         @Sendable
