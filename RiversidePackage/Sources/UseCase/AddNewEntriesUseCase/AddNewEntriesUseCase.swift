@@ -20,6 +20,7 @@ extension AddNewEntriesUseCase {
         @Sendable
         @MainActor
         func addNewEntries(context: NSManagedObjectContext, feed: FeedModel) async throws -> [EntryInformation] {
+            logger.notice("fetching entries for '\(feed.title ?? "", privacy: .public)'")
             guard let feedURL = feed.url else {
                 throw NSError(domain: "FeedUseCase", code: -1)
             }
