@@ -52,14 +52,16 @@ extension BackgroundRefreshUseCase {
                     logger.error("failed to save refresh history: \(error, privacy: .public)")
                 }
                 
-                await iCloudEventDebouncedPublisher.nextValue()
+                await withTimeout(for: .seconds(7.5)) {
+                    await iCloudEventDebouncedPublisher.nextValue()
+                }
                 
                 do {
                     let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
                     history.addedEntryTitles = addedEntries.map(\.title)
                     if addedEntries.count > 0 {
                         let visibleEntryCount = 3
-                        var addedEntryStrings = addedEntries.prefix(visibleEntryCount).map {
+                        var addedEntryStrings = addedEntries.sorted(by: { $0.publishedAt > $1.publishedAt }).prefix(visibleEntryCount).map {
                             let title = $0.title.count > 20 ? $0.title.prefix(20) + "..." : $0.title
                             return "\(title) | \($0.feedTitle)"
                         }
