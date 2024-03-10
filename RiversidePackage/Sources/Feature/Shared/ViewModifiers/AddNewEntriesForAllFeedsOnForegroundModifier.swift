@@ -42,6 +42,7 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
                     await eventDebouncedPublisher.nextValue()
                 }
                 
+                logger.notice("start refreshing all feeds on foreground")
                 do {
                     let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
                     logger.notice("complete foreground refresh: \(addedEntries.count) entries added")
