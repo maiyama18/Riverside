@@ -299,6 +299,9 @@ let targets: [PackageDescription.Target] = [
     ),
     .target(
         name: "Utilities",
+        dependencies: [
+            .dependencies,
+        ],
         path: "Sources/Core/Utilities"
     ),
     .target(
