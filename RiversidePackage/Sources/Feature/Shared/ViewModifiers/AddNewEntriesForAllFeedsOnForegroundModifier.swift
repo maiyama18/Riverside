@@ -44,7 +44,7 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
                 
                 logger.notice("start refreshing all feeds on foreground")
                 do {
-                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
+                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, false)
                     logger.notice("complete foreground refresh: \(addedEntries.count) entries added")
                 } catch {
                     logger.error("failed to foreground refresh: \(error, privacy: .public)")
