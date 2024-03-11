@@ -19,13 +19,15 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
     
     @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
     @Dependency(\.logger[.foregroundRefresh]) private var logger
-    
+
     @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(\.managedObjectContext) private var context
     
     func body(content: Content) -> some View {
         content
             .onForeground { @MainActor in
+                guard !loading else { return }
+
                 loading = true
                 defer { loading = false }
                 
@@ -41,7 +43,7 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
                 await withTimeout(for: .seconds(5)) { [eventDebouncedPublisher = cloudSyncState.eventDebouncedPublisher] in
                     await eventDebouncedPublisher.nextValue()
                 }
-                
+
                 logger.notice("start refreshing all feeds on foreground")
                 do {
                     let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, false)
