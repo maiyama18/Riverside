@@ -14,6 +14,8 @@ extension LogCategory {
             .black
         case .feature:
             .pink
+        case .foregroundRefresh:
+            .purple
         case .iCloud:
             .blue
         case .feedModel:

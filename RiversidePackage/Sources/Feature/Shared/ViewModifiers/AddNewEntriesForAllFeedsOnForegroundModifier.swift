@@ -18,7 +18,7 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
     @Binding var loading: Bool
     
     @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
-    @Dependency(\.logger[.feature]) private var logger
+    @Dependency(\.logger[.foregroundRefresh]) private var logger
     
     @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(\.managedObjectContext) private var context
