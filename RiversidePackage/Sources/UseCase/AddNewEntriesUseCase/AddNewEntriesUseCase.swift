@@ -80,15 +80,21 @@ extension AddNewEntriesUseCase {
                 
                 logger.notice("starting add new entries")
                 let feeds = try context.fetch(FeedModel.all)
-                return await withTaskGroup(of: [EntryInformation]?.self) { group in
+                return await withTaskGroup(of: [EntryInformation].self) { group in
                     for feed in feeds {
                         group.addTask {
                             do {
-                                return try await withTimeout(for: .seconds(10)) {
+                                let entries = try await withTimeout(for: .seconds(10)) {
                                     try await addNewEntries(context: context, feed: feed)
                                 }
+                                if let entries {
+                                    return entries
+                                } else {
+                                    logger.notice("timeout to fetch new entries for '\(feed.title ?? "", privacy: .public)'")
+                                    return []
+                                }
                             } catch {
-                                logger.notice("failed to save new entries: \(error, privacy: .public)")
+                                logger.notice("failed to fetch new entries for '\(feed.title ?? "")': \(error, privacy: .public)")
                                 return []
                             }
                         }
@@ -96,9 +102,7 @@ extension AddNewEntriesUseCase {
                     do {
                         var allEntries: [EntryInformation] = []
                         for await entries in group {
-                            if let entries = entries {
-                                allEntries.append(contentsOf: entries)
-                            }
+                            allEntries.append(contentsOf: entries)
                         }
                         try context.saveWithRollback()
                         setLastAddExecutionDate(date: .now)
