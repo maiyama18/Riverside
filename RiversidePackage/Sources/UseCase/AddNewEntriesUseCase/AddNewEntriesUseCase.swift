@@ -84,9 +84,17 @@ extension AddNewEntriesUseCase {
                     for feed in feeds {
                         group.addTask {
                             do {
-                                return try await addNewEntries(context: context, feed: feed)
+                                let entries = try await withTimeout(for: .seconds(10)) {
+                                    try await addNewEntries(context: context, feed: feed)
+                                }
+                                if let entries {
+                                    return entries
+                                } else {
+                                    logger.notice("timeout to fetch new entries for '\(feed.title ?? "", privacy: .public)'")
+                                    return []
+                                }
                             } catch {
-                                logger.notice("failed to save new entries: \(error, privacy: .public)")
+                                logger.notice("failed to fetch new entries for '\(feed.title ?? "")': \(error, privacy: .public)")
                                 return []
                             }
                         }

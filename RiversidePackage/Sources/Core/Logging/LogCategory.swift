@@ -3,6 +3,7 @@ public enum LogCategory: String, CaseIterable, Sendable {
     case appExtension
     case background
     case feature
+    case foregroundRefresh
     case iCloud
     case feedModel
     case widget
