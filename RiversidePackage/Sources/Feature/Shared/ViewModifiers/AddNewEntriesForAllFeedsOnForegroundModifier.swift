@@ -41,7 +41,7 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
                 }
                 
                 await withTimeout(for: .seconds(5)) { [eventDebouncedPublisher = cloudSyncState.eventDebouncedPublisher] in
-                    await eventDebouncedPublisher.nextValue()
+                    try? await eventDebouncedPublisher.nextValue()
                 }
 
                 logger.notice("start refreshing all feeds on foreground")
