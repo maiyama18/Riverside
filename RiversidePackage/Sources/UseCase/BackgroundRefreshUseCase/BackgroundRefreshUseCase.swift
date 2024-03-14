@@ -53,7 +53,7 @@ extension BackgroundRefreshUseCase {
                 }
                 
                 await withTimeout(for: .seconds(7.5)) {
-                    await iCloudEventDebouncedPublisher.nextValue()
+                    try? await iCloudEventDebouncedPublisher.nextValue()
                 }
                 
                 do {

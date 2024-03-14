@@ -13,10 +13,8 @@ public func withTimeout<T: Sendable>(for duration: Duration, _ operation: @Senda
             try await operation()
         }
         
-        for try await value in group {
-            group.cancelAll()
-            return value
-        }
-        return nil
+        let value = try await group.next()!
+        group.cancelAll()
+        return value
     }
 }
