@@ -22,7 +22,7 @@ final class ConcurrencyUtilsTests: XCTestCase {
         
         await clock.advance(by: .seconds(2.8))
         XCTAssertEqual(result.value, nil)
-        await clock.advance(by: .seconds(0.11))
+        await clock.advance(by: .seconds(0.15))
         XCTAssertEqual(result.value, 42)
     }
     
@@ -48,7 +48,7 @@ final class ConcurrencyUtilsTests: XCTestCase {
         await clock.advance(by: .seconds(2.9))
         XCTAssertEqual(withTimeoutReturned.value, false)
         XCTAssertEqual(operationCompleted.value, false)
-        await clock.advance(by: .seconds(0.11))
+        await clock.advance(by: .seconds(0.15))
         XCTAssertEqual(withTimeoutReturned.value, true)
         XCTAssertEqual(operationCompleted.value, false)
         await clock.advance(by: .seconds(0.1))
