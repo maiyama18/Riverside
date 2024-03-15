@@ -18,7 +18,7 @@ extension Publisher where Failure == Never {
             continuationIsolated.withValue { $0?.resume(throwing: CancellationError()) }
         }
 
-        _ = cancellable
+        cancellable?.cancel()
         return value
     }
 }
