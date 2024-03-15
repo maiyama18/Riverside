@@ -32,7 +32,7 @@ final class ConcurrencyUtilsTests: XCTestCase {
         let operationCompleted: LockIsolated<Bool> = .init(false)
         
         Task {
-            let r = try await withDependencies {
+            try await withDependencies {
                 $0.continuousClock = clock
             } operation: {
                 do {
