@@ -26,8 +26,9 @@ extension BackgroundRefreshUseCase {
         
         @Sendable
         func schedule() {
-            let request = BGAppRefreshTaskRequest(identifier: taskIdentifier)
+            let request = BGProcessingTaskRequest(identifier: taskIdentifier)
             request.earliestBeginDate = Date(timeIntervalSinceNow: 30 * 60)
+            request.requiresNetworkConnectivity = true
             
             do {
                 try BGTaskScheduler.shared.submit(request)
@@ -52,12 +53,12 @@ extension BackgroundRefreshUseCase {
                     logger.error("failed to save refresh history: \(error, privacy: .public)")
                 }
                 
-                await withTimeout(for: .seconds(7.5)) {
-                    try? await iCloudEventDebouncedPublisher.nextValue()
-                }
+                    await withTimeout(for: .seconds(15)) {
+                        try? await iCloudEventDebouncedPublisher.nextValue()
+                    }
                 
                 do {
-                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(20))
+                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(20), 3)
                     history.addedEntryTitles = addedEntries.map(\.title)
                     if addedEntries.count > 0 {
                         let visibleEntryCount = 3
