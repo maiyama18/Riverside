@@ -1,6 +1,7 @@
 import Dependencies
 import Logging
 import FlashClient
+import OSLog
 import SwiftUI
 
 public struct LogScreen: View {
@@ -11,6 +12,7 @@ public struct LogScreen: View {
     
     @State private var allLogEntries: [LogEntry] = []
     @State private var searchScope: SearchScope = .all
+    @State private var logLevel: OSLogEntryLog.Level = .notice
     @State private var query: String = ""
     @State private var loading: Bool = false
     
@@ -21,12 +23,14 @@ public struct LogScreen: View {
     public init() {}
     
     private var visibleEntries: [LogEntry] {
+        let filteredEntries = allLogEntries.filter { $0.level >= logLevel }
+        
         let scopedEntries: [LogEntry]
         switch searchScope {
         case .all:
-            scopedEntries = allLogEntries
+            scopedEntries = filteredEntries
         case .category(let category):
-            scopedEntries = allLogEntries.filter { $0.category == category }
+            scopedEntries = filteredEntries.filter { $0.category == category }
         }
         
         let trimmedQuery = query.trimmingCharacters(in: .whitespaces)
@@ -40,16 +44,26 @@ public struct LogScreen: View {
                     .controlSize(.extraLarge)
             } else {
                 VStack(alignment: .leading, spacing: 0) {
-                    Picker(selection: $searchScope) {
-                        Text("all").tag(SearchScope.all)
-                        ForEach(LogCategory.allCases, id: \.self) { category in
-                            Text(category.rawValue).tag(SearchScope.category(category))
+                    HStack {
+                        Picker(selection: $searchScope) {
+                            Text("all").tag(SearchScope.all)
+                            ForEach(LogCategory.allCases, id: \.self) { category in
+                                Text(category.rawValue).tag(SearchScope.category(category))
+                            }
+                        } label: {
+                            Text("Category")
                         }
-                    } label: {
-                        Text("Category")
+                        
+                        Picker(selection: $logLevel) {
+                            ForEach(OSLogEntryLog.Level.allCases, id: \.rawValue) { logLevel in
+                                Text(logLevel.string).tag(logLevel)
+                            }
+                        } label: {
+                            Text("Level")
+                        }
                     }
                     .padding(.horizontal, 8)
-                    
+
                     List {
                         ForEach(visibleEntries, id: \.date) { entry in
                             LogRowView(entry: entry)
@@ -74,5 +88,38 @@ public struct LogScreen: View {
             }
         }
         .navigationTitle("Log")
+    }
+}
+
+extension OSLogEntryLog.Level: CaseIterable {
+    public static var allCases: [OSLogEntryLog.Level] {
+        [.debug, .info, .notice, .error, .fault]
+    }
+}
+
+extension OSLogEntryLog.Level: Comparable {
+    public static func < (lhs: OSLogEntryLog.Level, rhs: OSLogEntryLog.Level) -> Bool {
+        lhs.rawValue < rhs.rawValue
+    }
+}
+
+extension OSLogEntryLog.Level {
+    var string: String {
+        switch self {
+        case .undefined:
+            "undefined"
+        case .debug:
+            "debug"
+        case .info:
+            "info"
+        case .notice:
+            "notice"
+        case .error:
+            "error"
+        case .fault:
+            "fault"
+        @unknown default:
+            "unknown"
+        }
     }
 }
