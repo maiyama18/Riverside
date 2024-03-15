@@ -57,7 +57,7 @@ extension BackgroundRefreshUseCase {
                 }
                 
                 do {
-                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true)
+                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(20))
                     history.addedEntryTitles = addedEntries.map(\.title)
                     if addedEntries.count > 0 {
                         let visibleEntryCount = 3

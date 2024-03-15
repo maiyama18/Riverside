@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct AddNewEntriesUseCase: Sendable {
     public var execute: @Sendable @MainActor (_ context: NSManagedObjectContext, _ feed: FeedModel) async throws -> [EntryInformation]
-    public var executeForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool) async throws -> [EntryInformation]
+    public var executeForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool, _ timeout: Duration) async throws -> [EntryInformation]
 }
 
 extension AddNewEntriesUseCase {
@@ -72,7 +72,7 @@ extension AddNewEntriesUseCase {
             execute: { context, feed in
                 try await addNewEntries(context: context, feed: feed)
             },
-            executeForAllFeeds: { context, force in
+            executeForAllFeeds: { context, force, timeout in
                 if force {
                     deleteLastAddExecutionDate()
                 }
@@ -93,7 +93,7 @@ extension AddNewEntriesUseCase {
                     for feed in feeds {
                         group.addTask {
                             do {
-                                let entries = try await withTimeout(for: .seconds(10)) {
+                                let entries = try await withTimeout(for: timeout) {
                                     try await addNewEntries(context: context, feed: feed)
                                 }
                                 if let entries {
