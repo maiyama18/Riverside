@@ -160,7 +160,7 @@ extension FeedClient {
                             return feed
                         }
                     }()
-                    logger.notice("fetched feed from \(url, privacy: .public): \(feed.title, privacy: .public), \(feed.entries.count) entries (latest: '\(feed.entries.first?.title ?? "", privacy: .public)')")
+                    logger.debug("fetched feed from \(url, privacy: .public): \(feed.title, privacy: .public), \(feed.entries.count) entries (latest: '\(feed.entries.first?.title ?? "", privacy: .public)')")
                     return feed
                 } catch {
                     logger.warning("failed to fetch feed \(url, privacy: .public): \(error, privacy: .public)")
