@@ -65,7 +65,7 @@ public struct RootScreen: View {
                                 refreshing = true
                                 defer { refreshing = false }
                                 do {
-                                    try await addNewEntriesUseCase.executeForAllFeeds(context, true)
+                                    try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(10), 1)
                                 } catch {
                                     flashClient.present(
                                         type: .error,
