@@ -35,14 +35,18 @@ final class ConcurrencyUtilsTests: XCTestCase {
             let r = try await withDependencies {
                 $0.continuousClock = clock
             } operation: {
-                try await withTimeout(for: .seconds(3)) {
-                    try await clock.sleep(for: .seconds(3.1))
-                    operationCompleted.withValue { $0 = true }
-                    return 42
+                do {
+                    return try await withTimeout(for: .seconds(3)) {
+                        try await clock.sleep(for: .seconds(3.1))
+                        operationCompleted.withValue { $0 = true }
+                        return 42
+                    }
+                } catch {
+                    XCTAssertTrue(error is TimeoutError)
+                    withTimeoutReturned.withValue { $0 = true }
+                    throw error
                 }
             }
-            XCTAssertEqual(r, nil)
-            withTimeoutReturned.withValue { $0 = true }
         }
         
         await clock.advance(by: .seconds(2.9))
