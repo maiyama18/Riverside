@@ -1,6 +1,17 @@
 import Dependencies
 
-public func withTimeout<T: Sendable>(for duration: Duration, _ operation: @Sendable @escaping () async throws -> T) async rethrows -> T? {
+public struct TimeoutError: Error {}
+
+public func withRetry<T: Sendable>(count: Int, operation: @Sendable @escaping () async throws -> T) async rethrows -> T {
+    for _ in 0..<(count-1) {
+        do {
+            return try await operation()
+        } catch {}
+    }
+    return try await operation()
+}
+
+public func withTimeout<T: Sendable>(for duration: Duration, _ operation: @Sendable @escaping () async throws -> T) async rethrows -> T {
     @Dependency(\.continuousClock) var clock
     
     return try await withThrowingTaskGroup(of: T?.self) { group in
@@ -15,6 +26,10 @@ public func withTimeout<T: Sendable>(for duration: Duration, _ operation: @Senda
         
         let value = try await group.next()!
         group.cancelAll()
-        return value
+        if let value {
+            return value
+        } else {
+            throw TimeoutError()
+        }
     }
 }

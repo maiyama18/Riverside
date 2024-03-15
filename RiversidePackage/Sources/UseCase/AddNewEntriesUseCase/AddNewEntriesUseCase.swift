@@ -9,10 +9,16 @@ import SwiftUI
 
 public struct AddNewEntriesUseCase: Sendable {
     public var execute: @Sendable @MainActor (_ context: NSManagedObjectContext, _ feed: FeedModel) async throws -> [EntryInformation]
-    public var executeForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool) async throws -> [EntryInformation]
+    public var executeForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool, _ timeout: Duration, _ retryCount: Int) async throws -> [EntryInformation]
 }
 
 extension AddNewEntriesUseCase {
+    enum FetchResult {
+        case success([EntryInformation])
+        case timeout
+        case error(any Error)
+    }
+    
     static var live: AddNewEntriesUseCase {
         @Dependency(\.feedClient) var feedClient
         @Dependency(\.logger[.feedModel]) var logger
@@ -20,7 +26,7 @@ extension AddNewEntriesUseCase {
         @Sendable
         @MainActor
         func addNewEntries(context: NSManagedObjectContext, feed: FeedModel) async throws -> [EntryInformation] {
-            logger.notice("fetching entries for '\(feed.title ?? "", privacy: .public)'")
+            logger.debug("fetching entries for '\(feed.title ?? "", privacy: .public)'")
             guard let feedURL = feed.url else {
                 throw NSError(domain: "FeedUseCase", code: -1)
             }
@@ -37,7 +43,7 @@ extension AddNewEntriesUseCase {
             for entry in addedEntries {
                 feed.addToEntries(entry.toModel(context: context))
             }
-            logger.notice("fetched entries for '\(feed.title ?? "", privacy: .public)': all \(fetchedEntries.count) entries, new \(newEntries.count), added: \(addedEntries.count)")
+            logger.debug("fetched entries for '\(feed.title ?? "", privacy: .public)': all \(fetchedEntries.count) entries, new \(newEntries.count), added: \(addedEntries.count)")
             return addedEntries.map {
                 EntryInformation(
                     title: $0.title,
@@ -66,7 +72,7 @@ extension AddNewEntriesUseCase {
             execute: { context, feed in
                 try await addNewEntries(context: context, feed: feed)
             },
-            executeForAllFeeds: { context, force in
+            executeForAllFeeds: { context, force, timeout, retry in
                 if force {
                     deleteLastAddExecutionDate()
                 }
@@ -80,37 +86,52 @@ extension AddNewEntriesUseCase {
                 
                 logger.notice("starting add new entries")
                 let feeds = try context.fetch(FeedModel.all)
-                return await withTaskGroup(of: [EntryInformation].self) { group in
+                let result = await withTaskGroup(
+                    of: FetchResult.self,
+                    returning: ([EntryInformation], Int, Int, Int).self
+                ) { group in
                     for feed in feeds {
                         group.addTask {
                             do {
-                                let entries = try await withTimeout(for: .seconds(10)) {
-                                    try await addNewEntries(context: context, feed: feed)
+                                let entries = try await withRetry(count: 3) {
+                                    try await withTimeout(for: timeout) {
+                                        try await addNewEntries(context: context, feed: feed)
+                                    }
                                 }
-                                if let entries {
-                                    return entries
-                                } else {
-                                    logger.notice("timeout to fetch new entries for '\(feed.title ?? "", privacy: .public)'")
-                                    return []
-                                }
+                                return .success(entries)
                             } catch {
-                                logger.notice("failed to fetch new entries for '\(feed.title ?? "")': \(error, privacy: .public)")
-                                return []
+                                if error is TimeoutError {
+                                    logger.debug("timeout to fetch new entries for '\(feed.title ?? "", privacy: .public)'")
+                                    return .timeout
+                                } else {
+                                    logger.debug("failed to fetch new entries for '\(feed.title ?? "")': \(error, privacy: .public)")
+                                    return .error(error)
+                                }
                             }
                         }
                     }
-                    do {
-                        var allEntries: [EntryInformation] = []
-                        for await entries in group {
+                    
+                    var allEntries: [EntryInformation] = []
+                    var successCount = 0
+                    var timeoutCount = 0
+                    var errorCount = 0
+                    for await result in group {
+                        switch result {
+                        case .success(let entries):
                             allEntries.append(contentsOf: entries)
+                            successCount += 1
+                        case .timeout:
+                            timeoutCount += 1
+                        case .error:
+                            errorCount += 1
                         }
-                        try context.saveWithRollback()
-                        setLastAddExecutionDate(date: .now)
-                        return allEntries
-                    } catch {
-                        return []
                     }
+                    try? context.saveWithRollback()
+                    setLastAddExecutionDate(date: .now)
+                    return (allEntries, successCount, timeoutCount, errorCount)
                 }
+                logger.notice("finished executeForAllFeeds: success \(result.1), timeout \(result.2), error \(result.3)")
+                return result.0
             }
         )
     }
