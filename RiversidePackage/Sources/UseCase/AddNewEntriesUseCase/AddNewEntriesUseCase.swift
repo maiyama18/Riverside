@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct AddNewEntriesUseCase: Sendable {
     public var execute: @Sendable @MainActor (_ context: NSManagedObjectContext, _ feed: FeedModel) async throws -> [EntryInformation]
-    public var executeForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool, _ timeout: Duration) async throws -> [EntryInformation]
+    public var executeForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool, _ timeout: Duration, _ retryCount: Int) async throws -> [EntryInformation]
 }
 
 extension AddNewEntriesUseCase {
@@ -72,7 +72,7 @@ extension AddNewEntriesUseCase {
             execute: { context, feed in
                 try await addNewEntries(context: context, feed: feed)
             },
-            executeForAllFeeds: { context, force, timeout in
+            executeForAllFeeds: { context, force, timeout, retry in
                 if force {
                     deleteLastAddExecutionDate()
                 }
@@ -93,18 +93,20 @@ extension AddNewEntriesUseCase {
                     for feed in feeds {
                         group.addTask {
                             do {
-                                let entries = try await withTimeout(for: timeout) {
-                                    try await addNewEntries(context: context, feed: feed)
+                                let entries = try await withRetry(count: 3) {
+                                    try await withTimeout(for: timeout) {
+                                        try await addNewEntries(context: context, feed: feed)
+                                    }
                                 }
-                                if let entries {
-                                    return .success(entries)
-                                } else {
+                                return .success(entries)
+                            } catch {
+                                if error is TimeoutError {
                                     logger.debug("timeout to fetch new entries for '\(feed.title ?? "", privacy: .public)'")
                                     return .timeout
+                                } else {
+                                    logger.debug("failed to fetch new entries for '\(feed.title ?? "")': \(error, privacy: .public)")
+                                    return .error(error)
                                 }
-                            } catch {
-                                logger.debug("failed to fetch new entries for '\(feed.title ?? "")': \(error, privacy: .public)")
-                                return .error(error)
                             }
                         }
                     }
