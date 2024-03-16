@@ -1,4 +1,5 @@
 import Dependencies
+import Foundation
 import Logging
 import UserNotifications
 
@@ -9,7 +10,7 @@ public struct LocalPushNotificationClient : Sendable {
 }
 
 extension LocalPushNotificationClient {
-    public static var live: LocalPushNotificationClient {
+    public static func live(userDefaults: UserDefaults) -> LocalPushNotificationClient {
         @Dependency(\.logger[.app]) var logger
         
         return .init(
@@ -35,6 +36,10 @@ extension LocalPushNotificationClient {
                 center.delegate = delegate
             },
             send: { title, body in
+                guard userDefaults.bool(forKey: "background-refresh-push-notification-enabled") else {
+                    return
+                }
+                
                 let content = UNMutableNotificationContent()
                 content.title = title
                 if let body {
@@ -57,7 +62,7 @@ extension LocalPushNotificationClient {
 }
 
 extension LocalPushNotificationClient: DependencyKey {
-    public static let liveValue: LocalPushNotificationClient = .live
+    public static let liveValue: LocalPushNotificationClient = .live(userDefaults: .standard)
 }
     
 extension DependencyValues {
