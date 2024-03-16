@@ -8,6 +8,8 @@ import Utilities
 import SwiftUI
 
 public struct AddNewEntriesUseCase: Sendable {
+    nonisolated(unsafe) static var executingForAllFeeds: Bool = false
+    
     public var execute: @Sendable @MainActor (_ context: NSManagedObjectContext, _ feed: FeedModel) async throws -> [EntryInformation]
     public var executeForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool, _ timeout: Duration, _ retryCount: Int) async throws -> [EntryInformation]
 }
@@ -73,6 +75,10 @@ extension AddNewEntriesUseCase {
                 try await addNewEntries(context: context, feed: feed)
             },
             executeForAllFeeds: { context, force, timeout, retry in
+                guard Self.executingForAllFeeds == false else { return [] }
+                Self.executingForAllFeeds = true
+                defer { Self.executingForAllFeeds = false }
+                
                 if force {
                     deleteLastAddExecutionDate()
                 }
@@ -85,7 +91,7 @@ extension AddNewEntriesUseCase {
                 }
                 
                 logger.notice("starting add new entries")
-                let feeds = try context.fetch(FeedModel.all)
+                let feeds = try context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled()
                 let result = await withTaskGroup(
                     of: FetchResult.self,
                     returning: ([EntryInformation], Int, Int, Int).self
@@ -93,7 +99,7 @@ extension AddNewEntriesUseCase {
                     for feed in feeds {
                         group.addTask {
                             do {
-                                let entries = try await withRetry(count: 3) {
+                                let entries = try await withRetry(count: retry) {
                                     try await withTimeout(for: timeout) {
                                         try await addNewEntries(context: context, feed: feed)
                                     }

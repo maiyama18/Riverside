@@ -4,15 +4,11 @@ import SwiftSoup
 
 extension FeedParser {
     func parseFeed() async throws -> FeedKit.Feed {
-        try await withCheckedThrowingContinuation { continuation in
-            parseAsync { result in
-                switch result {
-                case .success(let feed):
-                    continuation.resume(returning: feed)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        switch parse() {
+        case .success(let feed):
+            return feed
+        case .failure(let error):
+            throw error
         }
     }
 }
