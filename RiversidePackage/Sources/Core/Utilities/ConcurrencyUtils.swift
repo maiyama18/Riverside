@@ -13,10 +13,9 @@ public func withRetry<T: Sendable>(count: Int, operation: @Sendable @escaping ()
 
 public func withTimeout<T: Sendable>(for duration: Duration, _ operation: @Sendable @escaping () async throws -> T) async rethrows -> T {
     @Dependency(\.continuousClock) var clock
-    
     return try await withThrowingTaskGroup(of: T?.self) { group in
         group.addTask {
-            try? await clock.sleep(for: duration)
+            try await clock.sleep(for: duration)
             return nil
         }
         

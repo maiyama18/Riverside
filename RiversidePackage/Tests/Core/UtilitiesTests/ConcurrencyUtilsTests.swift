@@ -9,20 +9,25 @@ final class ConcurrencyUtilsTests: XCTestCase {
         let result: LockIsolated<Int?> = .init(nil)
         
         Task {
-            let r = try await withDependencies {
-                $0.continuousClock = clock
-            } operation: {
-                try await withTimeout(for: .seconds(3)) {
-                    try await clock.sleep(for: .seconds(2.9))
-                    return 42
+            do {
+                let r = try await withDependencies {
+                    $0.continuousClock = clock
+                    $0.uuid = .incrementing
+                } operation: {
+                    try await withTimeout(for: .seconds(3)) {
+                        try await clock.sleep(for: .seconds(2))
+                        return 42
+                    }
                 }
+                result.withValue { $0 = r }
+            } catch {
+                XCTFail()
             }
-            result.withValue { $0 = r }
         }
         
-        await clock.advance(by: .seconds(2.8))
+        await clock.advance(by: .seconds(1.9))
         XCTAssertEqual(result.value, nil)
-        await clock.advance(by: .seconds(0.15))
+        await clock.advance(by: .seconds(0.6))
         XCTAssertEqual(result.value, 42)
     }
     
