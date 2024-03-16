@@ -75,6 +75,8 @@ extension AddNewEntriesUseCase {
                 try await addNewEntries(context: context, feed: feed)
             },
             executeForAllFeeds: { context, force, timeout, retry in
+                let startedAt: Date = .now
+                
                 guard Self.executingForAllFeeds == false else { return [] }
                 Self.executingForAllFeeds = true
                 defer { Self.executingForAllFeeds = false }
@@ -136,7 +138,7 @@ extension AddNewEntriesUseCase {
                     setLastAddExecutionDate(date: .now)
                     return (allEntries, successCount, timeoutCount, errorCount)
                 }
-                logger.notice("finished executeForAllFeeds: success \(result.1), timeout \(result.2), error \(result.3)")
+                logger.notice("finished executeForAllFeeds (\(Date.now.timeIntervalSince(startedAt)) s): success \(result.1), timeout \(result.2), error \(result.3)")
                 return result.0
             }
         )
