@@ -12,8 +12,6 @@ import ViewModifiers
 @MainActor
 public struct IOSApp: App {
     private let navigationState = NavigationState()
-    private let cloudSyncState = CloudSyncState()
-    private let persistentProvider = PersistentProvider.cloud
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     
@@ -35,9 +33,9 @@ public struct IOSApp: App {
     public var body: some Scene {
         WindowGroup {
             MainTabScreen()
-                .environment(cloudSyncState)
+                .environment(appDelegate.cloudSyncState)
                 .environment(navigationState)
-                .environment(\.managedObjectContext, persistentProvider.viewContext)
+                .environment(\.managedObjectContext, appDelegate.persistentProvider.viewContext)
                 .systemNotification(context)
                 .onBackground {
                     await backgroundRefreshUseCase.schedule()
@@ -55,10 +53,6 @@ public struct IOSApp: App {
                         break
                     }
                 }
-        }
-        .backgroundTask(.appRefresh(backgroundRefreshUseCase.taskIdentifier)) {
-            let context = persistentProvider.backgroundContext
-            await backgroundRefreshUseCase.execute(context, cloudSyncState.eventDebouncedPublisher)
         }
     }
 }

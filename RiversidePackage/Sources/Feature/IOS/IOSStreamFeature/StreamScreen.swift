@@ -194,7 +194,7 @@ public struct StreamScreen: View {
         }
         
         do {
-            _ = try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(15), 1)
+            _ = try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(20), 1)
         } catch {
             flashClient.present(
                 type: .error,

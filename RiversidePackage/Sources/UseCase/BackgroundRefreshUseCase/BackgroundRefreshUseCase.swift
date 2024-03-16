@@ -13,6 +13,7 @@ public struct BackgroundRefreshUseCase: Sendable {
     public var taskIdentifier: String
     public var schedule: @Sendable () -> Void
     public var execute: @Sendable (
+        _ task: BGProcessingTask,
         _ context: NSManagedObjectContext,
         _ iCloudEventDebouncedPublisher: any Publisher<Void, Never>
     ) async -> Void
@@ -41,8 +42,12 @@ extension BackgroundRefreshUseCase {
         return BackgroundRefreshUseCase(
             taskIdentifier: taskIdentifier,
             schedule: schedule,
-            execute: { context, iCloudEventDebouncedPublisher in
+            execute: { task, context, iCloudEventDebouncedPublisher in
                 schedule()
+                
+                task.expirationHandler = {
+                    logger.notice("background refresh expired")
+                }
                 
                 let history = BackgroundRefreshHistoryModel(context: context)
                 history.startedAt = .now
@@ -53,9 +58,9 @@ extension BackgroundRefreshUseCase {
                     logger.error("failed to save refresh history: \(error, privacy: .public)")
                 }
                 
-                    await withTimeout(for: .seconds(15)) {
-                        try? await iCloudEventDebouncedPublisher.nextValue()
-                    }
+                await withTimeout(for: .seconds(15)) {
+                    try? await iCloudEventDebouncedPublisher.nextValue()
+                }
                 
                 do {
                     let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(20), 3)
@@ -89,13 +94,14 @@ extension BackgroundRefreshUseCase {
                 } catch {
                     logger.error("failed to save refresh history: \(error, privacy: .public)")
                 }
+                task.setTaskCompleted(success: true)
             }
         )
     }
 }
 
 extension BackgroundRefreshUseCase: DependencyKey {
-    public static let liveValue: BackgroundRefreshUseCase = .live(taskIdentifier: "com.muijp.RiversideIOSApp.refreshTask")
+    public static let liveValue: BackgroundRefreshUseCase = .live(taskIdentifier: "com.muijp.RiversideIOSApp.processingTask")
 }
 
 extension DependencyValues {

@@ -4,7 +4,7 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.muijp.RiversideIOSApp.refreshTask</string>
+		<string>com.muijp.RiversideIOSApp.processingTask</string>
 	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
@@ -23,6 +23,7 @@
 	<false/>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>fetch</string>
 		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
