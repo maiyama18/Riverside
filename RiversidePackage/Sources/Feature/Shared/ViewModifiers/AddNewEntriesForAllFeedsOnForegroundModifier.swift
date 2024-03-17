@@ -31,7 +31,7 @@ struct AddNewEntriesForAllFeedsOnForegroundModifier: ViewModifier {
                 loading = true
                 defer { loading = false }
                 
-                let history = BackgroundRefreshHistoryModel(context: context)
+                let history = ForegroundRefreshHistoryModel(context: context)
                 history.startedAt = .now
                 do {
                     try context.saveWithRollback()
