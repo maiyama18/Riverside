@@ -7,7 +7,6 @@ import Entities
 import LocalPushNotificationClient
 import Logging
 import Utilities
-import WidgetKit
 
 public struct BackgroundRefreshUseCase: Sendable {
     public var taskIdentifier: String
@@ -84,7 +83,6 @@ extension BackgroundRefreshUseCase {
                             addedEntryStrings.joined(separator: "\n")
                         )
                     }
-                    WidgetCenter.shared.reloadAllTimelines()
                     logger.notice("complete executeForAllFeeds: \(addedEntries.count) entries added")
                 } catch {
                     history.errorMessage = error.localizedDescription

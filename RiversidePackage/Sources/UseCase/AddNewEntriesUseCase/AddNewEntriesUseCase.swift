@@ -6,6 +6,7 @@ import Utilities
 @preconcurrency import Entities
 @preconcurrency import CoreData
 import SwiftUI
+import WidgetKit
 
 public struct AddNewEntriesUseCase: Sendable {
     nonisolated(unsafe) static var executingForAllFeeds: Bool = false
@@ -135,6 +136,7 @@ extension AddNewEntriesUseCase {
                         }
                     }
                     try? context.saveWithRollback()
+                    WidgetCenter.shared.reloadAllTimelines()
                     setLastAddExecutionDate(date: .now)
                     return (allEntries, successCount, timeoutCount, errorCount)
                 }
