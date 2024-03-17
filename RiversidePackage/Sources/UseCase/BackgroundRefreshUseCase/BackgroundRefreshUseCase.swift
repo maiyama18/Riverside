@@ -45,10 +45,6 @@ extension BackgroundRefreshUseCase {
             execute: { task, context, iCloudEventDebouncedPublisher in
                 schedule()
                 
-                task.expirationHandler = {
-                    logger.notice("background refresh expired")
-                }
-                
                 let history = BackgroundRefreshHistoryModel(context: context)
                 history.startedAt = .now
                 do {
@@ -58,12 +54,20 @@ extension BackgroundRefreshUseCase {
                     logger.error("failed to save refresh history: \(error, privacy: .public)")
                 }
                 
-                await withTimeout(for: .seconds(15)) {
+                task.expirationHandler = {
+                    logger.notice("background refresh expired")
+                    
+                    history.finishedAt = .now
+                    history.errorMessage = "task expired"
+                    try? context.saveWithRollback()
+                }
+
+                await withTimeout(for: .seconds(10)) {
                     try? await iCloudEventDebouncedPublisher.nextValue()
                 }
                 
                 do {
-                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(20), 3)
+                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(15), 3)
                     history.addedEntryTitles = addedEntries.map(\.title)
                     if addedEntries.count > 0 {
                         let visibleEntryCount = 3
