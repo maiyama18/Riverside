@@ -19,8 +19,10 @@ extension View {
     private func entryMenu(context: NSManagedObjectContext, entry: EntryModel) -> some View {
         if entry.read {
             Button {
-                entry.read = false
-                try? context.saveWithRollback()
+                withAnimation {
+                    entry.read = false
+                    try? context.saveWithRollback()
+                }
             } label: {
                 Label {
                     Text("Mark as unread")
@@ -31,8 +33,10 @@ extension View {
             .tint(.gray)
         } else {
             Button {
-                entry.read = true
-                try? context.saveWithRollback()
+                withAnimation {
+                    entry.read = true
+                    try? context.saveWithRollback()
+                }
             } label: {
                 Label {
                     Text("Mark as read")
@@ -45,8 +49,10 @@ extension View {
         
         #if DEBUG
         Button {
-            context.delete(entry)
-            try? context.saveWithRollback()
+            withAnimation {
+                context.delete(entry)
+                try? context.saveWithRollback()
+            }
         } label: {
             Label {
                 Text("Delete")
