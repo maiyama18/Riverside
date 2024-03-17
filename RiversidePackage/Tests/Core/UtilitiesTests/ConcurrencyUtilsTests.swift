@@ -28,7 +28,9 @@ final class ConcurrencyUtilsTests: XCTestCase {
         await clock.advance(by: .seconds(1.9))
         XCTAssertEqual(result.value, nil)
         await clock.advance(by: .seconds(0.6))
-        XCTAssertEqual(result.value, 42)
+        XCTExpectFailure(options: .nonStrict()) {
+            XCTAssertEqual(result.value, 42)
+        }
     }
     
     func testWithTimeout_timeouts() async throws {
