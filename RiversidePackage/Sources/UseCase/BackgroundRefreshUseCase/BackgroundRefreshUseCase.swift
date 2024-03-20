@@ -7,6 +7,7 @@ import Entities
 import LocalPushNotificationClient
 import Logging
 import Utilities
+import WidgetKit
 
 public struct BackgroundRefreshUseCase: Sendable {
     public var taskIdentifier: String
@@ -38,6 +39,38 @@ extension BackgroundRefreshUseCase {
             }
         }
         
+        @Sendable
+        func addNewEntries(context: NSManagedObjectContext, history: BackgroundRefreshHistoryModel) async throws -> [EntryInformation] {
+            let feeds = try context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled()
+            
+            history.warningMessages = []
+            return await withTaskGroup(of: [EntryInformation].self) { group in
+                for feed in feeds {
+                    group.addTask {
+                        do {
+                            let entries = try await withRetry(count: 3) {
+                                try await withTimeout(for: .seconds(10)) {
+                                    try await addNewEntriesUseCase.execute(context, feed)
+                                }
+                            }
+                            return entries
+                        } catch {
+                            history.warningMessages?.append("'\(feed.title ?? "")': \(error.localizedDescription)")
+                            return []
+                        }
+                    }
+                }
+                
+                var allEntries: [EntryInformation] = []
+                for await entries in group {
+                    allEntries.append(contentsOf: entries)
+                }
+                try? context.saveWithRollback()
+                WidgetCenter.shared.reloadAllTimelines()
+                return allEntries
+            }
+        }
+        
         return BackgroundRefreshUseCase(
             taskIdentifier: taskIdentifier,
             schedule: schedule,
@@ -66,7 +99,7 @@ extension BackgroundRefreshUseCase {
                 }
                 
                 do {
-                    let addedEntries = try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(15), 3)
+                    let addedEntries = try await addNewEntries(context: context, history: history)
                     history.addedEntryTitles = addedEntries.map(\.title)
                     if addedEntries.count > 0 {
                         let visibleEntryCount = 3
