@@ -1,4 +1,4 @@
-import BackgroundTasks
+@preconcurrency import BackgroundTasks
 import BackgroundRefreshUseCase
 import CloudSyncState
 import Dependencies

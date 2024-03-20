@@ -110,6 +110,7 @@ let targets: [PackageDescription.Target] = [
             "LogFeature",
             "NavigationState",
             "Utilities",
+            "UIComponents",
         ],
         path: "Sources/Feature/IOS/IOSSettingsFeature"
     ),
@@ -136,6 +137,7 @@ let targets: [PackageDescription.Target] = [
             "CloudSyncState",
             "DeleteDuplicatedEntriesUseCase",
             "Entities",
+            "ForegroundRefreshState",
             "AddNewEntriesUseCase",
             "FlashClient",
             "LicensesFeature",
@@ -184,8 +186,30 @@ let targets: [PackageDescription.Target] = [
             "AddNewEntriesUseCase",
             "CloudSyncState",
             "DeleteDuplicatedEntriesUseCase",
+            "ForegroundRefreshState",
         ],
         path: "Sources/Feature/Shared/ViewModifiers"
+    ),
+    .target(
+        name: "CloudSyncState",
+        dependencies: [
+            .dependencies,
+        ],
+        path: "Sources/State/CloudSyncState"
+    ),
+    .target(
+        name: "ForegroundRefreshState",
+        dependencies: [
+            "AddNewEntriesUseCase",
+        ],
+        path: "Sources/State/ForegroundRefreshState"
+    ),
+    .target(
+        name: "NavigationState",
+        dependencies: [
+            "Entities",
+        ],
+        path: "Sources/State/NavigationState"
     ),
     .target(
         name: "AddNewEntriesUseCase",
@@ -219,20 +243,6 @@ let targets: [PackageDescription.Target] = [
             "LocalPushNotificationClient",
         ],
         path: "Sources/UseCase/BackgroundRefreshUseCase"
-    ),
-    .target(
-        name: "CloudSyncState",
-        dependencies: [
-            .dependencies,
-        ],
-        path: "Sources/State/CloudSyncState"
-    ),
-    .target(
-        name: "NavigationState",
-        dependencies: [
-            "Entities",
-        ],
-        path: "Sources/State/NavigationState"
     ),
     .target(
         name: "AppAppearanceClient",
@@ -309,6 +319,7 @@ let targets: [PackageDescription.Target] = [
         dependencies: [
             .nukeUI,
             "Entities",
+            "ForegroundRefreshState",
         ],
         path: "Sources/Core/UIComponents"
     ),

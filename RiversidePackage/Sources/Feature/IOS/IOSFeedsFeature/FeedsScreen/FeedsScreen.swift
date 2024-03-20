@@ -31,7 +31,6 @@ public struct FeedsScreen: View {
     @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(NavigationState.self) private var navigationState
     @Environment(\.managedObjectContext) private var context
-    @Environment(\.loadingAllFeedsOnForeground) private var loadingAllFeedsOnForeground
     
     @State private var presentation: Presentation? = nil
     @State private var unreadCountByFeedURL: [URL?: Int] = [:]
@@ -91,9 +90,7 @@ public struct FeedsScreen: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack {
-                        if loadingAllFeedsOnForeground {
-                            ProgressView()
-                        }
+                        ForegroundRefreshIndicator()
                         
                         Button {
                             navigationState.feedsPresentation = .subscribeFeed

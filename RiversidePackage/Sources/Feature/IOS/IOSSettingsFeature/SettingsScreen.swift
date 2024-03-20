@@ -7,6 +7,7 @@ import LogFeature
 import NavigationState
 import SwiftUI
 import Utilities
+import UIComponents
 
 public struct SettingsScreen: View {
     @AppStorage("appearance") private var appearance: UIUserInterfaceStyle = .unspecified
@@ -163,6 +164,11 @@ public struct SettingsScreen: View {
                     LocalPushTestingScreen()
                 case .refreshHistory:
                     RefreshHistoryScreen()
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    ForegroundRefreshIndicator()
                 }
             }
             .sheet(item: $navigationState.settingsPresentation) { presentation in

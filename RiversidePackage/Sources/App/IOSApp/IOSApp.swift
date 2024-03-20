@@ -1,7 +1,8 @@
 import BackgroundRefreshUseCase
 import CloudSyncState
 import Dependencies
-@preconcurrency import Entities
+import Entities
+import ForegroundRefreshState
 import Logging
 import NavigationState
 import SystemNotification
@@ -12,6 +13,7 @@ import ViewModifiers
 @MainActor
 public struct IOSApp: App {
     private let navigationState = NavigationState()
+    private let foregroundRefreshState = ForegroundRefreshState()
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     
@@ -35,6 +37,7 @@ public struct IOSApp: App {
             MainTabScreen()
                 .environment(appDelegate.cloudSyncState)
                 .environment(navigationState)
+                .environment(foregroundRefreshState)
                 .environment(\.managedObjectContext, appDelegate.persistentProvider.viewContext)
                 .systemNotification(context)
                 .onBackground {

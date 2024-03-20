@@ -3,6 +3,7 @@ import CoreData
 import Dependencies
 import Entities
 import FlashClient
+import ForegroundRefreshState
 import LicensesFeature
 import Logging
 import LogFeature
@@ -14,6 +15,7 @@ import Utilities
 @MainActor
 public struct MacApp: App {
     private let cloudSyncState: CloudSyncState = .init()
+    private let foregroundRefreshState: ForegroundRefreshState = .init()
     private let persistentProvider: PersistentProvider = .cloud
     
     @Dependency(\.flashClient) private var flashClient
@@ -36,6 +38,7 @@ public struct MacApp: App {
         WindowGroup {
             RootScreen()
                 .environment(cloudSyncState)
+                .environment(foregroundRefreshState)
                 .environment(\.managedObjectContext, persistentProvider.viewContext)
                 .systemNotification(context)
             

@@ -1,12 +1,14 @@
 import AddNewEntriesUseCase
 import Algorithms
-import CoreData
+@preconcurrency import CoreData
 import CloudSyncState
 import Dependencies
 import Entities
+import ForegroundRefreshState
 import FlashClient
 import SwiftUI
 import ViewModifiers
+import UIComponents
 
 @MainActor
 public struct RootScreen: View {
@@ -16,12 +18,11 @@ public struct RootScreen: View {
     @Dependency(\.flashClient) private var flashClient
     
     @Environment(CloudSyncState.self) private var cloudSyncState
+    @Environment(ForegroundRefreshState.self) private var foregroundRefreshState
     @Environment(\.managedObjectContext) private var context
     
     @State private var selectedFeedID: ObjectIdentifier? = nil
     @State private var selectedEntryID: ObjectIdentifier? = nil
-    @State private var refreshing: Bool = false
-    @State private var loadingAllFeedsOnForeground: Bool = false
     
     @FetchRequest(fetchRequest: EntryModel.all) private var entries: FetchedResults<EntryModel>
     
@@ -59,27 +60,17 @@ public struct RootScreen: View {
                         
                         CloudSyncStateButton()
                         
-                        let loading = refreshing || cloudSyncState.syncing || loadingAllFeedsOnForeground
+                        let loading = cloudSyncState.syncing || foregroundRefreshState.state.isRefreshing
                         Button {
                             Task {
-                                refreshing = true
-                                defer { refreshing = false }
-                                do {
-                                    try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(10), 1)
-                                } catch {
-                                    flashClient.present(
-                                        type: .error,
-                                        message: "Failed to refresh feeds: \(error.localizedDescription)"
-                                    )
-                                }
+                                await foregroundRefreshState.refresh(context: context, force: true, timeout: .seconds(15), retryCount: 2)
                             }
                         } label: {
                             if loading {
                                 Image(systemName: "arrow.clockwise")
                                     .hidden()
                                     .overlay {
-                                        ProgressView()
-                                            .controlSize(.small)
+                                        ForegroundRefreshIndicator()
                                     }
                             } else {
                                 Image(systemName: "arrow.clockwise")
@@ -95,9 +86,12 @@ public struct RootScreen: View {
                 }
             }
         }
-        .addNewEntriesForAllFeedsOnForeground(loading: $loadingAllFeedsOnForeground)
+        .onForeground {
+            Task {
+                await foregroundRefreshState.refresh(context: context, force: true, timeout: .seconds(10))
+            }
+        }
         .deleteDuplicatedEntriesOnBackground()
-        .environment(\.loadingAllFeedsOnForeground, loadingAllFeedsOnForeground)
     }
 }
 

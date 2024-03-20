@@ -3,6 +3,7 @@ import CloudSyncState
 import CoreData
 import Dependencies
 import Entities
+import ForegroundRefreshState
 import AddNewEntriesUseCase
 import FlashClient
 import NavigationState
@@ -16,9 +17,9 @@ public struct StreamScreen: View {
     @Dependency(\.flashClient) private var flashClient
     
     @Environment(CloudSyncState.self) private var cloudSyncState
+    @Environment(ForegroundRefreshState.self) private var foregroundRefreshState
     @Environment(NavigationState.self) private var navigationState
     @Environment(\.managedObjectContext) private var context
-    @Environment(\.loadingAllFeedsOnForeground) private var loadingAllFeedsOnForeground
     
     @FetchRequest(fetchRequest: EntryModel.all) private var entries: FetchedResults<EntryModel>
     @FetchRequest(fetchRequest: FeedModel.all) private var feeds: FetchedResults<FeedModel>
@@ -55,14 +56,7 @@ public struct StreamScreen: View {
                                         Text("Add feed")
                                     }
                                     
-                                    Button {
-                                        Task {
-                                            await forceRefresh()
-                                        }
-                                    } label: {
-                                        Text("Refresh")
-                                    }
-                                    .disabled(!cloudSyncState.syncing)
+                                    refreshButton
                                 }
                                 .padding(.top, 12)
                             }
@@ -76,15 +70,8 @@ public struct StreamScreen: View {
                                 )
                             },
                             actions: {
-                                Button {
-                                    Task {
-                                        await forceRefresh()
-                                    }
-                                } label: {
-                                    Text("Refresh")
-                                }
-                                .disabled(cloudSyncState.syncing || loadingAllFeedsOnForeground)
-                                .padding(.top, 12)
+                                refreshButton
+                                    .padding(.top, 12)
                             }
                         )
                     }
@@ -134,9 +121,7 @@ public struct StreamScreen: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack {
-                        if loadingAllFeedsOnForeground {
-                            ProgressView()
-                        }
+                        ForegroundRefreshIndicator()
                         
                         Menu {
                             Toggle(isOn: $unreadOnly) { Text("Unread only") }
@@ -179,6 +164,17 @@ public struct StreamScreen: View {
         }
     }
     
+    private var refreshButton: some View {
+        Button {
+            Task {
+                await forceRefresh()
+            }
+        } label: {
+            Text("Refresh")
+        }
+        .disabled(cloudSyncState.syncing || foregroundRefreshState.state.isRefreshing)
+    }
+    
     private var sections: [StreamSection] {
         StreamSectionBuilder.build(entries: uniquedEntries.filter({ unreadOnly ? $0.read == false : true }))
     }
@@ -189,18 +185,7 @@ public struct StreamScreen: View {
     }
     
     private func forceRefresh() async {
-        guard !cloudSyncState.syncing else {
-            return
-        }
-        
-        do {
-            _ = try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(20), 1)
-        } catch {
-            flashClient.present(
-                type: .error,
-                message: "Failed to refresh feeds: \(error.localizedDescription)"
-            )
-        }
+        await foregroundRefreshState.refresh(context: context, force: true, timeout: .seconds(15), retryCount: 3)
     }
 }
 
