@@ -1,7 +1,8 @@
 import AppAppearanceClient
-import CoreData
+@preconcurrency import CoreData
 import Dependencies
 import Entities
+import ForegroundRefreshState
 import NavigationState
 import Utilities
 import IOSFeedsFeature
@@ -17,11 +18,11 @@ public struct MainTabScreen: View {
     
     @Dependency(\.appAppearanceClient) private var appAppearanceClient
     
+    @Environment(\.managedObjectContext) private var context
     @Environment(NavigationState.self) private var navigationState
+    @Environment(ForegroundRefreshState.self) private var foregroundRefreshState
     
     @FetchRequest(fetchRequest: EntryModel.unreads) private var unreadEntries: FetchedResults<EntryModel>
-    
-    @State private var loadingAllFeedsOnForeground: Bool = false
     
     public init() {}
 
@@ -58,9 +59,12 @@ public struct MainTabScreen: View {
         .onChange(of: unreadEntries.map(\.url), initial: false) { _, _ in
             WidgetCenter.shared.reloadAllTimelines()
         }
-        .addNewEntriesForAllFeedsOnForeground(loading: $loadingAllFeedsOnForeground)
+        .onForeground {
+            Task {
+                await foregroundRefreshState.refresh(context: context, force: false)
+            }
+        }
         .deleteDuplicatedEntriesOnBackground()
-        .environment(\.loadingAllFeedsOnForeground, loadingAllFeedsOnForeground)
     }
 }
 
