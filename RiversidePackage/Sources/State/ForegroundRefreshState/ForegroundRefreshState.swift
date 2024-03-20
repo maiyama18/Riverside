@@ -113,7 +113,7 @@ public final class ForegroundRefreshState {
             setLastAddExecutionDate(date: .now)
             return (allEntries, successCount, timeoutCount, errorCount)
         }
-        logger.notice("finished executeForAllFeeds (\(Date.now.timeIntervalSince(startedAt)) s): success \(result.1), timeout \(result.2), error \(result.3)")
+        logger.notice("finished foreground refresh (\(Date.now.timeIntervalSince(startedAt)) s): success \(result.1), timeout \(result.2), error \(result.3)")
     }
     
     private func getLastAddExecutionDate() -> Date? {
