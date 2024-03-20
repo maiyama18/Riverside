@@ -185,18 +185,7 @@ public struct StreamScreen: View {
     }
     
     private func forceRefresh() async {
-        guard !cloudSyncState.syncing else {
-            return
-        }
-        
-        do {
-            _ = try await addNewEntriesUseCase.executeForAllFeeds(context, true, .seconds(20), 1)
-        } catch {
-            flashClient.present(
-                type: .error,
-                message: "Failed to refresh feeds: \(error.localizedDescription)"
-            )
-        }
+        await foregroundRefreshState.refresh(context: context, force: true, timeout: .seconds(15), retryCount: 3)
     }
 }
 
