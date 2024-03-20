@@ -137,6 +137,7 @@ let targets: [PackageDescription.Target] = [
             "CloudSyncState",
             "DeleteDuplicatedEntriesUseCase",
             "Entities",
+            "ForegroundRefreshState",
             "AddNewEntriesUseCase",
             "FlashClient",
             "LicensesFeature",
