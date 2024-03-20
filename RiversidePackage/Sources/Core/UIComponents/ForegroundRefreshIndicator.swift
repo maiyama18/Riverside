@@ -15,7 +15,7 @@ public struct ForegroundRefreshIndicator: View {
                 .hidden()
                 .overlay {
                     Circle()
-                        .subtracting(Circle().inset(by: 8))
+                        .subtracting(Circle().inset(by: 4))
                         .fill(
                             AngularGradient(
                                 stops: [

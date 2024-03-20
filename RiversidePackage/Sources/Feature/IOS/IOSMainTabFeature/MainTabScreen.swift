@@ -61,7 +61,7 @@ public struct MainTabScreen: View {
         }
         .onForeground {
             Task {
-                await foregroundRefreshState.refresh(context: context, force: false)
+                await foregroundRefreshState.refresh(context: context, force: false, timeout: .seconds(10))
             }
         }
         .deleteDuplicatedEntriesOnBackground()

@@ -44,7 +44,7 @@ public final class ForegroundRefreshState {
         self.userDefaults = userDefaults
     }
     
-    public func refresh(context: NSManagedObjectContext, force: Bool) async {
+    public func refresh(context: NSManagedObjectContext, force: Bool, timeout: Duration, retryCount: Int = 1) async {
         let startedAt: Date = .now
         
         guard !state.isRefreshing else { return }
@@ -73,8 +73,8 @@ public final class ForegroundRefreshState {
             for feed in feeds {
                 group.addTask {
                     do {
-                        let entries = try await withRetry(count: 3) {
-                            try await withTimeout(for: .seconds(15)) {
+                        let entries = try await withRetry(count: retryCount) {
+                            try await withTimeout(for: timeout) {
                                 try await self.addNewEntriesUseCase.execute(context, feed)
                             }
                         }
