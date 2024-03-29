@@ -1,5 +1,6 @@
 import AddNewEntriesUseCase
 @preconcurrency import CoreData
+import CloudSyncState
 import Dependencies
 import Entities
 import Foundation
@@ -44,7 +45,13 @@ public final class ForegroundRefreshState {
         self.userDefaults = userDefaults
     }
     
-    public func refresh(context: NSManagedObjectContext, force: Bool, timeout: Duration, retryCount: Int = 1) async {
+    public func refresh(
+        context: NSManagedObjectContext,
+        cloudSyncState: CloudSyncState,
+        force: Bool,
+        timeout: Duration,
+        retryCount: Int = 1
+    ) async {
         let startedAt: Date = .now
         
         guard !state.isRefreshing else { return }
@@ -58,7 +65,27 @@ public final class ForegroundRefreshState {
         if let lastExecutionDate = getLastAddExecutionDate(),
            // 10 min
            Date.now.timeIntervalSince(lastExecutionDate) < 60 * 10 {
-            logger.notice("skipping add new entries. last execution date: \(lastExecutionDate)")
+            logger.notice("skipping foreground refresh. last execution date: \(lastExecutionDate)")
+            return
+        }
+        
+        if !force {
+            let history = ForegroundRefreshHistoryModel(context: context)
+            history.startedAt = .now
+            do {
+                try context.saveWithRollback()
+                logger.notice("saved background refresh history")
+            } catch {
+                logger.error("failed to save refresh history: \(error, privacy: .public)")
+            }
+            
+            await withTimeout(for: .seconds(10)) {
+                try? await cloudSyncState.eventDebouncedPublisher.nextValue()
+            }
+        }
+
+        guard !cloudSyncState.syncing else {
+            logger.notice("skipping foreground refresh. iCloud sync ongoing")
             return
         }
         

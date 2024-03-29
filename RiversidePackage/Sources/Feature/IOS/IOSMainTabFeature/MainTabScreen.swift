@@ -1,5 +1,6 @@
 import AppAppearanceClient
 @preconcurrency import CoreData
+import CloudSyncState
 import Dependencies
 import Entities
 import ForegroundRefreshState
@@ -19,6 +20,7 @@ public struct MainTabScreen: View {
     @Dependency(\.appAppearanceClient) private var appAppearanceClient
     
     @Environment(\.managedObjectContext) private var context
+    @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(NavigationState.self) private var navigationState
     @Environment(ForegroundRefreshState.self) private var foregroundRefreshState
     
@@ -61,7 +63,7 @@ public struct MainTabScreen: View {
         }
         .onForeground {
             Task {
-                await foregroundRefreshState.refresh(context: context, force: false, timeout: .seconds(10))
+                await foregroundRefreshState.refresh(context: context, cloudSyncState: cloudSyncState, force: false, timeout: .seconds(10))
             }
         }
         .deleteDuplicatedEntriesOnBackground()

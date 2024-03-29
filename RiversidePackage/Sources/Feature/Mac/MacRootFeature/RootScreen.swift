@@ -63,7 +63,13 @@ public struct RootScreen: View {
                         let loading = cloudSyncState.syncing || foregroundRefreshState.state.isRefreshing
                         Button {
                             Task {
-                                await foregroundRefreshState.refresh(context: context, force: true, timeout: .seconds(15), retryCount: 2)
+                                await foregroundRefreshState.refresh(
+                                    context: context,
+                                    cloudSyncState: cloudSyncState,
+                                    force: true,
+                                    timeout: .seconds(15),
+                                    retryCount: 2
+                                )
                             }
                         } label: {
                             if loading {
@@ -88,7 +94,12 @@ public struct RootScreen: View {
         }
         .onForeground {
             Task {
-                await foregroundRefreshState.refresh(context: context, force: true, timeout: .seconds(10))
+                await foregroundRefreshState.refresh(
+                    context: context,
+                    cloudSyncState: cloudSyncState,
+                    force: true,
+                    timeout: .seconds(10)
+                )
             }
         }
         .deleteDuplicatedEntriesOnBackground()

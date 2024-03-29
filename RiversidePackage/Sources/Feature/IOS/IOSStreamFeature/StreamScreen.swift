@@ -185,7 +185,13 @@ public struct StreamScreen: View {
     }
     
     private func forceRefresh() async {
-        await foregroundRefreshState.refresh(context: context, force: true, timeout: .seconds(15), retryCount: 3)
+        await foregroundRefreshState.refresh(
+            context: context,
+            cloudSyncState: cloudSyncState,
+            force: true,
+            timeout: .seconds(15),
+            retryCount: 3
+        )
     }
 }
 
