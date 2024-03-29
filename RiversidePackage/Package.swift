@@ -201,6 +201,7 @@ let targets: [PackageDescription.Target] = [
         name: "ForegroundRefreshState",
         dependencies: [
             "AddNewEntriesUseCase",
+            "CloudSyncState",
         ],
         path: "Sources/State/ForegroundRefreshState"
     ),
