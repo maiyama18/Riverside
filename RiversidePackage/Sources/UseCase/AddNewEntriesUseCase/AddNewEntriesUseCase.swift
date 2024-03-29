@@ -9,34 +9,20 @@ import SwiftUI
 import WidgetKit
 
 public struct AddNewEntriesUseCase: Sendable {
-    nonisolated(unsafe) static var executingForAllFeeds: Bool = false
-    
     public var execute: @Sendable @MainActor (_ context: NSManagedObjectContext, _ feed: FeedModel) async throws -> [EntryInformation]
-    public var executeForAllFeeds: @Sendable @MainActor (_ context: NSManagedObjectContext, _ force: Bool, _ timeout: Duration, _ retryCount: Int) async throws -> [EntryInformation]
+    public var executeInBackground: @Sendable (_ backgroundContext: NSManagedObjectContext, _ feed: FeedModel) async throws -> [EntryInformation]
 }
 
 extension AddNewEntriesUseCase {
-    enum FetchResult {
-        case success([EntryInformation])
-        case timeout
-        case error(any Error)
-    }
-    
     static var live: AddNewEntriesUseCase {
         @Dependency(\.feedClient) var feedClient
         @Dependency(\.logger[.feedModel]) var logger
         
         @Sendable
-        @MainActor
-        func addNewEntries(context: NSManagedObjectContext, feed: FeedModel) async throws -> [EntryInformation] {
-            logger.debug("fetching entries for '\(feed.title ?? "", privacy: .public)'")
-            guard let feedURL = feed.url else {
-                throw NSError(domain: "FeedUseCase", code: -1)
-            }
-            let fetchedFeed = try await feedClient.fetch(feedURL)
+        func addNewEntries(context: NSManagedObjectContext, existingFeed: FeedModel, fetchedFeed: Feed) -> [EntryInformation]  {
             let fetchedEntries = fetchedFeed.entries
             
-            let existingEntries = feed.entries as? Set<EntryModel> ?? []
+            let existingEntries = existingFeed.entries as? Set<EntryModel> ?? []
             let existingEntryURLs = existingEntries.compactMap(\.url)
             
             let latestEntryPublishedAt = existingEntries.compactMap(\.publishedAt).max() ?? Date(timeIntervalSince1970: 0)
@@ -44,9 +30,9 @@ extension AddNewEntriesUseCase {
             let newEntries = fetchedEntries.filter { $0.publishedAt > latestEntryPublishedAt }
             let addedEntries = newEntries.filter { newEntry in !existingEntryURLs.contains(where: { $0.isSame(as: newEntry.url) }) }
             for entry in addedEntries {
-                feed.addToEntries(entry.toModel(context: context))
+                existingFeed.addToEntries(entry.toModel(context: context))
             }
-            logger.debug("fetched entries for '\(feed.title ?? "", privacy: .public)': all \(fetchedEntries.count) entries, new \(newEntries.count), added: \(addedEntries.count)")
+            logger.debug("fetched entries for '\(fetchedFeed.title, privacy: .public)': all \(fetchedEntries.count) entries, new \(newEntries.count), added: \(addedEntries.count)")
             return addedEntries.map {
                 EntryInformation(
                     title: $0.title,
@@ -57,91 +43,30 @@ extension AddNewEntriesUseCase {
         }
         
         @Sendable
-        func getLastAddExecutionDate() -> Date? {
-            UserDefaults.standard.object(forKey: "last-all-episodes-fetched-at") as? Date
-        }
-        
-        @Sendable
-        func deleteLastAddExecutionDate() {
-            UserDefaults.standard.removeObject(forKey: "last-all-episodes-fetched-at")
-        }
-        
-        @Sendable
-        func setLastAddExecutionDate(date: Date) {
-            UserDefaults.standard.setValue(date, forKey: "last-all-episodes-fetched-at")
+        func fetchFeed(feed: FeedModel) async throws -> Feed {
+            logger.debug("fetching entries for '\(feed.title ?? "", privacy: .public)'")
+            guard let feedURL = feed.url else {
+                throw NSError(domain: "FeedUseCase", code: -1)
+            }
+            return try await feedClient.fetch(feedURL)
         }
         
         return .init(
-            execute: { context, feed in
-                try await addNewEntries(context: context, feed: feed)
+            execute: { @MainActor context, feed in
+                let fetchedFeed = try await fetchFeed(feed: feed)
+                return addNewEntries(
+                    context: context,
+                    existingFeed: feed,
+                    fetchedFeed: fetchedFeed
+                )
             },
-            executeForAllFeeds: { context, force, timeout, retry in
-                let startedAt: Date = .now
-                
-                guard Self.executingForAllFeeds == false else { return [] }
-                Self.executingForAllFeeds = true
-                defer { Self.executingForAllFeeds = false }
-                
-                if force {
-                    deleteLastAddExecutionDate()
-                }
-                
-                if let lastExecutionDate = getLastAddExecutionDate(),
-                   // 10 min
-                   Date.now.timeIntervalSince(lastExecutionDate) < 60 * 10 {
-                    logger.notice("skipping add new entries. last execution date: \(lastExecutionDate)")
-                    return []
-                }
-                
-                logger.notice("starting add new entries")
-                let feeds = try context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled()
-                let result = await withTaskGroup(
-                    of: FetchResult.self,
-                    returning: ([EntryInformation], Int, Int, Int).self
-                ) { group in
-                    for feed in feeds {
-                        group.addTask {
-                            do {
-                                let entries = try await withRetry(count: retry) {
-                                    try await withTimeout(for: timeout) {
-                                        try await addNewEntries(context: context, feed: feed)
-                                    }
-                                }
-                                return .success(entries)
-                            } catch {
-                                if error is TimeoutError {
-                                    logger.debug("timeout to fetch new entries for '\(feed.title ?? "", privacy: .public)'")
-                                    return .timeout
-                                } else {
-                                    logger.debug("failed to fetch new entries for '\(feed.title ?? "")': \(error, privacy: .public)")
-                                    return .error(error)
-                                }
-                            }
-                        }
-                    }
-                    
-                    var allEntries: [EntryInformation] = []
-                    var successCount = 0
-                    var timeoutCount = 0
-                    var errorCount = 0
-                    for await result in group {
-                        switch result {
-                        case .success(let entries):
-                            allEntries.append(contentsOf: entries)
-                            successCount += 1
-                        case .timeout:
-                            timeoutCount += 1
-                        case .error:
-                            errorCount += 1
-                        }
-                    }
-                    try? context.saveWithRollback()
-                    WidgetCenter.shared.reloadAllTimelines()
-                    setLastAddExecutionDate(date: .now)
-                    return (allEntries, successCount, timeoutCount, errorCount)
-                }
-                logger.notice("finished executeForAllFeeds (\(Date.now.timeIntervalSince(startedAt)) s): success \(result.1), timeout \(result.2), error \(result.3)")
-                return result.0
+            executeInBackground: { context, feed in
+                let fetchedFeed = try await fetchFeed(feed: feed)
+                return addNewEntries(
+                    context: context,
+                    existingFeed: feed,
+                    fetchedFeed: fetchedFeed
+                )
             }
         )
     }

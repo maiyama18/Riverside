@@ -50,7 +50,7 @@ extension BackgroundRefreshUseCase {
                         do {
                             let entries = try await withRetry(count: 3) {
                                 try await withTimeout(for: .seconds(10)) {
-                                    try await addNewEntriesUseCase.execute(context, feed)
+                                    try await addNewEntriesUseCase.executeInBackground(context, feed)
                                 }
                             }
                             return entries
@@ -116,10 +116,10 @@ extension BackgroundRefreshUseCase {
                             addedEntryStrings.joined(separator: "\n")
                         )
                     }
-                    logger.notice("complete executeForAllFeeds: \(addedEntries.count) entries added")
+                    logger.notice("complete foreground refresh: \(addedEntries.count) entries added")
                 } catch {
                     history.errorMessage = error.localizedDescription
-                    logger.error("failed to execute executeForAllFeeds: \(error, privacy: .public)")
+                    logger.error("failed to execute foreground refresh: \(error, privacy: .public)")
                 }
             
                 history.finishedAt = .now
