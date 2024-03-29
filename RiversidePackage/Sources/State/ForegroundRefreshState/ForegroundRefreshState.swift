@@ -70,26 +70,32 @@ public final class ForegroundRefreshState {
             of: FetchResult.self,
             returning: ([EntryInformation], Int, Int, Int).self
         ) { group in
-            for feed in feeds {
-                group.addTask {
-                    do {
-                        let entries = try await withRetry(count: retryCount) {
-                            try await withTimeout(for: timeout) {
-                                try await self.addNewEntriesUseCase.execute(context, feed)
-                            }
+            let batchSize = 8
+            @Sendable func addNewEntries(feed: FeedModel) async -> FetchResult {
+                do {
+                    let entries = try await withRetry(count: retryCount) {
+                        try await withTimeout(for: timeout) {
+                            try await self.addNewEntriesUseCase.execute(context, feed)
                         }
-                        return .success(entries)
-                    } catch {
-                        if error is TimeoutError {
-                            await self.logger.debug("timeout to fetch new entries for '\(feed.title ?? "", privacy: .public)'")
-                            return .timeout
-                        } else {
-                            await self.logger.debug("failed to fetch new entries for '\(feed.title ?? "")': \(error, privacy: .public)")
-                            return .error(error)
-                        }
+                    }
+                    return .success(entries)
+                } catch {
+                    if error is TimeoutError {
+                        await self.logger.debug("timeout to fetch new entries for '\(feed.title ?? "", privacy: .public)'")
+                        return .timeout
+                    } else {
+                        await self.logger.debug("failed to fetch new entries for '\(feed.title ?? "")': \(error, privacy: .public)")
+                        return .error(error)
                     }
                 }
             }
+            
+            for i in 0..<batchSize {
+                group.addTask {
+                    await addNewEntries(feed: feeds[i])
+                }
+            }
+            var index = batchSize
             
             var allEntries: [EntryInformation] = []
             var successCount = 0
@@ -106,6 +112,14 @@ public final class ForegroundRefreshState {
                     errorCount += 1
                 }
                 self.state = .refreshing(progress: Double(successCount + timeoutCount + errorCount) / Double(feeds.count))
+                
+                if index < feeds.count {
+                    let feed = feeds[index]
+                    group.addTask {
+                        await addNewEntries(feed: feed)
+                    }
+                    index += 1
+                }
             }
             self.state = .idle
             try? context.saveWithRollback()
