@@ -60,7 +60,7 @@ extension AddNewEntriesUseCase {
                     fetchedFeed: fetchedFeed
                 )
             },
-            executeInBackground: { context, feed in
+            executeInBackground: { @DatabaseActor context, feed in
                 let fetchedFeed = try await fetchFeed(feed: feed)
                 return addNewEntries(
                     context: context,
@@ -81,4 +81,8 @@ public extension DependencyValues {
         get { self[AddNewEntriesUseCase.self] }
         set { self[AddNewEntriesUseCase.self] = newValue }
     }
+}
+
+@globalActor actor DatabaseActor: GlobalActor {
+    static let shared = DatabaseActor()
 }
