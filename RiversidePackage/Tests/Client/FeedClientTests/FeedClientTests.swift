@@ -33,6 +33,11 @@ final class FeedClientTests: XCTestCase {
     private static let stackoverflowSwiftURL = URL(string: "https://stackoverflow.com/feeds/tag?tagnames=swift&sort=newest")!
     private static let phaNoteURL = URL(string: "https://note.com/pha/rss")!
     private static let naoyaSizumeURL = URL(string: "https://sizu.me/naoya/rss")!
+    
+    // RDF
+    private static let asahiURL = URL(string: "https://www.asahi.com/rss/asahi/newsheadlines.rdf")!
+    private static let avWatchURL = URL(string: "https://av.watch.impress.co.jp/data/rss/1.0/avw/feed.rdf")!
+    private static let toiroiroURL = URL(string: "https://toiroiro.blog.jp/index.rdf")!
 
     // Atom
     private static let maiyama4AtomURL = URL(string: "https://maiyama4.hatenablog.com/feed")!
@@ -48,6 +53,7 @@ final class FeedClientTests: XCTestCase {
     override func setUp() async throws {
         enum ResponseType {
             case rssFeed
+            case rdfFeed
             case atomFeed
             case jsonFeed
             case html
@@ -56,6 +62,8 @@ final class FeedClientTests: XCTestCase {
                 switch self {
                 case .rssFeed, .atomFeed:
                     "application/rss+xml"
+                case .rdfFeed:
+                    "text/xml"
                 case .jsonFeed:
                     "application/json"
                 case .html:
@@ -67,6 +75,8 @@ final class FeedClientTests: XCTestCase {
                 switch self {
                 case .rssFeed, .atomFeed:
                     "xml"
+                case .rdfFeed:
+                    "rdf"
                 case .jsonFeed:
                     "json"
                 case .html:
@@ -133,6 +143,11 @@ final class FeedClientTests: XCTestCase {
         try setFeedData(to: &responses, url: Self.stackoverflowSwiftURL, responseType: .rssFeed, resourceName: "stackoverflowSwift")
         try setFeedData(to: &responses, url: Self.phaNoteURL, responseType: .rssFeed, resourceName: "phaNote")
         try setFeedData(to: &responses, url: Self.naoyaSizumeURL, responseType: .rssFeed, resourceName: "naoyaSizume")
+
+        // RDF
+        try setFeedData(to: &responses, url: Self.asahiURL, responseType: .rdfFeed, resourceName: "asahi")
+        try setFeedData(to: &responses, url: Self.avWatchURL, responseType: .rdfFeed, resourceName: "avWatch")
+        try setFeedData(to: &responses, url: Self.toiroiroURL, responseType: .rdfFeed, resourceName: "toiroiro")
 
         // Atom
         try setFeedData(to: &responses, url: Self.maiyama4AtomURL, responseType: .atomFeed, resourceName: "maiyama4_atom")
@@ -409,6 +424,54 @@ final class FeedClientTests: XCTestCase {
         XCTAssertEqual(entry.content?.count, 308)
         XCTAssertEqual(entry.content?.prefix(50), "このエントリは、 3rd Party Cookie Advent Calendar の最終日である。")
         try XCTAssertEqual(entry.publishedAt, Date("2023-12-30T09:00:00+09:00", strategy: .iso8601))
+    }
+    
+    // MARK: - RDF
+
+    func test_asahi() async throws {
+        let feed = try await client.fetch(Self.asahiURL)
+        XCTAssertEqual(feed.url, Self.asahiURL)
+        XCTAssertEqual(feed.title, "朝日新聞デジタル")
+        XCTAssertEqual(feed.overview, "朝日新聞デジタル")
+        XCTAssertNil(feed.imageURL)
+
+        XCTAssertEqual(feed.entries.count, 40)
+        let entry = try XCTUnwrap(feed.entries.first)
+        XCTAssertEqual(entry.url, URL(string: "http://www.asahi.com/articles/ASS4X4VWGS4XUDCB00KM.html?ref=rss"))
+        XCTAssertEqual(entry.title, "JR内房線で女児が電車にはねられ搬送　千葉・館山")
+        XCTAssertEqual(entry.content?.count, 0)
+        try XCTAssertEqual(entry.publishedAt, Date("2024-04-29T00:20:00+09:00", strategy: .iso8601))
+    }
+    
+    func test_avWatch() async throws {
+        let feed = try await client.fetch(Self.avWatchURL)
+        XCTAssertEqual(feed.url, Self.avWatchURL)
+        XCTAssertEqual(feed.title, "AV Watch")
+        XCTAssertEqual(feed.overview, "オーディオ・ビジュアル総合情報サイト")
+        XCTAssertNil(feed.imageURL)
+
+        XCTAssertEqual(feed.entries.count, 20)
+        let entry = try XCTUnwrap(feed.entries.first)
+        XCTAssertEqual(entry.url, URL(string: "https://av.watch.impress.co.jp/docs/news/1588070.html"))
+        XCTAssertEqual(entry.title, "究極ポータブルオーディオ「FUGAKU」、ティアックのディスクリートDAC兼ヘッドフォンアンプも")
+        XCTAssertEqual(entry.content?.count, 140)
+        XCTAssertEqual(entry.content?.prefix(50), "「春のヘッドフォン祭 2024」が4月27日に東京駅八重洲直結のステーションコンファレンス東京で開催")
+        try XCTAssertEqual(entry.publishedAt, Date("2024-04-27T18:37:10+09:00", strategy: .iso8601))
+    }
+    
+    func test_toiroiro() async throws {
+        let feed = try await client.fetch(Self.toiroiroURL)
+        XCTAssertEqual(feed.url, Self.toiroiroURL)
+        XCTAssertEqual(feed.title, "トイロ公式ブログ【日々のこと～暮らしを彩る料理とモノ～】")
+        XCTAssertEqual(feed.overview, "おうちごはんや、お弁当、手作りおやつ、あったら便利なグッズ、好きなモノ・場所のことなど。暮らしを楽しむ様々なアイデアや日々のことを綴る、トイロのオフィシャルブログです。\n")
+        XCTAssertNil(feed.imageURL)
+
+        XCTAssertEqual(feed.entries.count, 10)
+        let entry = try XCTUnwrap(feed.entries.first)
+        XCTAssertEqual(entry.url, URL(string: "https://toiroiro.blog.jp/archives/27826149.html"))
+        XCTAssertEqual(entry.title, "とり天＆おにぎりランチと、今日のVoicy")
+        XCTAssertEqual(entry.content?.count, 500)
+        try XCTAssertEqual(entry.publishedAt, Date("2024-04-27T22:27:13+09:00", strategy: .iso8601))
     }
 
     // MARK: - JSON
