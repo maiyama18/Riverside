@@ -20,12 +20,13 @@ extension FeedKit.Feed {
             Feed(
                 url: url,
                 pageURL: rssFeed.link.flatMap(URL.init(string:)) ?? url.baseURL(),
-                title: rssFeed.title ?? "",
+                title: rssFeed.title ?? rssFeed.dublinCore?.dcTitle ?? "",
                 overview: rssFeed.description ?? "",
                 imageURL: rssFeed.image?.url.flatMap(URL.init(string:)),
                 entries: rssFeed.items?.compactMap { item in
-                    guard let urlString = item.link, let url = URL(string: urlString),
-                          let publishedAt = item.pubDate else {
+                    guard let urlString = item.link,
+                          let url = URL(string: urlString),
+                          let publishedAt = item.pubDate ?? item.dublinCore?.dcDate else {
                         return nil
                     }
                     return Feed.Entry(
