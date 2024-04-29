@@ -38,3 +38,4 @@ jobs:
           branch: bump-up-version
           commit-message: "Bump up version to ${{ env.VERSION }}"
           title: "Bump up version to ${{ env.VERSION }}"
+          token: ${{ secrets.WRITE_TOKEN }}
