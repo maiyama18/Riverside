@@ -1,0 +1,40 @@
+name: Bump Up Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version e.g.) 1.2.3'
+        required: true
+
+jobs:
+  bump_up_version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      VERSION: ${{ github.event.inputs.version }}
+      PROJECT_FILE: RiversideApp/RiversideApp.xcodeproj/project.pbxproj
+
+    steps:
+      - name: Validate inputs
+        run: |
+          if [[ ! ${{ env.VERSION }} =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error Please specify version number by format x.y.z: ${{ env.VERSION }}"
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - name: Bump up marketing version
+        shell: bash
+        run: |
+          sed -i "s/MARKETING_VERSION = .*$/MARKETING_VERSION = ${{ env.VERSION }};/g" ${{ env.PROJECT_FILE }}
+          git add ${{ env.PROJECT_FILE }}
+
+      - name: create PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: bump-up-version
+          commit-message: "Bump up version to ${{ env.VERSION }}"
+          title: "Bump up version to ${{ env.VERSION }}"
