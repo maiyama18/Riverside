@@ -404,7 +404,7 @@ let targets: [PackageDescription.Target] = [
 // MARK: - Package
 
 let package = Package(
-    name: "RiversidePackage",
+    name: "RiversideAppPackage",
     defaultLocalization: "en",
     platforms: [.iOS(.v17), .macOS(.v14)],
     products: [

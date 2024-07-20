@@ -5,6 +5,6 @@
       location = "group:Client/RiversideApp/RiversideApp.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Client/RiversidePackage">
+      location = "group:Client/RiversideAppPackage">
    </FileRef>
 </Workspace>
