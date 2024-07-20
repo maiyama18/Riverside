@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:RiversideApp/RiversideApp.xcodeproj">
+      location = "group:Client/RiversideApp/RiversideApp.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:RiversidePackage">
+      location = "group:Client/RiversidePackage">
    </FileRef>
 </Workspace>
