@@ -3,13 +3,40 @@
 import PackageDescription
 
 let targets: [PackageDescription.Target] = [
+    
+    // Sources
+    
+    .target(
+        name: "Payloads"
+    ),
+    .target(
+        name: "FeedClient",
+        dependencies: [
+            "Payloads",
+            .product(name: "FeedKit", package: "FeedKit"),
+            .product(name: "SwiftSoup", package: "SwiftSoup"),
+            .product(name: "Vapor", package: "vapor"),
+        ],
+        exclude: ["FeedClient.xctestplan"]
+    ),
     .executableTarget(
         name: "App",
         dependencies: [
+            "Payloads",
             .product(name: "Vapor", package: "vapor"),
             .product(name: "NIOCore", package: "swift-nio"),
             .product(name: "NIOPosix", package: "swift-nio"),
         ]
+    ),
+    
+    // Tests
+    
+    .testTarget(
+        name: "FeedClientTests",
+        dependencies: [
+            "FeedClient",
+        ],
+        resources: [.process("Resources")]
     ),
     .testTarget(
         name: "AppTests",
@@ -42,9 +69,15 @@ let package = Package(
     platforms: [
        .macOS(.v13)
     ],
+    products: [
+        .library(name: "FeedClient", targets: ["FeedClient"]),
+        .library(name: "Payloads", targets: ["Payloads"]),
+    ],
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", exact: "4.99.3"),
         .package(url: "https://github.com/apple/swift-nio.git", exact: "2.65.0"),
+        .package(url: "https://github.com/nmdias/FeedKit", exact: "9.1.2"),
+        .package(url: "https://github.com/scinfu/SwiftSoup", exact: "2.6.1"),
     ],
     targets: targets
 )

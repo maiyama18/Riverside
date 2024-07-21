@@ -1,0 +1,690 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[r7kamura.com]]></title><description><![CDATA[r7kamuraの生活やプログラミングに関するウェブサイト]]></description><link>https://r7kamura.com/</link><generator>r7kamura/r7n</generator><lastBuildDate>Fri, 29 Dec 2023 05:23:53 GMT</lastBuildDate><atom:link href="https://r7kamura.com/feed.xml" rel="self" type="application/rss+xml"/><item><title><![CDATA[vscode-ruby-light開発日記 - Prismパーサー導入編]]></title><description><![CDATA[vscode-ruby-lightの開発中に考えたことを書いていきます。]]></description><link>https://r7kamura.com/articles/2023-12-29-vscode-ruby-light</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-12-29-vscode-ruby-light</guid><pubDate>Thu, 28 Dec 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p><a href="https://github.com/r7kamura/vscode-ruby-light">vscode-ruby-light</a>の開発中に考えたことを書いていきます。今回は、内部で利用しているRuby用パーサーの<a href="https://github.com/tree-sitter/tree-sitter-ruby">tree-sitter-ruby</a>から<a href="https://github.com/ruby/prism/tree/main">Prism</a>への移行について書きます。</p>
+<h2>@ruby/prismパッケージの概観</h2>
+<p>Prismは、JavaScriptからもその実装を利用できるよう、@ruby/prismという名前でnpmパッケージを公開しています。</p>
+<p>何が含まれているパッケージなのかというと、まずWASMバイナリという形でコンパイルされたPrismの実装と、それを便利に使うためのJavaScriptの実装、それからTypeScript向けの型定義ファイルが含まれています。これらはESModuleという形式に従ってモジュール化されています。またruby/prismのリポジトリ内に、JavaScript向けの簡単なドキュメントも含まれています。</p>
+<p>もちろん、本拡張でもこのnpmパッケージを利用しました。</p>
+<h2>CommonJSからESModuleへの移行</h2>
+<p>本拡張に含まれるLanguage Serverの実装ではもともと、公式の雛形に従い、CommonJSが利用されていました。</p>
+<p>基本的に、CommonJSのモジュールからESModuleのモジュールは利用できません。@ruby/prismは前述した通りESModuleを採用しているので、今回を機にCommonJSからESModuleへ移行することにしました。</p>
+<p>とはいえ、基本的には等価な処理を実現できることが分かっているので、単純な変換作業が多いだけで、そこまで難しい変更ではありませんでした。要点を整理すると、以下の作業が必要でした。</p>
+<ul>
+<li>package.jsonで、ESModuleを利用することを示す</li>
+<li>tsconfig.jsonで、ESModule向けにコンパイルすることを示す</li>
+<li><code>import</code> でこれまで省略が許されていた拡張子を補う</li>
+<li><code>require</code> を利用している箇所を書き換える</li>
+</ul>
+<h2>VSCode拡張からのWASMの利用</h2>
+<p>「WASMバイナリで実装が提供されている」って何？という話ですが、そんなに難しいものではありません。</p>
+<p>例えば本拡張のようにNode.jsから利用する場合、prism.wasmというファイルを <code>fs.readFileSync</code> で読み込んで、WASMを扱う上でのお決まりのパターンで初期化処理を書くと、便利に呼び出せる関数が取り出せるという感じです。</p>
+<p>これはWASMバイナリ側の実装によりますが、標準入出力を行ったりメモリ割り当てを行ったりしたいという都合で、WASMバイナリの内部実装にはOSの機能を使うような処理が含まれている場合があります。そういった処理をWASMバイナリに含められるように、WASI (WebAssembly System Interface) という仕様があり、WASMバイナリの利用者側で初期化時にWASI互換のアダプタを用意してあげることになっています。勿論、そういった機能に依存していない実装であればこれは不要ですが、@ruby/prismの場合はこれが必要な実装になっています。</p>
+<p>一般的なNode.jsのランタイムであれば、特に労せずして簡単にWASI互換のアダプタを用意できるのですが、VSCode拡張のランタイムは少し特殊な環境で、これが利用できません。そこで今回は、WebブラウザからWASMバイナリを利用するときによく使われるWASI用のShim、<a href="https://github.com/bjorn3/browser_wasi_shim">bjorn3/browser_wasi_shim</a>で代用することにしました。</p>
+<h2>TypeScriptからの@ruby/prismの利用</h2>
+<p>今回はTypeScriptから@ruby/prismを利用することになりました。今回のような、Language Server Protocolや抽象構文木を扱うコードを書く場合は特に、型検査の恩恵を大きく受けられます。</p>
+<p>TypeScriptから@ruby/prismを利用する場合、TypeScript向けの型定義ファイルがパッケージの <code>types/*.d.ts</code> というパスに含まれているので、これを利用するだけで十分です。ただ、パッケージ側にニ点ほど問題があったので、それらに対処する必要がありました。</p>
+<p>一点目は、型定義の誤りです。Prismは元々C言語で開発されている訳なので、コードをある程度機械的に生成することでJavaScript向けのnpmパッケージを提供しています。Prismの生成するJavaScriptファイルには、JSDocという形式に則ったコメントで型注釈が記述されています。最近のTypeScriptコンパイラは、このJSDocの型注釈を利用して型定義ファイルを生成できるのですが、この型注釈にいくつか誤りがあったため、これを修正する必要がありました。</p>
+<ul>
+<li><a href="https://github.com/ruby/prism/pull/2107">Fix <code>Cannot find name 'Node'</code> error in types/visitor.d.ts by r7kamura · Pull Request #2107 · ruby/prism</a></li>
+</ul>
+<p>二点目は、型定義ファイルの配置場所です。細かい話をすっ飛ばして説明すると、<code>src/foo.js</code> というファイルに対して <code>src/foo.d.ts</code> というパスに型定義ファイルがあれば、TypeScriptコンパイラは <code>src/foo.js</code> を読み込もうとしている箇所で自動的にその型定義を検出してくれます。一方、実際には <code>types/*.d.ts</code> に型定義ファイルがあるので、ここでミスマッチが生じ、そのままでは型定義ファイルがないですよというエラーが出てしまいます。利用者側でTypeScriptコンパイラに対して適当な設定を追加すれば解決できるのですが、利用者に都度この設定を強制するのは大変だと思うので、一旦Issueを用意してより良い形を模索することにしました。</p>
+<ul>
+<li><a href="https://github.com/ruby/prism/issues/2114">More user-friendly type definition files structure for TypeScript · Issue #2114 · ruby/prism</a></li>
+</ul>
+<h2>パーサーを扱う箇所の書き換え</h2>
+<p>本拡張は、以下の機能を提供しています。</p>
+<ul>
+<li>Diagnostics
+<ul>
+<li>RuboCopによる違反箇所の検出</li>
+</ul>
+</li>
+<li>Document Formatting
+<ul>
+<li>RuboCopによる違反箇所の自動修正</li>
+</ul>
+</li>
+<li>Document Highlight
+<ul>
+<li>カーソル位置のトークンに対応するトークンのハイライト</li>
+</ul>
+</li>
+<li>Document Symbol
+<ul>
+<li>クラスやメソッド定義の検出 (アウトラインや検索で利用)</li>
+</ul>
+</li>
+<li>Selection Ranges
+<ul>
+<li>Expand SelectionやShrink Selectionで拡縮される範囲の最適化</li>
+</ul>
+</li>
+<li>Others
+<ul>
+<li>Rubyを検出するパターンの調整 (ファイルパスや拡張子、ファイルの内容等)</li>
+<li>改行時のインデントルールの調整</li>
+</ul>
+</li>
+</ul>
+<p>この内、拡張内でRubyのパーサーが利用されているのは以下の3箇所です。これらの実装をPrismを利用するものに書き換えれば、tree-sitterからPrismへの移行完了です。</p>
+<ul>
+<li>Document Highlight</li>
+<li>Document Symbol</li>
+<li>Selection Ranges</li>
+</ul>
+<h2>PrismとTree-sitterの比較</h2>
+<p>PrismはTree-sitterと比べてどうなのかという話ですが、Prismの方が良い体験を提供できると感じています。</p>
+<p>いずれのパーサーを利用する場合でも、細かく手を加えていけば同様の処理を実現できるとは思います。それこそ、もし足りない部分があれば自前でパース処理を書けば良いですからね。そうなってくると、違いは実装コストに現れてきます。</p>
+<p>比較してみると、Tree-sitterのASTは字句解析上の表現、要するにトークン列にフォーカスしたASTの構造になっているのに対して、PrismのASTは意味解析上の表現にフォーカスしたASTの構造になっているように感じます。例えば、Tree-sitterでは <code>end</code> キーワードをAST上で1つの <code>EndKeywordNode</code> として扱っている一方、Prismではメソッド定義を表す <code>DefNode</code> というノードの中に <code>end</code> キーワードの位置情報が含まれている、といった具合です。</p>
+<p>この違いは、どういった部分で効いてくるでしょうか。</p>
+<figure><img src="https://i.imgur.com/dJZJOtj.gif" alt="" title="Selection Rangesの利用例"><figcaption>Selection Rangesの利用例</figcaption></figure>
+<p>例えば、Language Server ProtocolにSelection Rangesという仕組みがあります。これは、現在のカーソル位置から選択範囲を広げようとしたときに、どんな範囲の候補を提示すべきかを返す仕組みです。この仕組みを利用すると、エディタがExpand SelectionやShrink Selectionといった機能を実現できます。</p>
+<p>Selection Rangesに対応するためのLanguage Serverの内部実装としてはまず、与えられたソースコードとカーソルの位置情報を元に、カーソルに最も近い選択範囲の候補を見つけ、次にその範囲を内包する範囲を見つけ、更にその範囲を内包する範囲を見つけ……というように実装していきます。この実装において、選択範囲のデフォルトの候補としてAST上のノードを活用できます。エディタの利用者が選択したい範囲って、大体ASTのノードの単位ですからね。</p>
+<p>勿論、「引用符の内側を選択したあと、次は引用符を含む範囲を選択したい」といったような、AST上のノードの単位だけでは表現できない選択範囲もあるので、それらについては都度別途実装が必要になります。しかし、基本的にはASTのノードを利用すれば上手くいく場合が多いです。このとき、ASTのノードの単位が構文上の意味的な単位で構成されておらずガタガタしていると、選択範囲の候補として利用するには不自然な場合が増え、都度実装が必要になっていきます。</p>
+<p>PrismのASTは、こういった要件においてかなり自然に使える構造になっていたので、Tree-sitterと比べると実装が楽で、不具合が含まれる可能性も減るように感じました。</p>
+<h2>まとめ</h2>
+<p><a href="https://github.com/r7kamura/vscode-ruby-light">vscode-ruby-light</a>で使っているRuby用パーサーを<a href="https://github.com/tree-sitter/tree-sitter-ruby">tree-sitter-ruby</a>から<a href="https://github.com/ruby/prism/tree/main">Prism</a>に移行したので、その過程で考えていたことについて書いてみました。</p>
+<p><a href="https://marketplace.visualstudio.com/items?itemName=r7kamura.vscode-ruby-light">Ruby Light - Visual Studio Marketplace</a>に移行後の新しいバージョンを公開したので、興味がある人は試してみてください。移行直後でまだ全然試験運用されていないので、かなり不具合があるとは思います。多分ちょっと複雑なRubyのプログラムを開いた瞬間、右下にポップアップが出て、そのワークスペースでは拡張が一旦停止されるでしょう。気付き次第、折を見て改善していく予定です。</p>
+<p>そこまで難しい実装をしている訳ではないし、自分自身もTypeScriptもLSPもVSCodeもWASMもよく分からないまま雰囲気でやっている部分が多いので、何か開発に参加してみたいという人がいたら、是非手元で編集してPull Requestを送ってみてください。Mergeしたりしなかったりします。よろしくお願いします。</p>
+]]></content:encoded></item><item><title><![CDATA[ドメインをRoute53からCloudflareに移管]]></title><description><![CDATA[r7kamura.comドメインをAmazon Route53からCloudflareに移管したので、手順等を書き残しておきます。]]></description><link>https://r7kamura.com/articles/2023-12-24-route53-to-cloudflare</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-12-24-route53-to-cloudflare</guid><pubDate>Sat, 23 Dec 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>r7kamura.comドメインをAmazon Route53からCloudflareに移管したので、手順等を書き残しておきます。</p>
+<h2>Cloudflareのアカウント作成</h2>
+<p>自分の場合、2016年にアカウントを作成していたので、このアカウントを利用しました。無い場合はここで作成することになります。</p>
+<ul>
+<li><a href="https://www.cloudflare.com/ja-jp/">https://www.cloudflare.com/ja-jp/</a></li>
+</ul>
+<p>ドメインの移管や維持にはお金が掛かります。ドメイン移管時に支払い情報の登録が必要になるので、ここで予めクレジットカードの情報等を設定しておくと事が円滑に進みます。</p>
+<h2>Cloudflareにドメイン名を登録</h2>
+<p>Cloudflareにログインし、管理画面右上の "Add a site" から、ドメイン名を登録してサイト情報を用意します。</p>
+<p>ドメイン名を入力すると、このサイトに対して利用する料金プランを選択することになります。自分の場合、今回は無料のもので十分なので、Freeプランを選択しました。ここで、このドメインに今から設定すべきネームサーバーのアドレスが表示されます。今回は2つ表示されました。</p>
+<h2>CloudflareのSSL設定を調整</h2>
+<p>今回移管するドメインは、GitHub Pagesでホスティングしてもらっている本ウェブサイトのために利用します。注意点として、GitHub PagesやVercel等でCloudflareを利用する場合、Cloudflare側で追加で必要な設定があります。Cloudflareにサイト (ドメイン) を登録した際、デフォルトではSSL/TLS encryption modeの設定が "Flexible" になります。GitHub PagesやVercelでは "Flexible" を利用するとリダイレクトループが発生してしまうため、今回はこれを "Full" または "Full (strict)" に変更する必要があります。</p>
+<p>詳しい情報については、<a href="https://stackoverflow.com/questions/50145231/how-to-fix-err-too-many-redirects-on-custom-github-pages-domain">dns - How to fix ERR_TOO_MANY_REDIRECTS on custom github pages domain? - Stack Overflow</a> 等が参考になります。</p>
+<h2>Route53側のネームサーバーを変更</h2>
+<p>Route53の登録済みドメインの設定画面に行き、移管対象のドメインのネームサーバーを、前述のCloudflare側で発行されたものに変更します。</p>
+<p>この設定により、このドメインにアクセスした際、Cloudflareのネームサーバーにアクセスされるようになります。Cloudflare側では、ドメイン登録時にRoute53から読み取ったDNSレコードが勝手に設定されているので、今回の用途のようなドメインであれば何も設定しなくてもこれまで通り上手く接続できるはずです。</p>
+<h2>Cloudflare側でネームサーバーをチェック</h2>
+<p>Route53側でネームサーバーの設定が完了したら、設定が完了したことを伝えるボタンをCloudflare側で押します。日本語UIだと「ネームサーバーをチェック」みたいなやつですね。ネームサーバーの反映にはしばらく掛かるので、これはその時点で成功しなくても問題ありません。</p>
+<h2>Route53側でドメイン移管リクエストを送信</h2>
+<p>前準備として、Route53の登録済みドメインの設定画面に行き、もし対象ドメインの移管ロックがオンになっていたら、オフにします。自分の場合、元々オフでした。</p>
+<p>Route53に、別のレジストラにドメインを移管するリクエストを送ります。ここで、移管先のCloudflareで発行される認証コードの入力を求められます。Cloudflare側でこの認証コードを取得できるので、これを持ってきて入力します。連絡先情報等の入力も求められます。</p>
+<h2>移管の承認確認に対応</h2>
+<p>Route53側でドメイン移管リクエストを送信したら、ドメインの移管がはじまり、しばらく後に承認用のメールが届きます。このメールには、ドメイン移管の承認確認のためのURLが記載されているので、これを開いて承認作業を行います。これで、移管作業が完了します。</p>
+<h2>ホストゾーンの削除</h2>
+<p>最後に、Route53にホストゾーンが存在していると課金され続けてしまうので、元々利用していたホストゾーンを削除しておきます。</p>
+<h2>料金面</h2>
+<p>r7kamura.comドメインの運用に必要な金額を整理してみます。</p>
+<p>Route53の場合、この1年間では20.44USD (≒2,912円) 課金されていました。課金される要素は以下の通り。</p>
+<ul>
+<li>ドメインの更新</li>
+<li>DNSクエリ</li>
+<li>ホストゾーン</li>
+</ul>
+<p>ドメインの更新は、.comドメインの場合は年額13USD課金されます。</p>
+<p>DNSクエリに対しての課金は、以下の価格設定に対して月平均300,000クエリが発生していたので、月額0.12USD課金されます。</p>
+<blockquote>
+<p>$0.40 per 1,000,000 queries for the first 1 Billion queries</p>
+</blockquote>
+<p>ホストゾーンに対しての課金は、以下の価格設定に対して、ドメインを1個管理するためにホストゾーンを1個設定する必要があるため、月額0.50USD課金されます。</p>
+<blockquote>
+<p>$0.50 per Hosted Zone for the first 25 Hosted Zones</p>
+</blockquote>
+<p>Cloudflareの場合、年額8.03USD (≒1,142円) 課金される見込みです。課金される要素は以下の通り。</p>
+<ul>
+<li>ドメインの更新</li>
+</ul>
+<p>ドメインの更新は、.comドメインの場合は年額8.03USDです。</p>
+]]></content:encoded></item><item><title><![CDATA[vscode-ruby-light開発日記 - 初期版ふりかえり編]]></title><description><![CDATA[vscode-ruby-lightの開発中に考えたことを書いていきます。]]></description><link>https://r7kamura.com/articles/2023-12-23-vscode-ruby-light</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-12-23-vscode-ruby-light</guid><pubDate>Fri, 22 Dec 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p><a href="https://github.com/r7kamura/vscode-ruby-light">vscode-ruby-light</a>の開発中に考えたことを書いていきます。今回は、2022年末に初期版を開発してから1年ほど経った2023年末時点でのふりかえりを行います。</p>
+<h2>vscode-ruby-lightとは</h2>
+<p>1年ほど前に、<a href="https://r7kamura.com/articles/2022-08-16-vscode-ruby-light">Ruby用VSCode拡張: vscode-ruby-light</a>という記事を書きました。要約すると、Rubyがインストールされていなくても使える、Rubyを書くのがちょっと便利になるVSCode拡張をつくってみているという話です。具体的には、シンタックスハイライトやトークンの選択など、VSCode標準の機能よりちょっと良い編集体験を提供しようという目的の拡張です。</p>
+<p>あまり真面目に開発している訳ではなく、VSCode拡張やLSPについての勉強も兼ね、ちょっとした趣味プロジェクトとして開発したりしなかったりしているというのが実情です。開発自体は1年ほど停滞していたのですが、この1年でRubyのパーサーやVSCode拡張を取り巻く情勢にも大きく変化があったので、これを機にまたしばらく開発を進めてみています。</p>
+<h2>Rubyのインストールの是非</h2>
+<p>上述のVSCode拡張をつくってみた後、Rubyを必要としないことを利点とするのであれば、もしRubyや関連Gemをインストールしてもらえる場合はどのぐらい良い編集体験を提供できるのか、またその場合の導入や運用はどの程度大変なのか、ということをよく検証する必要があると考えました。</p>
+<p>そこで、新たに<a href="https://github.com/r7kamura/rucoa">rucoa</a>というRuby用のLanguage Serverを提供するGemをつくり、<a href="https://github.com/r7kamura/vscode-rucoa">vscode-rucoa</a>というVSCode拡張も用意して、Rubyを用いた開発現場で1年間ほど利用し、使い勝手を比較してみました。</p>
+<p>結果を整理すると、Rubyをインストールしてもらう形式の拡張の場合、まず以下の利点があると感じました。</p>
+<ul>
+<li>Ruby製のパーサーを簡単に利用できるので、複雑な構文に対応できる</li>
+<li>RuboCopの実行時に、外部コマンド経由でなくRubyのAPI経由でやり取りできる</li>
+<li>解析対象の言語で実装できるので、結果的に開発コストが低く済む</li>
+</ul>
+<p>一方で、以下の欠点があると感じました。</p>
+<ul>
+<li>導入に手間が掛かる</li>
+<li>複数人で開発するプロジェクトで導入しづらい</li>
+<li>Dockerを利用した開発時に使いづらい</li>
+</ul>
+<p>結論すると、やはりRubyをインストールしない形式の拡張にも大きな需要があると感じました。</p>
+<h2>Ruby向けVSCode拡張を取り巻く環境の変化</h2>
+<p>この1年間ほどで、Ruby向けのVSCode拡張を取り巻く環境も幾らか変わりました。いい機会なので、関係がありそうな情報をここで紹介しておきます。</p>
+<p>Ruby向けVSCode拡張としてデファクトスタンダードだった<a href="https://github.com/rubyide/vscode-ruby">vscode-ruby</a>の開発が、元々それまでも停滞はしていたんですが、公式に完全停止されることとなり、リポジトリがアーカイブされ、マーケットプレイスにおいてもVSCode拡張に非推奨フラグが付くようになりました。</p>
+<p>代わりに、Shopifyが開発する<a href="https://github.com/Shopify/vscode-ruby-lsp">vscode-ruby-lsp</a>が台頭し、vscode-rubyにおいてはこちらへの移行が推奨されるようになりました。この拡張は、rucoaと同じく別のGemでLanguage Serverを提供する形式になっており、Rubyに加えて<a href="https://github.com/Shopify/ruby-lsp">ruby-lsp</a>というGemをインストールする必要があります。</p>
+<p>Shopifyと言えば、Rubyにおける3rd Party製の静的型検査器である<a href="https://github.com/sorbet/sorbet">sorbet</a>を導入していることでも有名で、ruby-lspにも解析対象のコードでsorbetが利用されている場合に有利な機能が幾つか実装されていたり、またruby-lspの開発自体にもsorbetが利用されています。この辺りの話題には、もしかしたら幾らか駆け引きがあるのかもしれませんね。</p>
+<p>他の話題として、<a href="https://github.com/ruby/vscode-rdbg">vscode-rdbg</a>というものも登場し、便利な世の中になりました。Rubyの次世代デバッガー (要はブレイクポイントとかを設定したりできてちょっと豪華なデバッグができるやつ) として、<a href="https://github.com/ruby/debug">debug</a>というGemがあるんですが、これをVSCodeから便利に使うためのVSCode拡張がvscode-rdbgという訳ですね。VSCodeはGUIから利用できるデバッグ機能向けインターフェースを豊富に備えているので、これとdebug gemの機能を組み合わせることで、より便利にRubyのデバッグができるようになります。</p>
+<p>他にVSCode拡張に関連しそうな話として、RuboCopに幾つか機能が増えました。1つ目がサーバーモードの追加で、RuboCopのデーモンプロセスをサーバーとして裏で起動しておくことで、それ以降のRuboCopの実行時に高速に起動できるようになりました。VSCode拡張から外部コマンド経由でRuboCopを実行する場合、ミリ秒単位の細かい起動時間が編集体験に効いてくるので、これはかなり重要な機能です。それから、RuboCopがLanguage Serverとしての機能を搭載するようになり、<a href="https://github.com/rubocop/vscode-rubocop">vscode-rubocop</a>というVSCode拡張も登場しました。大LSP時代ですね。</p>
+<h2>Prismの登場</h2>
+<p>Rubyのパーサーとして、新たに<a href="https://github.com/ruby/prism">Prism</a> (旧名:YARP) が登場しました。CRubyの内部で使うパーサーがどうなっていくかは今後色々あると思うんですが、少なくともRuby 3.3では、RubyからPrismのパーサーとしての機能を利用するAPIが利用できるようになるみたいですね。</p>
+<p>興味深い話として、Prismはいわゆるユニバーサルな使い方も意識してくれていて、WASM経由での利用方法も提供してくれています。これをVSCode拡張に利用できれば、Rubyを入れてもらわなくても複雑な構文に簡単に対応できるようになりそうです。</p>
+<p>という訳で、vscode-ruby-lightでは現在、内部で利用するパーサーをtree-sitter-rubyからPrismに変更するという活動を進めてみています。自分自身、WASM自体への知識やNode.jsからWASMを利用する方法なんかについての知識がまだまだ乏しいので、なかなか大変そうな活動ではありますが、勉強しながら楽しく進めていっています。</p>
+<ul>
+<li><a href="https://github.com/r7kamura/vscode-ruby-light/pull/34">Change parser from tree-sitter-ruby to prism by r7kamura · Pull Request #34 · r7kamura/vscode-ruby-light</a></li>
+</ul>
+]]></content:encoded></item><item><title><![CDATA[npm ciのキャッシュ方式の検討]]></title><description><![CDATA[結論から言うと、node_modulesをキャッシュしてnpm ciの実行を省略するのが、多くの場合には有効そうです。]]></description><link>https://r7kamura.com/articles/2023-12-15-npm-cache</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-12-15-npm-cache</guid><pubDate>Thu, 14 Dec 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>結論から言うと、node_modulesをキャッシュしてnpm ciの実行を省略するのが、多くの場合には有効そうです。</p>
+<h2>はじめに</h2>
+<p>CIで <code>npm ci</code> を使うとき、実行時間短縮のためにキャッシュの利用を検討することになると思います。このとき、どのようにキャッシュするのが良いのでしょうか？</p>
+<p>よく知られているキャッシュ方式として、以下の二通りの方式があります。</p>
+<ul>
+<li>~/.npmをキャッシュする方式</li>
+<li>node_modulesをキャッシュする方式</li>
+</ul>
+<p>それぞれの違いについて、詳しく見てみましょう。</p>
+<h2>~/.npmをキャッシュする方式</h2>
+<p><code>npm ci</code> を実行すると、POSIX系のOSではデフォルトで ~/.npm にキャッシュデータが書き込まれます。package-lock.json をキーにこのディレクトリをキャッシュしておくことで、次回以降の <code>npm ci</code> 実行時にこのキャッシュデータを利用しよう、というのがこの方式です。</p>
+<p>例えばGitHub Actionsの公式アクションである<a href="https://github.com/actions/setup-node">actions/setup-node</a>では、この記事の執筆時点ではこの方式が推奨されており、これを補助する機能が実装されています。また、NPM公式ドキュメントの<a href="https://docs.npmjs.com/cli/v10/commands/npm-ci">npm-ci</a>の項目でも、この方式の例が掲載されています。</p>
+<p>一方でこの方式の欠点として、キャッシュデータを利用していても、<code>npm ci</code> では色々な計算処理が行われるため、幾らか時間が掛かるという点が挙げられます。そのため、この方式は「意外と時間が掛かる」という感想になることが多いように思います。</p>
+<h2>node_modulesをキャッシュする方式</h2>
+<p><code>npm ci</code> の主な用途は、./node_modules 内に依存パッケージをインストールすることです。そこで、package-lock.json をキーにこのディレクトリをキャッシュしておくことで、次回以降の <code>npm ci</code> を省略しよう、というのがこの方式です。</p>
+<p>キャッシュが利用できる場合には <code>npm ci</code> が省略されるので、前述の方式と比べるとより短く済みます。一見すると全部この方式で良さそうですが、一体どんな欠点があるのでしょうか？話が長くなりそうなので先に結論を書いておくと、以下の二つの欠点があります。</p>
+<ul>
+<li>Node.jsのバージョンをキャッシュキーに含めないと、バージョン変更時に困る</li>
+<li>postinstall等の兼ね合いで上手くいかない場合がある</li>
+</ul>
+<p>例えば<a href="https://github.com/actions/cache">actions/cache</a>のNPM利用者向けの説明箇所では、昔はnode_modulesをキャッシュする例が紹介されていました。しかし以下のIssueとPull Requestで、~/.npmをキャッシュする例に変更されました。</p>
+<ul>
+<li><a href="https://github.com/actions/cache/issues/67">https://github.com/actions/cache/issues/67</a></li>
+<li><a href="https://github.com/actions/cache/pull/69">https://github.com/actions/cache/pull/69</a></li>
+</ul>
+<p>このときの変更理由を見てみると、この方式の欠点が見えてきそうです。</p>
+<blockquote>
+<p>This is generally not recommended: see <a href="https://docs.npmjs.com/cli/ci.html#example">here</a>, <a href="https://stackoverflow.com/questions/42521884/should-i-have-travis-cache-node-modules-or-home-npm">here</a>, <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/caching/?view=azure-devops#nodejsnpm">here</a>, etc. It also doesn't integrate well with npm's suggested CI workflow -- which is to cache <code>~/.npm</code> and use <code>npm ci</code> -- because <code>npm ci</code> always removes node_modules if it exists so caching it strictly slows down the build.</p>
+</blockquote>
+<p>説明の補足として、時代背景を考慮する必要があります。当時 <code>npm ci</code> はまだ比較的新しい機能であり、今ほど普及していませんでした。実際、この例でもそれまで <code>npm install</code> が利用されていました。そこで、<code>npm install</code> から <code>npm ci</code> に変更しながらキャッシュ方式も変更しようという、二点の変更が同時に提案された訳ですね。</p>
+<p>それで、"generally not recommended" の拠り所として挙げられているリンク先を見てみると、「異なるバージョンのNode.js間で同じnode_modulesを再利用すると問題が起こる場合があるから、良くない」という話が書かれています。この問題は、Node.jsのバージョンをキャッシュキーに含めれば回避できそうです。</p>
+<p>また、これについては特に言及を見かけませんでしたが、node_modulesをキャッシュすると上手くいかなくなる場合も稀に起こり得るはずです。</p>
+<blockquote>
+<p><code>npm ci</code> の主な用途は、./node_modules 内に依存パッケージをインストールすることです。</p>
+</blockquote>
+<p>と前述しましたが、NPMのパッケージには、<code>install</code> や <code>postinstall</code> など、利用者がパッケージをインストールする際に実行されるスクリプトを登録できる機能があります。稀な例だとは思いますが、もしこれが高度に利用されていると、上手くいかなくなる可能性はありそうです。</p>
+<h2>GitHub Actionsでの設定例</h2>
+<p>以上の点を踏まえ、ここではnode_modulesをキャッシュする方式の例として、GitHub Actionsでの単純な設定例を記述してみます。</p>
+<pre><code>- uses: actions/setup-node@v3
+  with:
+    node-version-file: .node-version
+- id: cache-node-modules
+  uses: actions/cache@v3
+  with:
+    path: node_modules
+    key: node-modules-${{ runner.os }}-${{ hashFiles('.node-version') }}-${{ hashFiles('package-lock.json') }}
+    restore-keys: node-modules-${{ runner.os }}-${{ hashFiles('.node-version') }}-${{ hashFiles('package-lock.json') }}
+- if: steps.cache-node-modules.outputs.cache-hit != 'true'
+  run: npm ci
+</code></pre>
+<p>この例では、キャッシュキーにNode.jsのバージョンを含め、キャッシュを見つけられなかった場合にのみ <code>npm ci</code> を実行しています。</p>
+<h2>おわり</h2>
+<p>以上、<code>npm ci</code> の二つのキャッシュ方式について、それぞれの違いを見てみました。</p>
+<p>結果、可能な場合にはnode_modulesをキャッシュし、できればキャッシュキーにNode.jsのバージョンを含めるというのが、より実行時間の短縮をねらいたい場合には有効そうに思いました。<code>npm ci</code> のキャッシュ方式、皆さんも是非検討してみてください。</p>
+]]></content:encoded></item><item><title><![CDATA[デスク配線記]]></title><description><![CDATA[作業机の配線の記録をまとめておきます。]]></description><link>https://r7kamura.com/articles/2023-12-12-cable-management</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-12-12-cable-management</guid><pubDate>Mon, 11 Dec 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>作業机の配線の記録をまとめておきます。</p>
+<figure><img src="https://i.imgur.com/JV0DACsh.jpg" alt="" title="現在の様子"><figcaption>現在の様子</figcaption></figure>
+<h2>2020</h2>
+<p>2020年は牧歌的な時代で、子供の頃から使っていた机の上に、必要な機器を乱雑に並べていました。当時はゲームの録画や配信をはじめた頃だったので、それ以前と比べると、キャプチャーボードやオーディオインターフェースが増えていっていました。</p>
+<figure><img src="https://i.imgur.com/hDxuRn7h.jpg" alt="" title="乱雑に積まれた機器達"><figcaption>乱雑に積まれた機器達</figcaption></figure>
+<h2>2021</h2>
+<p>2021年には作業机を買い替えたり、はじめて自作PCを組んだりしました。この辺りでようやく、配線に真面目に向き合い始めました。この年には、天板下にクランプで取り付けられる、サンワサプライのケーブルトレーを導入しました。</p>
+<figure><img src="https://i.imgur.com/xMmOcXq.png" alt="" title="電源ケーブルはカーペット下を通している"><figcaption>電源ケーブルはカーペット下を通している</figcaption></figure>
+<figure><img src="https://i.imgur.com/hh0TeBxh.jpg" alt="" title="あらゆる機器が詰め込まれたケーブルトレー"><figcaption>あらゆる機器が詰め込まれたケーブルトレー</figcaption></figure>
+<figure><img src="https://i.imgur.com/9hwp7MNh.jpg" alt="" title="電源タップはマグネットシートで設置"><figcaption>電源タップはマグネットシートで設置</figcaption></figure>
+<figure><img src="https://i.imgur.com/0VctOAwh.jpg" alt="" title="PC裏にはゲーム機"><figcaption>PC裏にはゲーム機</figcaption></figure>
+<h2>2022</h2>
+<p>引越しを済ませ、生活が落ち着いてきた頃合いで、半年間、朝6時から12時まで毎日作業配信をやってみました。これにより、マイクやカメラなどの機材が配線に加わりました。</p>
+<figure><img src="https://i.imgur.com/yQqe78jh.png" alt="" title="バチバチに光らせて配信ソフトで遊んでいる"><figcaption>バチバチに光らせて配信ソフトで遊んでいる</figcaption></figure>
+<p>毎日配信で自分の作業机の様子を映していると、流石に散らかっている部分が気になってきました。そこで夏頃、重い腰を上げ、机の位置を変えたり壁面照明を追加したり、机の位置を変更したりと、見栄えが良くなるよう試行錯誤を進めてみました。</p>
+<figure><img src="https://i.imgur.com/u2lPY19h.jpg" alt="" title="いい感じに撮ったやつ 1"><figcaption>いい感じに撮ったやつ 1</figcaption></figure>
+<figure><img src="https://i.imgur.com/9zt64XDh.jpg" alt="" title="いい感じに撮ったやつ 2"><figcaption>いい感じに撮ったやつ 2</figcaption></figure>
+<p>この頃からオットマンを利用して脚を伸ばすようにしたことで、天板下のケーブルトレーが邪魔になることに気付きました。そこでケーブルトレーは廃止して、代わりにケーブルボックスを導入することにしました。PCの隣に配置して、あらゆる機器をここにぶち込んでいきます。</p>
+<figure><img src="https://i.imgur.com/5GyXWWNh.png" alt="" title="やけに凝った配線図"><figcaption>やけに凝った配線図</figcaption></figure>
+<h2>2023</h2>
+<p>これまでの配置は見栄えを優先するあまり、利便性や保守性に欠ける部分がありました。そこで、改めて配線を見直してみることにしました。</p>
+<figure><img src="https://i.imgur.com/JV0DACsh.jpg" alt="" title="2023年の結論"><figcaption>2023年の結論</figcaption></figure>
+<p>結果、現代のPCケースは作業机の右奥への設置が想定されていることから、PCの更に右奥側にケーブルボックスを置き、モニターアームやマイクアームもその付近から生やし、机の右奥で配線をまとめるのが最適だと結論付けました。配線距離を極力短くまとめることで、そもそもの配線の必要量を減らしつつ、発生するケーブルは全て箱にぶち込もうという考えです。天板下にまとめるのと比較すると、設置要件が緩く、メンテも簡単です。</p>
+<p>スマホやコントローラー、イヤホンなどの無線機器の充電用に、補助的に左側の棚にも電源系統を1つ用意し、こちらにもケーブルボックスを置いてみることにしました。こちらはあくまで補助で、最悪いつ電源が落ちても問題が無い機器類と位置付けています。設置要件的に大変そうであれば、これらの充電機器はPC付近にまとめても良いかも。</p>
+<figure><img src="https://i.imgur.com/r22AyJ6h.jpg" alt="" title="電源ケーブルを脚に這わせている"><figcaption>電源ケーブルを脚に這わせている</figcaption></figure>
+<p>机には右下側から電源ケーブル1本だけを引き入れ、電源タップにケーブルスリーブを纏わせた上で、PC裏のケーブルボックスまで繋いでいます。有線LANケーブルを引きたい場合は、ここで一緒にまとめるのが良いですね。ケーブルがまるで存在しないのも寂しいし、自分はこの太い電源ケーブルが繋がっているところが気に入っているので、一部のケーブルはあえて見せておくようにしようと思っています。キーボードのケーブルなんかもその1つです。</p>
+<p>ケーブルを這わせるためにネジ止めだとか両面テープだとかで天板に何かを固定するのは、いじるのもだるいしやり直しも効きづらいので、できれば使いたくありません。その点で、磁力で机の脚にケーブルを固定できるPREDUCTSのマグネットケーブルホルダーは重宝しました。たまにやってくるルンバも心なしか喜んでいるように見えます。</p>
+<figure><img src="https://i.imgur.com/FdZWE2Ch.jpg" alt="" title="PC背面の様子"><figcaption>PC背面の様子</figcaption></figure>
+<p>モニターとPCとの間には、電源ケーブルと映像用のケーブルがそれぞれ1本ずつ必要なので、これらもケーブルスリーブでまとめています。JOTOのケーブルスリーブは質感が良く、値段や長さの点でもケーブルスリーブ界の中では比較的使いやすかったです。作業中の仮止めや細かい部分の結束では、使い捨ての面ファスナーで結束できるサンワサプライのマジックバンドが重宝しました。</p>
+<h2>おわり</h2>
+<p>以上、2020年から2023年までの作業机の配線の記録でした。他人の作業環境の変遷やこだわり、考え方等を知るのが好きなので、自分で読みたい記事を書いてみました。配線整理、皆さんも是非やってみてください。</p>
+<h2>追記</h2>
+<p>質問をいただいたので、利用している機器等の商品ページへのリンクを載せておきます。</p>
+<ul>
+<li>ケーブルボックス <a href="https://www.amazon.co.jp/dp/B0846DPNPP?tag=r7kamuracom-22">山崎実業 ケーブルボックス</a></li>
+<li>ケーブルトレー <a href="https://www.amazon.co.jp/dp/B01N6B5ST9?tag=r7kamuracom-22">サンワサプライ ケーブルトレー</a></li>
+<li>ケーブルスリーブ <a href="https://www.amazon.co.jp/dp/B088JTYSGX?tag=r7kamuracom-22">JOTO ケーブルスリーブ</a></li>
+<li>ケーブルバンド <a href="https://www.amazon.co.jp/dp/B09ZV34326?tag=r7kamuracom-22">サンワサプライ マジックバンド</a></li>
+<li>ケーブルホルダー <a href="https://preducts.jp/products/magnet-cable-holder">PREDUCTS マグネットケーブルホルダー</a></li>
+<li>電源タップ <a href="https://www.amazon.co.jp/dp/B01NH5C9I3?tag=r7kamuracom-22">エレコム 電源タップ</a></li>
+<li>キーボード用USBケーブル <a href="https://www.amazon.co.jp/dp/B09F5T7LTQ?tag=r7kamuracom-22">GunMjo Pro カスタムコイルケーブル</a></li>
+<li>モニター上 <a href="https://www.amazon.co.jp/dp/B08P49Z6BX?tag=r7kamuracom-22">Dell ALIENWARE AW3821DW</a></li>
+<li>モニター下 <a href="https://www.amazon.co.jp/dp/B0BWMJ6XL2?tag=r7kamuracom-22">LG UltraGear 45GR95QE-B</a></li>
+<li>モニターアーム <a href="https://www.amazon.co.jp/dp/B07514G4ZL?tag=r7kamuracom-22">エルゴトロン LX デュアル ロングポール</a></li>
+<li>マイクアーム1 <a href="https://www.amazon.co.jp/dp/B0822PPK7P?th=1?tag=r7kamuracom-22">Logicool G Blue Compass</a></li>
+<li>マイクアーム2 <a href="https://www.amazon.co.jp/dp/B0CDWRJ6LB?tag=r7kamuracom-22">Elgato Wave Mic Arm LP</a></li>
+<li>机 <a href="https://kanademono.design/collections/standard-size-table/products/tbl-k03-bk?variant=32465592254526">かなでもの THE TABLE</a></li>
+<li>椅子 <a href="https://www.amazon.co.jp/dp/B08B3S2SNZ?tag=r7kamuracom-22">EKORNES ストレスレストーキョー</a></li>
+<li>間接照明1 <a href="https://www.amazon.co.jp/dp/B09MS3359S?tag=r7kamuracom-22">Nanoleaf Lines</a></li>
+<li>間接照明2 <a href="https://www.amazon.co.jp/dp/B08CZKKPH1?tag=r7kamuracom-22">Philips Hue ライトリボン</a></li>
+</ul>
+]]></content:encoded></item><item><title><![CDATA[家のダンボール全部抜く]]></title><description><![CDATA[重い腰を上げ、家のダンボールをまとめて資源回収に出した。]]></description><link>https://r7kamura.com/articles/2023-12-09-danbooru</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-12-09-danbooru</guid><pubDate>Fri, 08 Dec 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>重い腰を上げ、家のダンボールをまとめて資源回収に出した。</p>
+<figure><img src="https://i.imgur.com/nowHy0Gh.jpg" alt="" title="まとめたダンボールの一部"><figcaption>まとめたダンボールの一部</figcaption></figure>
+<p>ダンボールをまとめるため、今回から山善のハンディラップを導入して、これが非常に便利だった。適当な単位で重ねたダンボールを正座した状態で太ももの間に挟んで立てて、ハンディラップで3周ほどぐるっと巻くと綺麗にまとまる。</p>
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/B06XW4QHNS?th=1?tag=r7kamuracom-22">Amazon｜[山善] ハンディラップ セット品 幅10cm×150m巻 ストレッチ フィルム くるット セット(本体1個+交換用ラップ3個) HW-150/HWR-150｜新聞・雑誌ストッカー オンライン通販</a></li>
+</ul>
+<p>ダンボールストッカーがあると、まとめるのが更に楽になるのかもしれない。今のところうちでは、引越用に使った大きなダンボールにそれ以外のダンボールを突っ込んでストックしていくという運用でやっている。</p>
+<figure><img src="https://i.imgur.com/L4wyAyZh.jpg" alt="" title="100年ぶりに土間の床が見えた"><figcaption>100年ぶりに土間の床が見えた</figcaption></figure>
+<p>ハンディラップ使っていいのかどうかについて。元々、うちのゴミ収集所のゴミの捨て方的なガイドブックには、ダンボールはビニール紐でまとめるよう説明されていた。念のため、事前に収集所の管理人に聞いてみたところ、ハンディラップでも問題無いとの回答を得られた。</p>
+<p>素人がビニール紐でフニャフニャに縛ろうとして崩壊しかけになってるよりは、ハンディラップで綺麗にまとまってる方が収集しやすいと思うので、そんなに断られることはないように思うけど、収集場所によって判断基準は異なると思うので、事前に確認はしておいた方が良いかもしれない。</p>
+]]></content:encoded></item><item><title><![CDATA[スマートロックの『SESAME 5』と『SESAME Touch Pro』が良い]]></title><description><![CDATA[SESAME 5とSESAME Touch Proを導入して、非常に満足しているという話。]]></description><link>https://r7kamura.com/articles/2023-12-08-sesame</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-12-08-sesame</guid><pubDate>Thu, 07 Dec 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p><a href="https://www.amazon.co.jp/dp/B0C22W4Y5H?tag=r7kamuracom-22">SESAME 5</a>と<a href="https://www.amazon.co.jp/dp/B0C232GL4Q?tag=r7kamuracom-22">SESAME Touch Pro</a>を導入して、非常に満足しているという話。</p>
+<figure><img src="https://i.imgur.com/h8mqrdqh.jpg" alt="" title="一回取り外してメンテ中のSESAME Touch Proの様子"><figcaption>一回取り外してメンテ中のSESAME Touch Proの様子</figcaption></figure>
+<h2>Qrio Lock</h2>
+<p>2019年12月から2023年9月までは、Qrio Lockというスマートロックを使っていた。2019年の時点では、スマートロックの導入として非常に良い選択肢だったと思っているけれど、この製品には幾つかの不満も抱えていた。</p>
+<p>Qrio Lockの解錠の方法として、ジオフェンス (要はスマホが近付いたら位置情報を元に自動的に解錠するやつ) を使うか、あるいはそれが効かない場合にはiPhoneのアプリを使っていた。</p>
+<p>ジオフェンスで解錠が完全に自動化されて最高かと思いきや、この解錠方法に大きな不満があった。この機能は玄関から大体100mぐらい離れた場所に移動して帰ってきた場合にしか作動しないので、例えばゴミ捨てに少しだけ外に出た場合には動作しない。また、動作するまでに数秒から十数秒かかることや、上手く検知されず解錠されない場合があったりして、玄関の前でしばらく立ち尽くすことが多く、結局それを嫌ってiPhoneのアプリを開いて解錠するということが増えていた。</p>
+<p>いい大人がマンションの玄関の前で立ち尽くしている構図って、なんだか寂しいものがありますよね。万が一他の住民がたまたまそのタイミングで通りがかったときに備えて、私はUberの配達員のフリをする心構えをしていましたが、結局一度もその機会は訪れませんでした。</p>
+<h2>SESAME 5 と SESAME Touch Pro</h2>
+<p>2023年6月、SESAME 5とSESAME Touch Proが新たに発売されるということを知り、少し調べた結果以下の機能があることが分かり、購入に踏み切った。</p>
+<ul>
+<li>指紋認証で解錠できる</li>
+<li>NFC端末で解錠できる</li>
+<li>アプリで解錠できる</li>
+<li>パスコードで解錠できる</li>
+</ul>
+<p>指紋認証。これが一番利用頻度が高くて、普段解錠するのに使っている。100個まで登録できるので、指が多くても安心。</p>
+<p>NFC端末。要するにスマホを近付けたら解錠できますよというやつ。これは冬場に解錠するのに使っている。なぜなら、冬場の外出時は常に手袋をしているから。iPhoneをNFC端末として登録している。エクスプレスモード (iPhoneのロックを解除しなくてもICカード機能が使えるやつ) にも対応しているけど、iPhoneを盗られたときに侵入されるリスクがあるので、今のところエクスプレスモードは解錠には使っていない。</p>
+<p>アプリでの解錠。客人が帰るとき、基本的に自分より相手が先に玄関側に辿り着いてしまうので、靴を履いたりしている間にスマホで解錠している。勿論、解錠の手間を減らしてあげたいという配慮でもあるのだけど、それが主な目的ではない。スマートロックって両面テープで貼り付けているだけなので、施錠されている状態で事情を知らず力強く玄関が押されると、外れてしまったり、最悪壊れたりしてしまうことがあるので、それを防止したいという背景がある。解錠時にモーター音がある程度鳴る設計だと、「ああ何らかの仕組みで解錠されたんだな」ということが相手にも分かるので、この辺は完全に静音であるより、ある程度音があった方が都合が良かったりする。アプリでの解錠は、SESAME Touch Proの電池が切れたり動作不良を起こしたときのための緊急手段としても使っている。</p>
+<p>パスコード。文字盤で適当な数字を入力したら解錠できるやつ。極稀にトリッキーな用途で使っている。事前に一時的なパスコードを幾つか登録しておいて、家族や親しい友達が先に自宅に着いてしまったときにパスコードを連絡して先に入っておいてもらう、といった使い方。100個まで登録できるので、友達が多くても安心。</p>
+<h2>設置と脱着</h2>
+<p>SESAME 5とSESAME Touch Proの設置は非常に楽で、付属のスリーエムの両面テープで貼り付けるだけ。意外と一度も取れていない。高さ調整用の金属部品が無骨ながらわりと精緻なつくりだったので、この部分を自分は気に入っている。ただ、無骨すぎて気に入らない人もいそうな見た目ではあると思う。</p>
+<p>電池交換のためにSESAME Touch Proを一度脱着する機会があったのだけど、これには少し苦労した。とはいえ結局、ものすごく力強く張り付いていてもヘラとシール剥がしがあれば簡単に取り外せることが分かったので、寧ろまた安心して取り付けられるようになった。このシール剥がしセット持ってると便利だと思うので、スマートロック付ける人にはおすすめしたい。この辺の詳細については、『<a href="https://r7kamura.com/articles/2023-11-29-sesami-touch-pro">SESAME Touch Pro 取れない 対策</a>』という記事にまとめてある。</p>
+<h2>おわり</h2>
+<p>SESAME 5とSESAME Touch Proが良いという話でした。</p>
+<p>なお、このウェブサイトでは商品紹介に普段からAmazonアソシエイトを利用しているということもあり、記事先頭に記載したリンク先はそれぞれAmazon.co.jpの商品ページへのリンクになっているけど、2023年12月8日現在では<a href="https://jp.candyhouse.co/products/sesame5">公式サイトのオンラインストア</a>の方がいずれの商品も明らかに安いので、こちらから購入することをおすすめしたい。Amazonの方は「購入は全部Amazonで統一したい」とか「Amazonのポイントを消費したい」という人向け。</p>
+]]></content:encoded></item><item><title><![CDATA[良かったもの2023]]></title><description><![CDATA[良かったものを年末にまとめる回、2023年版。]]></description><link>https://r7kamura.com/articles/2023-11-30-good-buy-2023</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-11-30-good-buy-2023</guid><pubDate>Wed, 29 Nov 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>良かったものを年末にまとめる回、2023年版。</p>
+<h2>ラブリコと扇風機</h2>
+<p><img src="https://i.imgur.com/VXb6aCOh.jpg" alt=""></p>
+<p>脱衣所に大きな扇風機を設置できたおかげで、年中入浴後に快適に過ごせて、お風呂に入るのも楽しかった。入浴は健康に生活を送る上で重要な習慣だと感じているので、今年はそこの快適度を上げる努力をできたのが良かった。ラブリコは、賃貸物件でも問題無く設置できるし、最終的な処分も難しくはないし、自分で自分の環境を良くするDIYの楽しみがあるので、良いものだと思う。羽が大きい扇風機はいいぞ。</p>
+<p>『<a href="https://r7kamura.com/articles/2023-06-16-labrico">脱衣所に壁掛け扇風機</a>』という記事でも触れた。</p>
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/B083WKG6JH?tag=r7kamuracom-22">Amazon.co.jp: 平安伸銅工業 LABRICO DIY収納パーツ 2×4アジャスター強力タイプ オフホワイト 最大使用荷重40kg EXO-1: ホーム＆キッチン</a></li>
+</ul>
+<h2>あっちこっちふきん</h2>
+<p>12年ほど食器用に使っているふきん。めちゃくちゃ吸水力があるので、食器を拭くのに最高。高いだけの価値がある。欠点はやはり価格。4年に1度程度の頻度で買い替えている。</p>
+<p>今年は食器を洗う運用について見直していた。洗い物かごの導入や、シンクに置ける食器乾燥用のネットなど、色々な方式を試したのだけど、結局「あっちこっちふきんを1枚広げて置き、洗った食器をそこに重ねていき、最後に2枚目のあっちこっちふきんで拭いて、予め定められた保管場所に食器を片付ける。ふきんは洗濯乾燥機で洗う」という運用に落ち着いた。</p>
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/B0CKSW2822?th=1?tag=r7kamuracom-22">Amazon｜テイジン あっちこっちふきん Lサイズ 33×50cm 2枚セット 日本製 マイクロファイバー 吸水速乾 拭き取り 洗剤いらず キッチン 蛇口 鏡 窓 (グレー2枚)｜ふきん オンライン通販</a></li>
+</ul>
+<h2>AirPods Pro</h2>
+<p><img src="https://i.imgur.com/tiF0eW9h.jpg" alt=""></p>
+<p>今年もAirPods Proを使い倒した。仕事中ほぼ常時付けていたと思う。何か相談したいときに気軽に通話に入れていいね。付けっぱなしでインターホンに対応すると、訪問勧誘を「通話中なんですみません」とやんわりと断れることが分かった。</p>
+<p>自分の場合は長時間付けていても全く気にならない。他のイヤホンだと長時間付けていると痛くなることもあるし、知人でAirPods Proを長時間付けるのは厳しいと言う人も知っているので、偶然自分に上手く適合しているのだと思う。とはいえ、比較的適合しやすい方のイヤホンではあると思う。一度付けているのを忘れてシャワーを浴びた事があるけど、壊れなくて良かった。</p>
+<p>この手のノイズキャンセリング機能付きの完全ワイヤレスイヤホン、長時間の作業のために付けるのであれば、現代の充電容量を考えると基本的には2個持つのが良いと思う。という内容を『<a href="https://r7kamura.com/articles/2023-07-11-airpods-pro-2">AirPods Pro 2台持ち</a>』という記事でも触れた。</p>
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/B0CHXVBQHR?tag=r7kamuracom-22">Amazon.co.jp: Apple AirPods Pro（第2世代）​​​​​​​- MagSafe充電ケース（USB-C） : 家電＆カメラ</a></li>
+</ul>
+<h2>Anker 633</h2>
+<p><img src="https://i.imgur.com/UVgjTzVh.jpg" alt=""></p>
+<p>Ankerのスマホ用充電スタンド。寝室で使っている。</p>
+<p>「充電忘れてたので電池切れかけだけど、これから出かけないといけない！」というときに、モバイルバッテリーとして上部分を持っていけるので、何度か助けられた。充電開始時にスタンド下部がぼんやりと光るので、夜中にベッドから手探りでスマホを置いたときも、上手く充電が始まったかどうかしっかり分かるのが良い。こういう製品って設置場所によってケーブルの長さを調整したい場合も出てくるので、ケーブル部分が根本からリケーブル可能なのもわりと嬉しい。</p>
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/B09B3LKKW7?tag=r7kamuracom-22">Amazon.co.jp: Anker 633 Magnetic Wireless Charger (MagGo)(マグネット式 2-in-1 ワイヤレス充電ステーション)【モバイルバッテリー機能搭載 / 5000mAh / USB急速充電器付属/マグネット式/ワイヤレス出力 (7.5W) / PSE技術基準適合】iPhone14 / 13 / 12 シリーズ専用(ブラック) : 家電＆カメラ</a></li>
+</ul>
+<h2>ストレスレストーキョー</h2>
+<p><img src="https://i.imgur.com/Q0pXWqEh.jpg" alt=""></p>
+<p>エコーネス社のリクライニングチェア、ストレスレストーキョー。去年の良かったものにも入ってたけど、今年も1年間使い続けてとても良かったので、今年も入れた。良かったものについては、何度でも良かったと言っていきたいですね。</p>
+<p>『<a href="https://r7kamura.com/articles/2021-10-22-stressless-tokyo">ストレスレストーキョーのリクライニングチェア</a>』や『<a href="https://r7kamura.com/articles/2022-05-05-stressless-tokyo">ストレスレストーキョーで作業</a>』という記事でも触れた。</p>
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/B08B3S2SNZ?th=1?tag=r7kamuracom-22">Amazon｜EKORNES [正規品]ストレスレス®トーキョー スター ブラック/マットブラック チェアのみ mサイズ｜リクライニングチェア オンライン通販</a></li>
+</ul>
+<h2>Lian LiのPCケース</h2>
+<p><img src="https://i.imgur.com/y7JVjg4h.jpg" alt=""></p>
+<p>今年半ばに自作PCへの関心が高まり、いま使っているものを新調したい気持ちだったのだけど、性能的には今使っているものでまだ十分・今は時期が悪いという状態だった。そこで代わりに、PCケースやケースファンを買い替えて気分を変えてみた。普段自分のPCや友達のPCをNZXTのケースで組むことが多かったけど、Lian LiのPCケースはそれらに比べると若干割高め、品質が高め、互換性のある部品が非常に多め、という印象を受けた。</p>
+<p>『<a href="https://r7kamura.com/articles/2023-05-29-pc-case">PCケースとファンを換装</a>』という記事でも触れた。</p>
+<p>一度金属配管の本格水冷をやってみたい気持ちがあるので、来年始あたりに挑戦してみようと考えている。素人の配管で水没する可能性があるので、この画像が遺影になるかも。</p>
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/B0BKZS3XM2?tag=r7kamuracom-22">Amazon | LIANLI O11 DYNAMIC EVO BLACK ミドルタワーPCケース E-ATX / ATX / Micro ATX / Mini-ITX対応 冷却ファン最大10基・360mmラジエーター最大3基設置可能 ノーマル/リバースモード搭載 日本正規代理店品 | リアンリー(Li LIAN LI) | PCケース 通販</a></li>
+</ul>
+<h2>LGの有機EL曲面モニター</h2>
+<p><img src="https://i.imgur.com/sPjrNGPh.jpg" alt=""></p>
+<p>今年はメインのPCモニターを44.5型・240Hz・有機EL・曲面・ウルトラワイドなLGの面白巨大モニターに変えてみた。毎日仕事で使うもので結構不安があったものの、これは結果的に正解だった。まあ一番活躍してくれたのは、毎日固定でFF14の高難易度コンテンツで遊んでたときかも。</p>
+<p>ここ2年間ほどLGの有機ELのテレビを利用していて、有機ELってこんなに発色綺麗なんだと驚いていたので、それが購入のきっかけになった。上の画像の2枚の内、下側のやつがこれ。上側のやつはかなり一般的な部類の曲面モニターだけど、それと比べると曲率や視野角等が大きく異なっていることが分かる。なかなか癖があるけど、用途がハマる人には良いモニターだと思っている。</p>
+<p>この記事を見る人の中にはプログラミングをする人が一定数居ると思うので、「このモニターはプログラミング用途だとどうなの？」という疑問に答えておくと、「まあまあ良い」と思う。曲率が高いのは結構良いところ。文字って基本左側からはじまるので、ウルトラワイドモニターの画面左側に置いたウィンドウの左端から始まる文字って、普通かなり読みにくいと思うんだけど、このモニターだとその問題で困ったことがないので、そこは非常に良い点。そこを抜きにすると、目の疲れやすさは別に有機ELだろうがIPSだろうが特に変化を感じていない。欠点を挙げておくと、有機ELモニターは比較的画面焼けするほうなので、細かい点だけどこれを厭う人が多いかも。</p>
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/B0BWMJ6XL2?th=1?tag=r7kamuracom-22">Amazon.co.jp: LG ゲーミングモニター UltraGear 45GR95QE-B 44.5インチ 有機EL 800R曲面型21:9ウルトラワイド UWQHD(3440×1440)@240Hz / アンチグレア / 応答速度0.03ms(GTG) / DCI-P3 98.5% / G-SYNC Compatible、Freesync Premium/HDMI×2,DP : パソコン・周辺機器</a></li>
+</ul>
+<h2>Pulsar Xlite V2</h2>
+<p><img src="https://i.imgur.com/0oPuTbph.jpg" alt=""></p>
+<p>Escape from Tarkovという過酷なFPSゲームをやっており、主にこれを遊びやすくする目的で友達に聞いて軽めのマウスに買い替えた。これがとても良かった。あまりにも軽い。「別にいまのマウスの重量でも普通に使えてるし問題ないんだけど？」と最初は思っていたものの、軽いマウスを数日使ってみると完全に別の体験で、元のマウスには戻れなくなってしまった。ゲーム用途で購入したんだけど、結局仕事でも重宝している。</p>
+<p>この機会にマウスの持ち方を矯正してみて、これも結果的に良かった。以前より筋肉を使いやすく、かつ疲れない持ち方になったと思う。</p>
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/B09WXGMTDS?th=1?tag=r7kamuracom-22">Amazon.co.jp: Pulsar Gaming Gears ワイヤレス ゲーミングマウス Xlite V2 Wireless 超軽量 59グラム エルゴノミクス 2.4Ghz 1ms 20000 DPI Optical Sensor PAW3370 国内正規品 (Medium, White) : パソコン・周辺機器</a></li>
+</ul>
+<h2>リンク</h2>
+<p>過去回へのリンクはこちら。</p>
+<ul>
+<li><a href="https://r7kamura.com/articles/2022-12-26-good-buy-2022">良かったもの2022</a></li>
+<li><a href="https://r7kamura.com/articles/2021-12-29-good-buy-2021">良かったもの2021</a></li>
+<li><a href="https://r7kamura.com/articles/2020-11-23-good-buy-2020">良かったもの2020</a></li>
+</ul>
+]]></content:encoded></item><item><title><![CDATA[SESAME Touch Pro 取れない 対策]]></title><description><![CDATA[SESAME Touch Pro がシール剥がしとヘラで簡単に取れて良かったという話。]]></description><link>https://r7kamura.com/articles/2023-11-29-sesami-touch-pro</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-11-29-sesami-touch-pro</guid><pubDate>Tue, 28 Nov 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p><a href="https://www.amazon.co.jp/dp/B0C232GL4Q?tag=r7kamuracom-22">SESAME Touch Pro</a> がシール剥がしとヘラで簡単に取れて良かったという話。</p>
+<figure><img src="https://i.imgur.com/N0343iXh.jpg" alt="" title="取れた後の様子"><figcaption>取れた後の様子</figcaption></figure>
+<p>スマートロックの<a href="https://www.amazon.co.jp/dp/B0CJCG4Q4J?tag=r7kamuracom-22">SESAME 5</a>を拡張し、玄関ドアの外側に貼り付けて指紋認証やらNFCやらパスコードやらで開けられるようにするSESAME Touch Pro。電池交換の際には一旦取り外す必要があるのだけど、これがなかなか取れなかったのでしばらく困り果てていた。私は握力50kg以上持った成人男性だぞ、と思い全力でひねってもビクともしない。</p>
+<p>いろいろ調べたりサポートの方に連絡したりして、「ひねるようにすると取りやすい」「タコ糸やテグス等で糸ノコのように切るようにすると取りやすい」といった情報を得て試したのだけど、どれもうまくいかなかった。結局、いろいろと試行錯誤を重ねた結果、シール剥がしとヘラで簡単に取れたので、ここに記しておく。</p>
+<p>ちなみに、シール剥がしには<a href="https://www.amazon.co.jp/dp/B00F33Y1AE?tag=r7kamuracom-22">LOCTITE シールはがし プレミアム 60ml DSP-601</a>というやつをAmazonで購入して利用した。シールはがしの溶剤自体も結構良かったし、剥がし跡のケアまでできて助かったのだけど、商品自体に適度な大きさのヘラが付いているのが一番良かったところ。</p>
+<p>なお、SESAME 5とSESAME Touch Pro自体への感想はすこぶる良い。この価格で大体欲しい機能をすべて網羅したスマートロックを設置できて、他社のスマートロック製品であるQrio Lock等と比べても取り付けパーツの品質も遜色なし。今回サポートの方にも丁寧に対応していただけた。この丁寧さでサポートしてくれる企業はなかなかないように感じたので、非常にありがたかった。</p>
+]]></content:encoded></item><item><title><![CDATA[Elgatoのキャプボ『HD60 X』が優秀]]></title><description><![CDATA[Elgatoの『HD60 X』というキャプチャーボードが優秀って話。]]></description><link>https://r7kamura.com/articles/2023-11-29-hd60x</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-11-29-hd60x</guid><pubDate>Tue, 28 Nov 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>Elgatoの『<a href="https://www.amazon.co.jp/dp/B0CDWRBWY8?tag=r7kamuracom-22">HD60 X</a>』というキャプチャーボードが優秀って話。</p>
+<figure><img src="https://i.imgur.com/7HpjNkdh.jpg" alt="" title="Nintendo Switchと接続しているHD60 Xの様子"><figcaption>Nintendo Switchと接続しているHD60 Xの様子</figcaption></figure>
+<h2>要点</h2>
+<p>HD60 Xの良い点は以下の通り。</p>
+<ul>
+<li>設定の手間が少ない</li>
+<li>遅延が非常に少ない</li>
+<li>Elgatoが信用できる</li>
+</ul>
+<h2>設定の手間が少ない</h2>
+<p>例えば以前まで使っていたAVerMediaの『<a href="https://www.amazon.co.jp/dp/B07C2ZYHF5?tag=r7kamuracom-22">AVT-C878 PLUS</a>』だと、音声をまともに扱うには公式サイトのダウンロードページからユーティリティーツールをインストールし、そのツールを利用してドライバーをインストールする必要があり、更に映像入力と音声入力が別のデバイスとして認識されるため、そのための追加設定を行う必要があった。</p>
+<p>一方でHD60 Xは、特にドライバーをインストールする必要もなく、接続するだけで利用可能。環境によってはデバイスのファームウェアアップデートが必要になる場合もあるが、自分の環境ではその必要もなかったため、接続するだけですぐ利用可能という良い体験ができた。</p>
+<h2>遅延が非常に少ない</h2>
+<p>低遅延技術に力を入れているようで、確かに実際使ってみると遅延が非常に少ないことが感じられた。</p>
+<p>パススルー機能を使わず、キャプチャーボードで取り込んだ映像をOBSのプレビュー機能等で表示して遊びたい、というユースケースがある。これまで利用してきた他のキャプチャーボードでは、これをアクションゲームでやるには少し厳しい遅延具合だった。しかしHD60 Xでは体感できる程度に遅延が少なく、過酷なPvPのアクション対戦ゲームでもないかぎり、普通にプレイできるように感じた。</p>
+<p>実際、最近だとスーパーマリオRPGをこの方式でプレイしたのだけど、猶予3フレームと言われるスーパージャンプも普段と同じ感覚で難なく100回出せているし、実用的なレベルで遅延が少ないと感じる。(まあ厳密に言うとスーパージャンプは間隔が同じなので、遅延があっても成功はさせられるのだけど、「普段と同じ感覚で」というところは遅延が少なくないと成立しないはず)</p>
+<h2>Elgatoが信用できる</h2>
+<p>Elgatoには普段から『<a href="https://www.elgato.com/jp/ja/s/epoccam">Epoccam</a>』というアプリでお世話になっており、その品質の高さをかっているので、キャプチャーボードに関しても自分が信用に足る会社の製品を使えるというのは嬉しい。EpoccamはスマートフォンをPCのWebカメラとして利用できるようにする無料アプリ。うちではこのアプリのおかげでWebカメラを手放すことができた。普段会議や配信をするのに使っている。</p>
+<p>他にElgatoのハードウェア製品を挙げると、『<a href="https://www.amazon.co.jp/dp/B0CDWRJ6LB?tag=r7kamuracom-22">Elgato Wave Mic Arm LP</a>』を重宝している。製品名のLPはLow Profileの略で、一般的なマイクアームとは異なり、下から上に向かってマイクを伸ばすことを想定したつくりになっている。マイクは自分の口に近付けるほど音質が向上する。しかしマイクを口元に近付けようとするとアームが視界に入り邪魔。そこでこのアームでマイクを下から這わすと、この問題を上手く解決できる。モニターアームのような頑丈なつくりなので、マイクの重さで垂れていきづらい点も良い。</p>
+<h2>余談</h2>
+<p>うちでは主にウルトラワイドモニターを利用しているので、コンソール機をこれに繋ぐと縦横比がおかしなことになってしまう。当初HD60 Xを手に入れたときは、ゲームをするなら当然パススルー機能を使うものと考えていたので、PCから少し離れた位置にあるTVまで、長さ5mのUSBケーブルと5mのHDMIケーブルを使って接続し、キャプボ利用時はTVを使う設計にしていた。</p>
+<p>しかし実際に色々試してみると、あまりの遅延の少なさから、これOBSのプレビューで遊べば良くね？と思うようになり、結局この大仰な配線は片付け、今では専らPC側のモニターで遊んでいる。</p>
+<h2>おわり</h2>
+<p>『<a href="https://www.amazon.co.jp/dp/B0CDWRBWY8?tag=r7kamuracom-22">HD60 X</a>』いいよって話でした。</p>
+]]></content:encoded></item><item><title><![CDATA[仕事、筋トレ、YouTube]]></title><description><![CDATA[最近記事を書いていなかったので、取り留めのない近況について。]]></description><link>https://r7kamura.com/articles/2023-11-22-diary</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-11-22-diary</guid><pubDate>Tue, 21 Nov 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>最近記事を書いていなかったので、取り留めのない近況について。</p>
+<h2>仕事</h2>
+<p>相変わらず業務委託で様々なRailsアプリの開発現場に携わっている。</p>
+<p>仕事内容は主に「全般的にこのRailsアプリいい感じにしてください」という話を受けて、以下のような仕事を進めることが多い。</p>
+<ul>
+<li>RubyやRailsのバージョン変更
+<ul>
+<li>それ伴う様々な変更の調査と実装</li>
+<li>その後の継続的なバージョン変更</li>
+<li>自分が居なくなった後に手順をなぞれるように情報を整理</li>
+</ul>
+</li>
+<li>CIの改善
+<ul>
+<li>高速化、安定化</li>
+<li>Flakyなテストとの戦い</li>
+<li>テストコードの根本的な改善</li>
+<li>静的解析ツールの整理</li>
+<li>開発者の教育</li>
+</ul>
+</li>
+<li>開発環境の改善
+<ul>
+<li>開発環境構築手順の整理</li>
+<li>その組織向けのRailsやRSpecに関するガイドラインの策定</li>
+<li>Docker環境との棲み分け方の整理等</li>
+<li>その他ドキュメンテーション</li>
+</ul>
+</li>
+<li>その他改善できそうなところの調査と実装</li>
+</ul>
+<p>普段からたまに<a href="https://github.com/rubocop/rubocop/pulls?q=author%3Ar7kamura+">rubocop</a>や<a href="https://github.com/rubocop/rubocop-rails/pulls?q=author%3Ar7kamura+">rubocop-rails</a>、<a href="https://github.com/rubocop/rubocop-rspec/pulls?q=author%3Ar7kamura+">rubocop-rspec</a>にPull Requestを送っていたら、カスタムCopをさくっと書けるようになったので、最近の業務ではこれを活用することが多い。例えば、そのアプリや開発組織向けに適切なカスタムCopを用意したり、Railsのバージョン変更等で書き換えが必要なときにautocorrect目的で書き捨てのカスタムCopを用意したりといったことをやっている。正直、大規模なRubyのコード全体の面倒を見るなら、静的解析器を扱う能力がないとやってられん気がする。</p>
+<p>最近幾つかの会社でRails 5.0から7.1までのアップグレードを終えて一段落したので、Rubyを使っている組織で何か力になれそうなところがあれば、知り合い経由で<a href="https://twitter.com/r7kamura">XのDM</a>か<a href="mailto://r7kamura@gmail.com">メール</a>か何かで声をかけていただければと思います。こちらからはまず今の契約先と同等かそれ以上程度の条件を提示することになりそうです。話を聞いて、自分だと力になれなさそうだと判断したら断るかもしれません。英語はテキストベースでやりとりするぐらいなら全然問題無いけど、音声で意思疎通できるかというとかなり怪しい。</p>
+<p>この6年間で業務委託で参加している組織だと、1組織に対して1稼働日あたり平均6.7個のPull Requestをつくってきている模様。大体週2日程度の契約で参加することが多いので、規模感の参考になればと思います。</p>
+<h2>筋トレ</h2>
+<p>最近また筋トレを再開した。主に健康維持と体力増強のため。1日8分間ほど高強度なトレーニングを全力でやっているだけだけど、まずまず効果があるように感じている。</p>
+<p>去年はずっと続けていて、今年に入ってからしばらく中止していたのだけど、夏頃からまた再開した。トレーニングの時間を差し引いても1日の活動時間が増やせているので、多分良い効果を出せているはず。モチベーションとしては、まず活動時間が増えるのは嬉しいし、あと準委任契約で働いていることもあって、同じ時間給なら不健康な人間雇うより健康な人間雇いたいよなあという気持ちがあり、平日に不調な日がほぼ生まれない程度には運動しようと思っている。</p>
+<p>24時間営業でサウナ付きの最高の銭湯が近所にできたので、筋トレしたら行っていいというルールで通っている。習慣を付けたいときは何かと連鎖させて組んだ方が良いという<a href="https://www.amazon.co.jp/dp/B07YY2WV6K?tag=r7kamuracom-22">話もあり</a>、これはわりと効果的に働いていそう。</p>
+<p>1人で筋トレ続かないよという人は、TVでYouTube付けて、5分ぐらいの筋トレ動画流すのがおすすめ。筋トレ中に動画停止しようとすると大変なので、流されて最後までやってしまうと思う。最初は動画の人に全く追いつけないので無能感がすごいけど、何度かやってるとその内真似できるようになってきて面白い。この日は脚、この日は腕、とかでメニュー組んでカレンダーに予定入れとくのも良いですね。一度入れたらわざわざカレンダーから取り除くのもだるいので、惰性でわりと続く。</p>
+<h2>YouTube</h2>
+<p>唐突に動画編集で遊んでみたくなって、先月YouTubeのチャンネルをつくった。</p>
+<ul>
+<li><a href="https://www.youtube.com/@gamingboyjp">https://www.youtube.com/@gamingboyjp</a></li>
+</ul>
+<p>普段からそこそこゲームで遊んでるので、面白かったゲームの動画をほそぼそと上げてみている。前までは記事を書いてゲームの感想を書くことも多かったけど、ことゲームに関してはやはり動画の方が伝えたいことを表現しやすい。動画編集は登壇用の発表資料づくりとわりと似ているところがあるし、Podcastで話すときの考え方に通ずる部分もあるので、なかなか楽しい。</p>
+<p>どこから来てくれてるのか一切わからないのだけど (一切わからないというのは嘘で、アナリティクスを見る限りYouTubeのおすすめから来てくれている)、完全に無名の謎の投稿者のゲーム動画にコメントをしてくれる人というのが結構居て、非常にありがたい。しかもみんな楽しそう。もしかしてYouTubeって、<a href="https://dic.nicovideo.jp/a/twitter2">Twitter2</a> (だれも社会や政治の話をせず毎日みんなでアニメを観たりゲームをしたりして1日がおわるマジで楽しいSNS) なんじゃないか？</p>
+]]></content:encoded></item><item><title><![CDATA[RailsアプリのCI高速化]]></title><description><![CDATA[参加しているプロジェクトで、RailsアプリのCIの高速化を行った。]]></description><link>https://r7kamura.com/articles/2023-10-31-rails-ci</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-10-31-rails-ci</guid><pubDate>Mon, 30 Oct 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>参加しているプロジェクトで、RailsアプリのCIの高速化を行った。</p>
+<p>まだ進行中の部分も幾つかあるが、結果から言うと、元々8分前後だったテストが3分半程度に短縮された。行った作業を幾つかの観点に分け、どのように高速化を行ったか、どの程度高速化されたか等を記述する。</p>
+<h2>プロセス数とマシン性能の調整</h2>
+<p>元々は2コア1プロセス4マシンで8分程度掛かっていたが、8コア8プロセス1マシンに変更することで5分程度に短縮された。</p>
+<p>このプロジェクトではCIにGitHub Actionsを利用している。GitHub Actionsではデフォルトで2コアのマシンが利用されるが、Large runnerを利用して8コアに変更した。費用は変わらない。</p>
+<p>また同時に、8プロセスで並列実行するためにparallel_testsを導入した。このプロジェクトではMySQLとElasticsearchを利用しており、またファイルアップロード機能等もあったので、プロセス間で処理が競合しないように配慮し、flakyなテストも発生しないようにする等の細々とした調整を行った。</p>
+<p>並列実行の導入によるflakyなテストの発生は確率的には避けられないだろうと思ったので、flakyなテストが発生したときの報告手順を整理した。具体的には、Issueテンプレートを用意し、発生時にはまずテストファイル名でIssueを検索してもらい、見当たらなければテストファイル名とURL等を記述してもらうという素朴な運用で始めた。</p>
+<h2>テストケースの配分の調整</h2>
+<p>過去のテストファイルごとの実行時間を元に、各プロセスに均一にテストファイルを配分することで、5分程度から4分半程度に短縮された。各マシンでの合計実行時間は変わらないが、CI開始から完了までの時間は短縮される。</p>
+<p>当初は1プロセス4マシンの時代にこの調整を行っていたので、GitHub Actionsでこの機能を実現するために、<a href="https://github.com/r7kamura/split-tests-by-timings">r7kamura/split-tests-by-timings</a>というGitHub Actionを用意して利用していた。今は8プロセス1マシンで実行しているので、parallel_testsの機能でこの調整を行うようにした。もっとテストが大規模化してきて、例えば8プロセス2マシンとかになれば、これらの両方を用いることになると思う。</p>
+<p>デフォルトブランチでのCI実行時、各テストファイルの実行時間を記録したXMLファイルを最新の1回分だけ保存しておいて、テスト実行時にこれを参照しているような形。</p>
+<h2>Dockerイメージの利用</h2>
+<p>カスタムのDockerイメージを用意することで、テストの起動時間が30秒程度短縮された。</p>
+<p>それまでは、CIの実行のたびに都度aptのパッケージをインストールしたり、細かい設定をしたりといったことをやっていたので、それが無くなった。CIにGitHub Actionsを利用している場合、GitHub Container Registry (以下GHCR) との転送量が無料なので、これが非常に低コストに実現できる。CIにGitHub Actionsを利用する強みの一つ。</p>
+<p>これに伴い、開発環境でもCI環境でも同じDockerイメージを使うように統一した。GHCRとの認証を済ませていれば、開発環境構築時や更新時に開発者各位の手元でDockerイメージをビルドしてもらう必要はなく、GHCRからイメージがダウンロードされる。認証を済ませていない場合は、フォールバックして手元でビルドされる。</p>
+<p>この手のDockerイメージの利用はまだまだ珍しい方だと思うので、CI高速化の文脈からは少し脱線するが、以下で運用における細かいあれこれにも一応言及しておく。</p>
+<p>Dockerイメージのバージョン管理等について、現在のところはこれで必要十分なので、<code>ruby-3-0</code>、<code>ruby-3-1</code> のように、Rubyのマイナーバージョンごとにタグを発行して運用している。</p>
+<p>アプリの規模や管理コストを鑑みて、MacでもLinuxでもWindowsでも、開発にはDockerを利用する運用で統一している。MacのDocker用ファイルシステムの仕組みはまだまだ遅く使い物にならないレベルだと思われがちだが、この問題はDocker Desktop for MacにMutagen extensionを入れることで大きく改善されるので、この運用で上手く収まっている。</p>
+<h2>Rubyのバージョン変更</h2>
+<p>Rubyのバージョン変更により、テストの時間が数秒短縮された。</p>
+<p>Ruby 2.4から3.2まで試したが、2.7から3.0にかけての変更が大きかった。</p>
+<h2>Railsのバージョン変更</h2>
+<p>Railsのバージョン変更により、テストの時間が40秒程度短縮された。</p>
+<p>Rails 5.0から7.1まで試したが、Rails 5.2から6.0にかけての変更が劇的だった。</p>
+<h2>gem groupの整理</h2>
+<p>gem groupを整理し、そのジョブで必要なgemだけをインストールさせることで、RuboCop等のジョブの実行時間が10秒程度短縮された。</p>
+<p>これはCI全体の実行時間が短くなったというより、速めのジョブがより速く終わってすぐ報告されるようになったという形。</p>
+<p>例えばよくあるのが、RuboCop実行用のジョブでdefault gem groupのgemもインストールしてしまっているようなパターンや、test gem groupにrubocopを入れていて、test gem groupのgemを全部インストールしてしまう以下のようなパターン。</p>
+<pre><code># bad
+group :test do
+  # ...
+  gem "rubocop", require: false
+  gem "rubocop-rails", require: false
+end
+</code></pre>
+<p>好ましいのは以下のようなパターン。</p>
+<pre><code># good
+group :rubocop do
+  gem "rubocop", require: false
+  gem "rubocop-rails", require: false
+end
+
+group :test do
+  # ...
+end
+</code></pre>
+<p>このように分けて <code>BUNDLE_ONLY=rubocop</code> を指定すると、rubocop gem groupのものだけ入るようになる。BUNDLE_ONLYが未実装な古いバージョンのBundlerでは、<code>BUNDLE_WITHOUT=default:development:production:test</code> のようにも書ける。BUNDLE_ONLYはこういう用途のために実装したので、活用してほしい。</p>
+<h2>eager_load_pathsの整理</h2>
+<p><code>Rails.configuration.eager_load_paths</code> を整理した結果、RSpecの起動時間が1秒弱程度短縮された。これはどちらかと言うと、高速化というより別の観点での改善だったが、念のため記述しておく。</p>
+<p>具体的には、eager-loadingを行う必要のないディレクトリがここに幾つか含まれていたので、これを適切に整理した。Railsアプリではよく、libをautoload_pathsやeager_load_pathsに登録するような横着を見かけることがある。挙動も予測しづらくなるし、処理効率も悪い。</p>
+<p>現在の個人的な好みは、以下のディレクトリを設け、それぞれをautoload_pathsとeager_load_pathsに登録すること。</p>
+<ul>
+<li>lib/autoload</li>
+<li>lib/eager_load</li>
+</ul>
+<p>但し、Railsアプリではデフォルトでlibが <code>$LOAD_PATHS</code> に登録されるので、そのlibの中にこれらのディレクトリを設けるのは避けるべきという見方もあるかもしれない。それで言うと、以下のようなディレクトリを設けるのが良いのかもしれない。</p>
+<ul>
+<li>autoload</li>
+<li>eager_load</li>
+</ul>
+<h2>Gemfileの整理</h2>
+<p>Railsアプリ起動時に読み込む必要がないgemに <code>require: false</code> を付けることで、テスト起動までの時間が数百ms程度短縮された。</p>
+<h2>spec_helper / rails_helperの整理</h2>
+<p>spec/spec_helper.rb や spec/rails_helper.rb の整理を加えたことで、数秒程度高速化された。</p>
+<p>不要な処理が各テストケースごとに実行されていたので、それを取り除いた形。</p>
+<h2>テストの記述方法の改善</h2>
+<p>地道な改善だが、最終的にはこれを泥臭く進めていく必要がある。</p>
+<p>各テストレイヤーの役割をはっきりさせつつ、ある程度既存のテストコードを模範的な形に書き換えていくような形。改善の最初の方の段階では、静的解析器で検知したり書き換えを進めていったりするのが非常に有効で、具体的にはそのプロジェクトに適したカスタムCopを書きながら進めた。</p>
+<p>また、良くないコードは主にコピペで指数的に増えていくので、ある程度手作業になってしまっても、コピーされやすい代表的なテストファイルの内容を早い段階で改善しておくのも効率的。</p>
+]]></content:encoded></item><item><title><![CDATA[『Hammerwatch II』をやった]]></title><description><![CDATA[2DオープンワールドRPG、Hammerwatch II (Steam) を遊んだ。]]></description><link>https://r7kamura.com/articles/2023-08-17-hammerwatch2</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-08-17-hammerwatch2</guid><pubDate>Wed, 16 Aug 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>2DオープンワールドRPG、Hammerwatch II (<a href="https://store.steampowered.com/app/1538970/Hammerwatch_II/?l=japanese">Steam</a>) を遊んだ。クリアまでのプレイ時間は、サブクエストまでしっかりやって20時間程度だった。</p>
+<p><img src="https://i.imgur.com/teIsog1h.png" alt=""></p>
+<p>タイトルから分かる通り、Hammerwatchの続編である。また関連作として、人気の外伝ゲームHeroes of Hammerwatchがある。自分はHeroes of Hammerwatchから入ったクチで、これはマルチプレイが中毒的に楽しいダンジョンハクスラRPGゲーだったが、今作のHammerwatch IIは、構造的にはエルデンリングやゼルダの伝説 神々のトライフォースに近いような作品になっていた。</p>
+<p>今作はメインクエストを進めていく上での探索要素や謎解きがほどよく難しく、個人的にはこれはかなり魅力的な部分だった。昨今のJRPGのように親切ではなく、90年代のRPGのような手応えのある難しさな一方で、いずれもきちんと情報を整理すると解けるようになっている。</p>
+<p>戦闘面は流石によくできていた。複数職があり、今回はウィザードで遊んだ。被弾しないよう気を付けないといけない代わりに火力が高く、最終段階まで育てると一気に強化され、更に終盤の装備で吸収効果を付けると被弾やマナ残量すら気を付ける必要もなくなるなど、成長のスケール感が気持ち良かった。中盤まではバランスよく成長させ、終盤では呪文は一切使わず通常攻撃強化に全振りするビルドに進むなど、自分で方向性を決められる点もGood。</p>
+<p>一方良くなかった点として、仕様的にマルチプレイで気軽に遊びにくかったり、一度見聞きしたものを忘れるとどこに行けばいいか分からなくなったり、そもそも説明がない要素があったりなど、最初は面食らう部分も多かったかもしれない。この辺りも含めて、いい意味でもわるい意味でも、最近のゲームと比べると我が強い作品だと感じた。</p>
+]]></content:encoded></item><item><title><![CDATA[AirPods Pro 2台持ち]]></title><description><![CDATA[AmazonプライムセールでAirPods Proの第2世代が安くなっていたので、2台運用している内の古い方のAirPods Proを買い替えた。]]></description><link>https://r7kamura.com/articles/2023-07-11-airpods-pro-2</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-07-11-airpods-pro-2</guid><pubDate>Mon, 10 Jul 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>AmazonプライムセールでAirPods Proの第2世代が安くなっていたので、2台運用している内の古い方のAirPods Proを買い替えた。</p>
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/B0BDJGFWP4?tag=r7kamuracom-22">Amazon.co.jp: Apple AirPods Pro（第2世代） ​​​​​​​ ホワイト : 家電＆カメラ</a></li>
+</ul>
+<p>作業中、ノイズキャンセリング目的と気軽に通話に参加したい目的で常時AirPods Proを付けている。数時間で充電が切れるので、常時着用するとなると充電中にもう1台持つ必要があり、2台持つことにしている。2台持つとなるとまずまずの金額になるものの、そこは作業用の経費と割り切って使っている。</p>
+<h2>他社製品との比較</h2>
+<p>完全ワイヤレスイヤホンは選択肢が多く、用途的には別にAirPods Proでなくても良いのだけど、問題が起きたときにその製品固有の問題なのかどうかを切り分けるのが面倒。利用者が多く、最悪Appleストアに持ち込めば対応してもらえるということで、AirPods Proを選んでいる。2年使った頃に調子が悪くなったAirPods Pro 第1世代を一度Appleストアに持ち込んだことがあり、製品側に元々含まれていた不具合があったということで交換してもらったことがあるので、製品自体はともかくサポートについては割と信頼している節が有る。</p>
+<p>競合他社の最新製品と比べると、AirPods Proは第2世代でも対応コーデックがSBCやAACだけと、少し物足りなく感じる部分もある。例えば遅延のより少ないものや帯域幅の大きいものを選びたければ、aptX LLコーデックなんかに対応した製品を選びたくなるかもしれない。今のところ自分の用途だと特に気になっていない点だけど、その内、例えばPS5にBluetoothトランスミッターを付けて使いたいみたいな用途が発生したら気になってくるかも。</p>
+<p>ちなみにMacではなくWindows (とiPhone) とペアリングして使っているが、これも特に問題は無い。あえて挙げるなら、MacやiPhoneからだとバッテリーの残量状況を確認できるがWindowsだとできない、というのが欠点だろうか。</p>
+<h2>第1世代と第2世代の比較</h2>
+<p>色々良くなった点があるのだけど、特に自分が気に入った点について。</p>
+<p>二台運用していると、とにかく電池の持ちが1分でも長い方が嬉しい。第1世代では4.5時間、第2世代では6時間と、かなり伸びた印象があって嬉しい。こういう製品ってどうせ少し使うと段々理論値が出なくなるんでしょと最初は思っていたものの、2年使い込んだAirPods Pro 第1世代で大体4時間15分音楽を再生できたので、想像していたほどはバッテリーの持ちが悪くなるということはなかったらしい。</p>
+<p>Qiで充電するとき、置く位置が少しずれているせいで充電されず、利用する段階になって充電が切れていることに気付いて詰むということがたまにあったのだけど、第2世代では充電開始時に音が鳴るようになったので、この問題が起きにくくなった。発表当時、ケースにスピーカーを付けた理由が全然分かっていなかったのだけど、今になってようやく理解している。</p>
+]]></content:encoded></item><item><title><![CDATA[脱衣所に壁掛け扇風機]]></title><description><![CDATA[ラブリコと2x4材を使って、脱衣所に壁掛け扇風機を設置した。]]></description><link>https://r7kamura.com/articles/2023-06-16-labrico</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-06-16-labrico</guid><pubDate>Thu, 15 Jun 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p><a href="https://www.amazon.co.jp/dp/B083WKG6JH?tag=r7kamuracom-22">ラブリコ</a>と2x4材を使って、脱衣所に壁掛け扇風機を設置した。</p>
+<p>扇風機はTEKNOSの<a href="https://www.amazon.co.jp/dp/B0BXNN5VT1?tag=r7kamuracom-22">KI-W488R</a>という製品。羽が40cmあり比較的大きい。羽は大きい方が同じ電力で風量が大きくなると聞いたので、羽が大きめで比較的安い物を選ぼうということでこの製品にした。</p>
+<figure><img src="https://i.imgur.com/VXb6aCOh.jpg" alt="" title="扇風機設置後の様子"><figcaption>扇風機設置後の様子</figcaption></figure>
+<p>2x4材の方は、適切な長さに切られた2x4材の両端に部品をはめて、壁にはめ込み、上側のネジを手で回すことで設置できた。ここでの適切な長さとは「設置場所の最大長 - 120mm」である。</p>
+<p><a href="https://labrico.jp/">ラブリコの公式サイト</a>から辿れるオンラインショップでは、「柱セット」という形で、2x4材のカットや染色までやってくれるサービスがある。自分で2x4材を用意する場合と比べて価格は高くなるが、楽ではあるので、これを利用するのも良いと思う。</p>
+<figure><img src="https://i.imgur.com/7XRGJsIh.jpg" alt="" title="ラブリコで2x4材を設置した様子"><figcaption>ラブリコで2x4材を設置した様子</figcaption></figure>
+<p>扇風機に壁掛け金具とネジが付属しており、ドライバーで金属のネジをぐりぐり回していくと、壁掛け金具を2x4材に取り付けられた。</p>
+<figure><img src="https://i.imgur.com/Qan6QtTh.jpg" alt="" title="壁掛け金具"><figcaption>壁掛け金具</figcaption></figure>
+<p>余談になるが、当初は<a href="https://www.amazon.co.jp/dp/B00EQ1PD0G?tag=r7kamuracom-22">壁美人</a>に扇風機を取り付ける算段だったものの、調べてみるとうちの脱衣所の壁は壁美人を取り付けられなかったので、方針転換してこういう設置方法に落ち着いた。</p>
+<p>設置してから改めて考えてみると、スマホの充電器、ハンディークリーナー、洗濯用品など、壁面に取り付けられると便利そうなものが意外と多いので、この柱に生やしていくと今後捗る気がしている。</p>
+]]></content:encoded></item><item><title><![CDATA[Rubyのバージョン変更前に依存ライブラリのソースコードを静的解析]]></title><description><![CDATA[やっておくと安心。]]></description><link>https://r7kamura.com/articles/2023-06-08-static-analystics-on-ruby-upgrade</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-06-08-static-analystics-on-ruby-upgrade</guid><pubDate>Wed, 07 Jun 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>やっておくと安心。</p>
+<h2>手順</h2>
+<p>まず利用しているライブラリのソースコードを、適当な場所にコピー。</p>
+<pre><code>cp -r vendor/bundle/gems tmp/gems
+</code></pre>
+<p>各ライブラリに .rubocop.yml が含まれているとその設定が利用されてしまうので、削除する。前述のコピーはこのために必要。</p>
+<pre><code>rm tmp/gems/**/.rubocop.yml
+</code></pre>
+<p>適当なオプションを付け、Rubyのバージョン変更に関係がありそうなCopを指定しながら、RuboCopで静的解析する。</p>
+<pre><code>bundle exec rubocop \
+  --ignore-disable-comments \
+  --ignore-parent-exclusion \
+  --ignore-unrecognized-cops \
+  --only Lint/DeprecatedClassMethods,Lint/DeprecatedConstants,Lint/UnifiedInteger \
+  tmp/gems/**/*.rb
+</code></pre>
+<p>古いRuboCop向けのコメントを書いていて警告が出たり、拡張子が <code>*.rb</code> なファイルにERBが記載されていて <code>Lint/Syntax</code> が出たり、Rubyのバージョン変更に関係無い違反が含まれたりするものの、それらは無視する。</p>
+]]></content:encoded></item><item><title><![CDATA[CPUグリスを塗り直した]]></title><description><![CDATA[2年半前に組んだ自作PCのCPUグリスを塗り直した。]]></description><link>https://r7kamura.com/articles/2023-05-31-cpu-grease</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-05-31-cpu-grease</guid><pubDate>Tue, 30 May 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p><a href="https://r7kamura.com/articles/2021-01-08-pc-build-2021">2年半前に組んだ自作PC</a>のCPUグリスを塗り直した。</p>
+<figure><img src="https://i.imgur.com/fjkpwdGh.jpg" alt="" title="元々塗られていたグリスの様子"><figcaption>元々塗られていたグリスの様子</figcaption></figure>
+<p>自分の利用しているCPUクーラーのヘッダーは、4つのネジでマザーボード側のバックパネルと固定されている。このネジを外すと、ヘッダーとCPUとを分離できるようになる。ヘッダーのヒートシンク部とCPUとが乾いたグリスにより固着していないか心配だったが、少しの力で簡単に外れた。</p>
+<figure><img src="https://i.imgur.com/GCPMALEh.jpg" alt="" title="今回使ったグリスとクリーナー"><figcaption>今回使ったグリスとクリーナー</figcaption></figure>
+<p>今回はアイネックス社の<a href="https://www.amazon.co.jp/dp/B00430EX2E?tag=r7kamuracom-22">グリスクリーナー IPA-CLN2</a>を利用し、元々塗られていたグリスを拭き取った。元々塗られていたのは、CPUクーラーに出荷時から予め塗られていたグリス。触るとパサパサした感触。アルコールを含んだ布を当てると、グリスが溶けてきれいに拭き取れた。</p>
+<p>塗り直したのは、同じくアイネックス社の<a href="https://www.amazon.co.jp/dp/B00JHRXMZM?tag=r7kamuracom-22">ナノダイヤモンドグリス JP-DX1</a>。粘性が高めのグリスだと聞いていたが、そこまで塗りづらいと感じることもなく、難なく塗り直せた。再度ヘッダーをCPUに固定し、気持ちぐりぐりと押し当てた後、4つのネジを締め直し、作業完了。</p>
+<p>CPUグリスを塗り直す前のCPU温度は平時で55℃付近を上下していたが、塗り直した後は48℃付近を上下するようになった。</p>
+]]></content:encoded></item><item><title><![CDATA[野良フィードの保守]]></title><description><![CDATA[毎日0時に生成している野良フィードの保守をした。]]></description><link>https://r7kamura.com/articles/2023-05-29-weneedfeed</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-05-29-weneedfeed</guid><pubDate>Sun, 28 May 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>毎日0時に生成している野良フィードの保守をした。</p>
+<h2>対象</h2>
+<p>対象は以下の3つ。いずれも、公式でフィードが提供されていないウェブコミックの更新通知を受け取るためのもの。</p>
+<ul>
+<li><a href="https://github.com/r7kamura/weneedfeed-comic-newtype">https://github.com/r7kamura/weneedfeed-comic-newtype</a></li>
+<li><a href="https://github.com/r7kamura/weneedfeed-mangacross">https://github.com/r7kamura/weneedfeed-mangacross</a></li>
+<li><a href="https://github.com/r7kamura/weneedfeed-webace">https://github.com/r7kamura/weneedfeed-webace</a></li>
+</ul>
+<h2>デプロイ方式</h2>
+<p>GitHub Pagesへのデプロイを、ブランチを使う旧方式ではなく、GitHub Actionsを使う新方式に統一した。これにより、GitHubのアカウントの活動から機械的なcommitが減り、管理が楽になった。尚、方式変更の話題については、<a href="https://r7kamura.com/articles/2023-05-27-github-pages-deploy-direct">GitHub Pagesへ直接デプロイする方式に変更</a>という記事でも触れた。</p>
+<h2>デフォルトブランチ</h2>
+<p>デフォルトブランチ名も対象のリポジトリ間で統一した。GitHub Pagesでは、Environmentという仕組みを利用してデプロイがなされる。このとき、Environmentには基本的にProtection Ruleが設定されており、特定のブランチからのみデプロイ可能に設定されていることが多い。デフォルトでそういう設定がなされるためである。ブランチ名を変更した場合、これも配慮しないと次回デプロイ時に失敗してしまう。</p>
+<h2>セレクタ</h2>
+<p>一部のサイトでid属性の値が変更されたことでフィードが取得されなくなっていたのを確認したので、これを修正した。</p>
+]]></content:encoded></item><item><title><![CDATA[PCケースとファンを換装]]></title><description><![CDATA[自宅で使っているメインPCのケースとファンを換装した。]]></description><link>https://r7kamura.com/articles/2023-05-29-pc-case</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-05-29-pc-case</guid><pubDate>Sun, 28 May 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>自宅で使っているメインPCのケースとファンを換装した。</p>
+<h2>換装前</h2>
+<p>換装前は、NZXT社の<a href="https://www.amazon.co.jp/dp/B0B6Y6NQNF?tag=r7kamuracom-22">H510 Elite</a>というケースを使っていた。元々の構成については<a href="/articles/2021-01-08-pc-build-2021">自作PC2021</a>という記事で紹介している。将来的に本格水冷化して遊んでみたい気持ちがあり、まずはケースとファンだけ換装してみることにした。</p>
+<h2>換装後</h2>
+<p><img src="https://i.imgur.com/y7JVjg4h.jpg" alt=""></p>
+<p>換装後のケースは、LIAN LI社の<a href="https://www.amazon.co.jp/dp/B0BKZS3XM2?tag=r7kamuracom-22">O11 Dynamic EVO</a>という製品。他にiBUYPOWER社の<a href="https://www.amazon.co.jp/dp/B0BV5YLS99?tag=r7kamuracom-22">HYTE Y60</a>やNZXT社の<a href="https://www.amazon.co.jp/dp/B0BFZZ3ZWZ?tag=r7kamuracom-22">H9 Flow</a>を検討したものの、今回選んだ製品はケース側面の大きさに余裕があり、互換性のある製品が多く、利用事例も豊富ということで、最終的にこれにした。</p>
+<p>ケースの換装のついでに、一部のファンもLIAN LI社の<a href="https://www.amazon.co.jp/dp/B0B4P5S94P?tag=r7kamuracom-22">SL INFINITY 120</a> に換装した。このファンは隣接するファン同士を配線無しで接続でき、ファンから出る配線も回転数制御と照明制御が1本にまとめられており、配線口の方向も調整できて物理的に干渉しづらく、付属のファンコントローラーで4グループのファン達を束ねられるなど、使い勝手が良くて好印象。</p>
+<p><img src="https://i.imgur.com/UF2PH2Jh.jpg" alt=""></p>
+<p>ケースに付いているカバー類を外し、マザーボードやファンを取り付け、適当に配線を済ませ、残った部品を取り付けると作業完了。今回はNZXT社の<a href="https://www.amazon.co.jp/dp/B082DYSQVF?tag=r7kamuracom-22">Z63</a>という簡易水冷を引き続き利用したのだけど、Z63自体が回転数制御と照明制御用の配線のハブ機能を持っているため、ラジエーターに取り付けているNZXTのファンの配線をここに束ねられ、ファンコントローラーを別途用意する必要がなかったのが良かった。</p>
+<p><img src="https://i.imgur.com/yUEADfYh.jpg" alt=""></p>
+<p>近いうちに簡易水冷部分を組み直すことになるので、配線はあまり頑張らず、背面の配線用空間に押し込む形に。前回組んだときにUSBの配線が面倒だった記憶があり、今回はいつの間にか手に入れていたNZXT社の<a href="https://www.amazon.co.jp/dp/B08L8VJS3Z?tag=r7kamuracom-22">Internal USB Hub</a>を利用することに。フロントパネル、ファンコントローラー、簡易水冷、電源の合計4つのUSB接続をケース背面で1つにまとめられた。</p>
+<h2>道具</h2>
+<p>今回役に立った道具シリーズ。</p>
+<p><img src="https://i.imgur.com/Jou20odh.jpg" alt=""></p>
+<p>VESSEL社の<a href="https://www.amazon.co.jp/dp/B09V218NSD?tag=r7kamuracom-22">電ドラボールプラス</a>。PCケースはネジ留めする部品が非常に多く、いちいち手で回してたら日が暮れるので、これのおかげでかなり捗った。ビットの径は、自作PCだと標準添付の <code>+2</code> のやつだけで大体事足りる。M.2 SSD等でたまに小さいネジが使われるので <code>+1</code> もあると安心。何となく収納ケースも合わせて買ってみたら、チャックの留め具が可愛くて良かった。</p>
+<p>掃除用にナカバヤシ社の<a href="https://www.amazon.co.jp/dp/B07L9XPJT1?tag=r7kamuracom-22">エアダスター</a>。水冷用のラジエーターやファンなど、旧PCケースから引き継いだ部品の細かい埃を吹き飛ばすのに役に立った。容量やノズル切替の機構など、必要十分な機能で良かった。</p>
+<p><a href="https://www.amazon.co.jp/dp/B0BSTYL2ZY?tag=r7kamuracom-22">ジップロック フリーザーバッグ</a>はネジや細かい部品類を細かく仕分けて保管しておく用。ネジやらケーブルやら色々詰め込みがち。何から発生した部品かを記載しておくと後々記憶を失った頃に便利。あとジップロックコンテナも、一時的に発生するネジ入れとして役に立った。どっちも普段は料理に使ってるやつ。</p>
+]]></content:encoded></item><item><title><![CDATA[GitHub Pagesへ直接デプロイする方式に変更]]></title><description><![CDATA[このサイトのGitHub Pagesへのデプロイ方式を、GitHub Actionsを使って直接デプロイする方式に変更した。]]></description><link>https://r7kamura.com/articles/2023-05-27-github-pages-deploy-direct</link><guid isPermaLink="true">https://r7kamura.com/articles/2023-05-27-github-pages-deploy-direct</guid><pubDate>Fri, 26 May 2023 15:00:00 GMT</pubDate><content:encoded><![CDATA[<p>このサイトのGitHub Pagesへのデプロイ方式を、GitHub Actionsを使って直接デプロイする方式に変更した。</p>
+<h2>新機能の説明</h2>
+<p>2022年7月まで、GitHub Pagesにファイルをデプロイするためには、何らかのブランチにデプロイしたいファイルを配置する必要があった。これを実現するために、よく<a href="https://github.com/peaceiris/actions-gh-pages">peaceiris/actions-gh-pages</a>のようなカスタムアクションが使われていた。</p>
+<p>2022年7月から、新方式として、<a href="https://github.com/actions/upload-pages-artifact">actions/upload-pages-artifact</a>と<a href="https://github.com/actions/deploy-pages">actions/deploy-pages</a>という二つのカスタムアクションを組み合わせて、ブランチにファイルを配置することなく直接GitHub Pagesにデプロイする方式も選べるようになった。この情報は、<a href="https://github.blog/changelog/2022-07-27-github-pages-custom-github-actions-workflows-beta/">GitHubのブログ記事</a>でも紹介されている。2023年5月時点で、この機能はβ版という位置付けになっている。</p>
+<h2>このサイトでの変更箇所</h2>
+<p>リポジトリの設定と、workflow、合計二箇所を変更することになった。</p>
+<p>リポジトリの設定変更について。GitHub PagesのSourceを "Deploy from a branch" から "GitHub Actions" に変更した。</p>
+<figure><img src="https://i.imgur.com/leRcFfuh.png" alt="" title="Settings > Pages"><figcaption>Settings > Pages</figcaption></figure>
+<p>workflowの変更について。変更前は、デプロイ用のworkflowは以下のような内容だった。</p>
+<pre><code>name: publish
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: r7kamura/r7n
+      - uses: actions/checkout@v3
+        with:
+          path: r7kamura.com
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: package.json
+          cache: npm
+      - run: npm install
+      - run: npm run export
+        env:
+          ARTICLES_DIRECTORY_PATHS: ./r7kamura.com/articles
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          cname: r7kamura.com
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: out
+</code></pre>
+<p>変更後は、以下のような内容になった。</p>
+<pre><code>name: publish
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: r7kamura/r7n
+      - uses: actions/checkout@v3
+        with:
+          path: r7kamura.com
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: package.json
+          cache: npm
+      - run: npm install
+      - run: npm run export
+        env:
+          ARTICLES_DIRECTORY_PATHS: ./r7kamura.com/articles
+      - uses: actions/upload-pages-artifact@v1
+        with:
+          path: out
+  deploy:
+    needs: build
+    permissions:
+      id-token: write
+      pages: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/deploy-pages@v2
+        id: deployment
+</code></pre>
+<p>元々peaceiris/actions-gh-pagesを実行していた箇所が、actions/upload-pages-artifactに変わった。また実行されるjobが、元々buildだけだったのが、buildとdeployの2つに分かたれた。</p>
+<p>buildアクションでは、まず一時的にartifactとしてファイルがアップロードされる。次に、後続のdeployアクションで、artifactがGitHub Pagesにデプロイされる。actions/deploy-pagesでは、このように二つのjobに分割することを推奨していたので、そのようにした。</p>
+<p>また細かい変更点として、カスタムドメインを使うためのCNAMEというファイルが、GitHubによってリポジトリのデフォルトブランチに自動的に配置された。このCNAMEファイルはドキュメントを読む限り本来不要なように見えるので、不具合で追加されただけかも。</p>
+]]></content:encoded></item></channel></rss>

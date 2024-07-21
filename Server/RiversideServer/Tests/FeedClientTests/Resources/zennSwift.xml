@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Zennの「Swift」のフィード]]></title><description><![CDATA[Zennのトピック「Swift」のRSSフィードです]]></description><link>https://zenn.dev/topics/swift</link><image><url>https://storage.googleapis.com/zenn-user-upload/topics/84dd786118.png</url><title>Zennの「Swift」のフィード</title><link>https://zenn.dev/topics/swift</link></image><generator>zenn.dev</generator><lastBuildDate>Fri, 29 Dec 2023 21:54:16 GMT</lastBuildDate><atom:link href="https://zenn.dev/topics/swift/feed" rel="self" type="application/rss+xml"/><language><![CDATA[ja]]></language><item><title><![CDATA[[SF-0001] Calendar Sequence Enumeration の解説]]></title><description><![CDATA[この記事はSwiftWednesday Advent Calendar 2023の21日目の記事です。
+昨日は @sugiy さんの「矯正治療 - アプリ開発編2」でした。
+
+ はじめに
+macOS 14およびiOS 17において、CalendarクラスがSwiftに書き換えられました。この更新により、従来のenumerateDatesメソッドと比較して、Swiftの特性を活かした、より直感的で使いやすいCalendar APIの開発が可能となりました。
+この記事では、最近提案された [SF-0001] Calendar Sequence Enumeration に焦点を当てています。（...]]></description><link>https://zenn.dev/dena/articles/f5f6f9f9b89695</link><guid isPermaLink="true">https://zenn.dev/dena/articles/f5f6f9f9b89695</guid><pubDate>Fri, 29 Dec 2023 03:17:53 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--aUzS1SSH--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:%255BSF-0001%255D%2520Calendar%2520Sequence%2520Enumeration%2520%25E3%2581%25AE%25E8%25A7%25A3%25E8%25AA%25AC%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:ojun%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyL2ViMjg2MTZiZGIuanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:DeNA%2520Engineers%2Cx_220%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzE2ZWJkZjE0YWYuanBlZw==%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>ojun</dc:creator></item><item><title><![CDATA[Git Hooks の post-commit で意識せずにコードフォーマット]]></title><description><![CDATA[
+ 先にまとめ
+
+Git Hooks の post-commit で半自動的にコードフォーマッターをかける
+フォーマッターの差分は別のコミットとして積まれる
+
+
+ 背景
+
+以前は pre-commit でフォーマッターをかけていた
+本来の変更とフォーマッターの変更が一緒になってしまい、Pull Request 時にレビュアーの負荷が高かった
+
+プロジェクト全体に一括でフォーマットすれば、この問題は起きない
+
+
+
+
+ 解決策
+
+pre-commit ではなく post-commit でフォーマットする
+本来の変更とは別にコードフォーマットのコミットが作成される
+
+
+ コード
+#!/bin/...]]></description><link>https://zenn.dev/worlddowntown/articles/fde932c555f801</link><guid isPermaLink="true">https://zenn.dev/worlddowntown/articles/fde932c555f801</guid><pubDate>Thu, 28 Dec 2023 06:44:08 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--GsiDEj6t--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Git%2520Hooks%2520%25E3%2581%25AE%2520post-commit%2520%25E3%2581%25A7%25E6%2584%258F%25E8%25AD%2598%25E3%2581%259B%25E3%2581%259A%25E3%2581%25AB%25E3%2582%25B3%25E3%2583%25BC%25E3%2583%2589%25E3%2583%2595%25E3%2582%25A9%25E3%2583%25BC%25E3%2583%259E%25E3%2583%2583%25E3%2583%2588%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:WorldDownTown%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2loVW10SzFaSFlFcXNYTFVSbWVjenZBOGprYWhMV3c4ZXktSF9nTnc9czI1MC1j%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>WorldDownTown</dc:creator></item><item><title><![CDATA[【Swift】SwiftUI で表を実装する]]></title><description><![CDATA[
+ 初めに
+今回は SwiftUI の Table を用いて表のUIを実装していきたいと思います。
+
+ 記事の対象者
+
+Swift, SwiftUI 学習者
+SwiftUI で表の実装が必要な方
+
+
+ 目的
+今回は以下の画像のように、表のUIを実装していきます。
+なお、今回は VisionOS 上での実装を行います。
+
+!
+Table は以下のOSのバージョンのみで使用可能となります。
+
+iOS 16.0+
+iPadOS 16.0+
+macOS 12.0+
+Mac Catalyst 16.0+
+visionOS 1.0+ Beta
+
+
+
+ 実装
+今回はスキルセットの表を作成してみたいと思...]]></description><link>https://zenn.dev/koichi_51/articles/55c87e9b4c8877</link><guid isPermaLink="true">https://zenn.dev/koichi_51/articles/55c87e9b4c8877</guid><pubDate>Wed, 27 Dec 2023 14:08:28 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--yOmpM3YN--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:%25E3%2580%2590Swift%25E3%2580%2591SwiftUI%2520%25E3%2581%25A7%25E8%25A1%25A8%25E3%2582%2592%25E5%25AE%259F%25E8%25A3%2585%25E3%2581%2599%25E3%2582%258B%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:Koichi%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUFUWEFKeEItYV8xVld0YWdLMHo3UW1IZUVqcEl2cVVOUWRkWlFneFFPajk9czk2LWM=%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>Koichi</dc:creator></item><item><title><![CDATA[ARKitのPeople Occlusion]]></title><description><![CDATA[!
+本記事は拙著「実践ARKit」に記載している内容（初出は2019年9月）を転載したものです。
+
+
+ オクルージョンとは
+ARKit 3（iOS 13）から、People Occlusionと呼ばれる機能が追加されました。
+オクルージョンとは、手前にある物体が背後にある物体を隠して見えないようにする状態のことです。
+たとえば下図の左の画像のようにカメラに映っている状態で、ARKitでワールドトラッキングを行い、検出したテーブルの平面に仮想オブジェクトを設置するとします。すると、従来は下図の右の画像のように描画されていました。
+
+手前の人物より奥にあるテーブルの平面に設置されているはずの...]]></description><link>https://zenn.dev/shu223/articles/arkit_people-occlusion</link><guid isPermaLink="true">https://zenn.dev/shu223/articles/arkit_people-occlusion</guid><pubDate>Wed, 27 Dec 2023 12:37:15 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--G3Vtboph--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_72:ARKit%25E3%2581%25AEPeople%2520Occlusion%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:Shuichi%2520Tsutsumi%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2pHcm5LNC1XQ2l0MVBwSUFqSTFFODhnLXRFZUd6UmRfVkcwNlZwRmc9czI1MC1j%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>Shuichi Tsutsumi</dc:creator></item><item><title><![CDATA[UITextViewにPlaceholderを表示する]]></title><description><![CDATA[
+ はじめに
+UITextViewには標準でPlaceholderが付いていないので、自分で実装するか、UITextView+Placeholderなどのライブラリを使用する必要があります。
+VoicyではUITextView+Placeholderライブラリを使っていましたが、自分で実装できるものはライブラリを使わずに実装してライブラリを消したいと思ったので、消しました。
+
+ コード
+import UIKit
+
+class PlaceholderTextView: UITextView {
+    
+    var placeholderLabel = UILabel()
+    
+ ...]]></description><link>https://zenn.dev/musa/articles/4f40d44c385c3f</link><guid isPermaLink="true">https://zenn.dev/musa/articles/4f40d44c385c3f</guid><pubDate>Wed, 27 Dec 2023 09:55:29 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--Cv3fT_wf--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:UITextView%25E3%2581%25ABPlaceholder%25E3%2582%2592%25E8%25A1%25A8%25E7%25A4%25BA%25E3%2581%2599%25E3%2582%258B%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:%25E3%2583%25A0%25E3%2583%2583%25E3%2583%2581%25E3%2583%25A7%2520%257C%2520iOS%25E3%2582%25A8%25E3%2583%25B3%25E3%2582%25B8%25E3%2583%258B%25E3%2582%25A2%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzhhYzAxYzVkYzkuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>ムッチョ | iOSエンジニア</dc:creator></item><item><title><![CDATA[学生初心者FlutterエンジニアがSwiftUIでまず作ったもの]]></title><description><![CDATA[
+ 最近CATechAccelでSwiftUIを触ることになった学生エンジニアがアウトプットの場として、何を作ったのかここに書いていこうと思います！
+
+まずは定番のToDoアプリ。
+これはおそらくほぼ全ての人がプログラミングを学習していく上で通る道だとは思います。
+localDBやFirebase,Supabaseに保存するものが多いでしょう。
+しかし、その前にもう一つ階段がほしい！みたいな方にとっては今回の記事は向いているかもしれません！
+今回作成するのはDBを一切使わないTodoアプリ！
+なんや、ToDoアプリやん！なんやあほくさ、って思ったそこのあなた！あなたもしかして関西人ですね...]]></description><link>https://zenn.dev/jboy_blog/articles/d120f6fa28606e</link><guid isPermaLink="true">https://zenn.dev/jboy_blog/articles/d120f6fa28606e</guid><pubDate>Tue, 26 Dec 2023 11:56:16 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--mxrVZNnv--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:%25E5%25AD%25A6%25E7%2594%259F%25E5%2588%259D%25E5%25BF%2583%25E8%2580%2585Flutter%25E3%2582%25A8%25E3%2583%25B3%25E3%2582%25B8%25E3%2583%258B%25E3%2582%25A2%25E3%2581%258CSwiftUI%25E3%2581%25A7%25E3%2581%25BE%25E3%2581%259A%25E4%25BD%259C%25E3%2581%25A3%25E3%2581%259F%25E3%2582%2582%25E3%2581%25AE%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:ryota1582%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzI5YjY1OThmZWIuanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:Jboy%25E7%258E%258B%25E5%259B%25BD%25E3%2583%25A1%25E3%2583%2587%25E3%2582%25A3%25E3%2582%25A2%2Cx_220%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzE0NDRkMDZhYTkuanBlZw==%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>ryota1582</dc:creator></item><item><title><![CDATA[Apollo iOS v1.x系の変更でインパクトがある点をおさらいする]]></title><description><![CDATA[
+ 1. はじめに
+皆様お疲れ様です。「iOS Advent Calendar 2023」の25日目を担当させて頂きます、fumiyasac(Fumiya Sakai)と申します。何卒よろしくお願い致します。
+現在、業務や個人開発では、サーバーサイド側をGraphQLを積極的に利用して開発する方針としているため、Apolloでの処理がアプリの根幹を担っています。また、iOS側のGraphQLクライアントは「apollo-ios」を利用しています。
+apollo-iosの導入から必要なコード生成に関する手順においてv0.x系から破壊的な変更があったので、v1.x系にバージョンアップを図る際...]]></description><link>https://zenn.dev/fumiyasac/articles/39e1d398bf8637</link><guid isPermaLink="true">https://zenn.dev/fumiyasac/articles/39e1d398bf8637</guid><pubDate>Tue, 26 Dec 2023 09:58:28 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--jr0Y9Yeq--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Apollo%2520iOS%2520v1.x%25E7%25B3%25BB%25E3%2581%25AE%25E5%25A4%2589%25E6%259B%25B4%25E3%2581%25A7%25E3%2582%25A4%25E3%2583%25B3%25E3%2583%2591%25E3%2582%25AF%25E3%2583%2588%25E3%2581%258C%25E3%2581%2582%25E3%2582%258B%25E7%2582%25B9%25E3%2582%2592%25E3%2581%258A%25E3%2581%2595%25E3%2582%2589%25E3%2581%2584%25E3%2581%2599%25E3%2582%258B%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:Fumiya%2520Sakai%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2dHTFRYbWlCRTJaczF2Mk8tUENSeWRTMzd5bkJJSFFuV2pEWWpWPXMyNTAtYw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>Fumiya Sakai</dc:creator></item><item><title><![CDATA[Journaling Suggestoins APIの概説]]></title><description><![CDATA[iOS17.2よりApple公式の日記アプリ「Journal」が利用できるようになりました。
+Journalは写真、ビデオ、録音した音声、場所などを使って、日常のありふれた瞬間や特別な出来事を詳しく記録して書き留めることができます。
+そして、アプリリリースと同時にJounaling Suggestions APIも公開されました。
+日記のような個人的な文章を書くアプリなどを開発している個人・企業もiPhone内にある情報を同じように利用できるようになります。
+今回は、APIの概要をざっくり検証していこうと思います。
+!
+現状でJounaling Suggestions APIの利用はでき...]]></description><link>https://zenn.dev/mtfum/articles/journaling_suggestions</link><guid isPermaLink="true">https://zenn.dev/mtfum/articles/journaling_suggestions</guid><pubDate>Tue, 26 Dec 2023 08:39:32 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--B6G89LTa--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Journaling%2520Suggestoins%2520API%25E3%2581%25AE%25E6%25A6%2582%25E8%25AA%25AC%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:Fumiya%2520Yamanaka%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzExZWQzM2E4OGUuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>Fumiya Yamanaka</dc:creator></item><item><title><![CDATA[iCloudで同期する付箋アプリを作ってみた。要件定義, Apple Developer登録, アイコン作成, リリースまでのワンマン開発記]]></title><description><![CDATA[macOSに最初から入ってるスティッキーズという便利なアプリ知ってますか？画面上のどこにでもピン留め（常に最前面に表示）できて、めちゃめちゃ小さく折りたためる。ツールバーやウィンドウコントロールのUIがギリギリクリックできるくらい小さく、「付箋」であることに特化しているアプリです。
+メモアプリも標準で入ってますが、スティッキーズみたいに極限まで最小化したり、半透明にしたりはできません。
+
+🔼極限まで最小化した状態のスティッキーズ。比較用に背景に別のアプリのControls（閉じるボタンなどがある部位のこと）を置いてみました。
+スティッキーズのiCloud対応を私は切望しているのですが、i...]]></description><link>https://zenn.dev/karaage/articles/4851f35d5c2e83</link><guid isPermaLink="true">https://zenn.dev/karaage/articles/4851f35d5c2e83</guid><pubDate>Tue, 26 Dec 2023 02:50:00 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--9EaM5wXQ--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:iCloud%25E3%2581%25A7%25E5%2590%258C%25E6%259C%259F%25E3%2581%2599%25E3%2582%258B%25E4%25BB%2598%25E7%25AE%258B%25E3%2582%25A2%25E3%2583%2597%25E3%2583%25AA%25E3%2582%2592%25E4%25BD%259C%25E3%2581%25A3%25E3%2581%25A6%25E3%2581%25BF%25E3%2581%259F%25E3%2580%2582%25E8%25A6%2581%25E4%25BB%25B6%25E5%25AE%259A%25E7%25BE%25A9%252C%2520Apple%2520Developer%25E7%2599%25BB%25E9%258C%25B2%252C%2520%25E3%2582%25A2%25E3%2582%25A4%25E3%2582%25B3%25E3%2583%25B3%25E4%25BD%259C%25E6%2588%2590%252C%2520%25E3%2583%25AA...%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:karaage%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzVmMzk1YzYzYzYuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>karaage</dc:creator></item><item><title><![CDATA[iOSアプリ開発の多言語対応のテスト方法のtips]]></title><description><![CDATA[
+ 能書き
+iOSアプリ開発における多言語サポートでは、「Localizable.strings」ファイルを用いてアプリ内で言語特有のコンテンツを実装します。開発者は一般的に、NSLocalizedString("Hello, world", comment: "")のような構文を使用して、これらのローカライズされた文字列をアプリに統合します。
+しかし、これらのファイルの長期的な管理と維持は、時折困ったことを引き起こすことがあります。例えば、「Localizable.strings」ファイル内のキー値が誤って変更されたり、タイプミスによりこれらの文字列が正しく適用されないことがあります。...]]></description><link>https://zenn.dev/yom03/articles/bdd7054acb4c7f</link><guid isPermaLink="true">https://zenn.dev/yom03/articles/bdd7054acb4c7f</guid><pubDate>Tue, 26 Dec 2023 02:27:32 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--tnjNbLN2--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:iOS%25E3%2582%25A2%25E3%2583%2597%25E3%2583%25AA%25E9%2596%258B%25E7%2599%25BA%25E3%2581%25AE%25E5%25A4%259A%25E8%25A8%2580%25E8%25AA%259E%25E5%25AF%25BE%25E5%25BF%259C%25E3%2581%25AE%25E3%2583%2586%25E3%2582%25B9%25E3%2583%2588%25E6%2596%25B9%25E6%25B3%2595%25E3%2581%25AEtips%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:YomEngine%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUVkRlRwNkwxRUUwbXVJcndPNGVuZ3Y1YlU2Wl9oUVBNWnB3MnRNSTVYU3M9czk2LWM=%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>YomEngine</dc:creator></item><item><title><![CDATA[ARKitで姿勢検出]]></title><description><![CDATA[!
+本記事は拙著「実践ARKit」に記載している内容（初出は2019年9月）を転載したものです。
+
+
+ モーションキャプチャ
+ARKit 3（iOS 13）から、モーションキャプチャ機能が追加され、現実の人物の全身の動きを取得できるようになりました。これにより、人体の特定の部位に仮想オブジェクトやエフェクトを表示したり、現実の人物の動きと同じように3Dモデルをアニメーションさせたりといったことが可能になります。
+
+他にもモーション認識に使用したり、スポーツにおける動きの分析、バーチャルオブジェクトとのインタラクションといった多様なユースケースが考えられます。
+本機能はA12以降（iPho...]]></description><link>https://zenn.dev/shu223/articles/arkit_motion-capture</link><guid isPermaLink="true">https://zenn.dev/shu223/articles/arkit_motion-capture</guid><pubDate>Mon, 25 Dec 2023 22:54:25 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--hr8DpwC---/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_66:ARKit%25E3%2581%25A7%25E5%25A7%25BF%25E5%258B%25A2%25E6%25A4%259C%25E5%2587%25BA%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:Shuichi%2520Tsutsumi%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2pHcm5LNC1XQ2l0MVBwSUFqSTFFODhnLXRFZUd6UmRfVkcwNlZwRmc9czI1MC1j%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>Shuichi Tsutsumi</dc:creator></item><item><title><![CDATA[VisionKitで自動画像切り抜き（Subject Lifting）]]></title><description><![CDATA[!
+本記事は2023年6月11日に #WWDC23 の勉強メモ というnoteのマガジンに書いた記事をリライトしたものです。
+
+iOS 16で標準の「写真」アプリに搭載され、多くのユーザーに歓迎された画像切り抜き機能ですが、iOS 17ではそれらに関連するAPIが追加されました。我々のアプリにも標準の写真アプリと同等の機能・体験をめちゃくちゃ簡単に、場合によってはコードを1行も追加することなく実装することができます。
+
+iOS 16の写真からの切り抜き機能
+関連するWWDC23のセッションは以下2つ。
+https://developer.apple.com/videos/play/wwd...]]></description><link>https://zenn.dev/shu223/articles/subject-lifting</link><guid isPermaLink="true">https://zenn.dev/shu223/articles/subject-lifting</guid><pubDate>Sun, 24 Dec 2023 22:00:02 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--QPNntJHA--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:VisionKit%25E3%2581%25A7%25E8%2587%25AA%25E5%258B%2595%25E7%2594%25BB%25E5%2583%258F%25E5%2588%2587%25E3%2582%258A%25E6%258A%259C%25E3%2581%258D%25EF%25BC%2588Subject%2520Lifting%25EF%25BC%2589%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:Shuichi%2520Tsutsumi%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2pHcm5LNC1XQ2l0MVBwSUFqSTFFODhnLXRFZUd6UmRfVkcwNlZwRmc9czI1MC1j%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>Shuichi Tsutsumi</dc:creator></item><item><title><![CDATA[GitHub ActionsでAWS S3にSwift DocCをデプロイしようとしてできない]]></title><description><![CDATA[Swift/Kotlin愛好会 Advent Calendar 2023の18日目の記事です。18日目の記事です。
+
+ はじめに
+みなさん Swift DocC 使ってますか？
+私は DocC 大好きです。特にTutorialが好きで、よく使ってます。
+DocCはGitHub Actions経由でGitHub Pagesで公開するのが定石となっており、こちらの方法はたくさん記事が出ています。
+使いたい GitHub Organization がエンタープライズプランであれば、リポジトリにアクセス権のある人だけが見られるようにアクセス制御を行うこともできてとても便利です。
+でも GitHu...]]></description><link>https://zenn.dev/ryomm/articles/8063e644427558</link><guid isPermaLink="true">https://zenn.dev/ryomm/articles/8063e644427558</guid><pubDate>Sun, 24 Dec 2023 15:04:09 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--VwabSQhz--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:GitHub%2520Actions%25E3%2581%25A7AWS%2520S3%25E3%2581%25ABSwift%2520DocC%25E3%2582%2592%25E3%2583%2587%25E3%2583%2597%25E3%2583%25AD%25E3%2582%25A4%25E3%2581%2597%25E3%2582%2588%25E3%2581%2586%25E3%2581%25A8%25E3%2581%2597%25E3%2581%25A6%25E3%2581%25A7%25E3%2581%258D%25E3%2581%25AA%25E3%2581%2584%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:Ryomm%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzY5ODJhZjNhMDUuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>Ryomm</dc:creator></item><item><title><![CDATA[Swift Decimal はどこまで表せるか]]></title><description><![CDATA[
+ 結果
+正確に表すのは39桁程度が限界(128ビット)
+雑でよければ166桁程度が限界(内容のある39桁 + 0で埋める127桁)
+
+ Decimalは何？
+Intの64ビットを超えた値を使える
+浮動小数的に言うと、仮数部が128ビット。指数部が8ビット。ただし指数部が表す値nは10^nとして結果に反映される。
+仮数部が128ビットなので10進数39桁程度まで正確に扱える。それを超えると正確さは落ちるが指数部の8ビットを使い、10進数166桁程度(39 + 127)まで扱える。
+最高は10進数166桁程度なので Double の308桁よりは小さい。よって Double の代わりになる...]]></description><link>https://zenn.dev/samekard_dev/articles/d65aa73b213c0f</link><guid isPermaLink="true">https://zenn.dev/samekard_dev/articles/d65aa73b213c0f</guid><pubDate>Sun, 24 Dec 2023 03:05:50 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--QZgYV7sq--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Swift%2520Decimal%2520%25E3%2581%25AF%25E3%2581%25A9%25E3%2581%2593%25E3%2581%25BE%25E3%2581%25A7%25E8%25A1%25A8%25E3%2581%259B%25E3%2582%258B%25E3%2581%258B%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:samekard_dev%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUxtNXd1M3YxOTJvM0NNcmdvZFMzb3VjbjdWQk1oYTdKSUtfSEdJSDNra2dDdz1zOTYtYw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>samekard_dev</dc:creator></item><item><title><![CDATA[【SwiftUI】Segmented Control的なものを作る]]></title><description><![CDATA[
+ Picker
+Picker | Apple Developer Documentation
+記事を参考に Picker で作成してみます。
+import SwiftUI
+
+struct PeriodSwitchView: View {
+    private enum Periods: String, CaseIterable, Identifiable {
+        case day = "日"
+        case week = "週"
+        case month = "月"
+        case year = "年"
+
+        var id: S...]]></description><link>https://zenn.dev/slowhand/articles/17d7c40d8c5663</link><guid isPermaLink="true">https://zenn.dev/slowhand/articles/17d7c40d8c5663</guid><pubDate>Sat, 23 Dec 2023 22:31:18 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--kkjcYEa---/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:%25E3%2580%2590SwiftUI%25E3%2580%2591Segmented%2520Control%25E7%259A%2584%25E3%2581%25AA%25E3%2582%2582%25E3%2581%25AE%25E3%2582%2592%25E4%25BD%259C%25E3%2582%258B%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:slowhand%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzEwY2YzMGUzMDAuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>slowhand</dc:creator></item><item><title><![CDATA[swift-syntaxを用いて、簡単なコマンドラインツールを作ってみる]]></title><description><![CDATA[本記事は、SwiftWednesday Advent Calendar 2023 23日目の記事です。
+本記事では、swift-syntaxを用いて、簡単なコマンドラインツールを作成する方法について解説します。
+
+ swift-syntaxとは
+
+The swift-syntax package is a set of libraries that work on a source-accurate tree representation of Swift source code, called the SwiftSyntax tree. The SwiftSyntax tree for...]]></description><link>https://zenn.dev/oks/articles/2dcd28a22d4ba6</link><guid isPermaLink="true">https://zenn.dev/oks/articles/2dcd28a22d4ba6</guid><pubDate>Sat, 23 Dec 2023 14:06:28 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--2IIblCJl--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:swift-syntax%25E3%2582%2592%25E7%2594%25A8%25E3%2581%2584%25E3%2581%25A6%25E3%2580%2581%25E7%25B0%25A1%25E5%258D%2598%25E3%2581%25AA%25E3%2582%25B3%25E3%2583%259E%25E3%2583%25B3%25E3%2583%2589%25E3%2583%25A9%25E3%2582%25A4%25E3%2583%25B3%25E3%2583%2584%25E3%2583%25BC%25E3%2583%25AB%25E3%2582%2592%25E4%25BD%259C%25E3%2581%25A3%25E3%2581%25A6%25E3%2581%25BF%25E3%2582%258B%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:uabyss%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyL2I5NGYxYjUzZDAuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>uabyss</dc:creator></item><item><title><![CDATA[SwiftUIで動的なStickyHeaderを自作する]]></title><description><![CDATA[
+ 今回作るStickyHeader
+このようなStickeyHeaderを作ります
+
+① 画面上部にとどまる
+② Viewはスクロール量に応じて動的に変化
+③ 余分に引き下げた場合にいい感じに伸びる
+
+完成形
+今回は自作するため動的に制御できるなどカスタマイズ性は高いですが、SwiftUI標準のLazyVStack + Sectionで済む場合はそちらがおすすめです。
+SwiftUI標準
+LazyVStack + SectionのコードScrollView {
+    LazyVStack(pinnedViews: [.sectionHeaders]) {
+        Sectio...]]></description><link>https://zenn.dev/jaco/articles/35930e39f697ed</link><guid isPermaLink="true">https://zenn.dev/jaco/articles/35930e39f697ed</guid><pubDate>Sat, 23 Dec 2023 07:47:49 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--ipIpKsII--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:SwiftUI%25E3%2581%25A7%25E5%258B%2595%25E7%259A%2584%25E3%2581%25AAStickyHeader%25E3%2582%2592%25E8%2587%25AA%25E4%25BD%259C%25E3%2581%2599%25E3%2582%258B%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:%25E3%2581%2598%25E3%2582%2583%25E3%2581%2593%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly96ZW5uLWRldi5naXRodWIuaW8vZGVmYXVsdC1hdmF0YXJzL2Rhcmsvai5wbmc=%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>じゃこ</dc:creator></item><item><title><![CDATA[Googleフォームをバックエンドとして使う]]></title><description><![CDATA[これは株式会社TimeTree Advent Calendar 2023の23日目の記事です。
+https://qiita.com/advent-calendar/2023/timetree
+
+ はじめに
+こんにちは、TimeTree iOS エンジニアのNeganです。
+モバイルアプリにおいて、ユーザーからのフィードバックや報告を受け付け、管理する機能は時として必要不可欠です。しかし、これを実現するために専用のAPIを開発することは、人材的にも時間的にもコストがかかる場合があります。そこで、私たちは、アプリから直接Googleフォームへデータを送信し、その結果をスプレッドシートで保存す...]]></description><link>https://zenn.dev/omsb/articles/817af1ff4d2118</link><guid isPermaLink="true">https://zenn.dev/omsb/articles/817af1ff4d2118</guid><pubDate>Fri, 22 Dec 2023 15:32:17 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--QrlCjNZI--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Google%25E3%2583%2595%25E3%2582%25A9%25E3%2583%25BC%25E3%2583%25A0%25E3%2582%2592%25E3%2583%2590%25E3%2583%2583%25E3%2582%25AF%25E3%2582%25A8%25E3%2583%25B3%25E3%2583%2589%25E3%2581%25A8%25E3%2581%2597%25E3%2581%25A6%25E4%25BD%25BF%25E3%2581%2586%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:misyobun%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2lqSXU4dWRLZ1FScTVrcGpOQ3MwLWZoTWduNWZNMWJrOFJScGltWGc9czk2LWM=%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>misyobun</dc:creator></item><item><title><![CDATA[Visionによる「人間」の検出]]></title><description><![CDATA[!
+本記事は iOS Advent Calendar 2023 シリーズ2の17日目 [1] の記事です。
+
+
+ オンデバイスで「人間」を検出する
+iOSでは古くはCore Imageの CIDetector で顔の検出ができたし、最近ではVisionフレームワークでディープラーニングベースの顔検出もできる。
+しかし顔検出は、顔しか検出できない。画像内における顔領域の大きさが小さかったり、顔が横や後ろを向いているときには画像内に人間がいることを検出できない。
+そういう場合、YOLOのCore MLモデル（公式でも配布されている）を利用して、personクラスを検出する方法があった。
+
+
+...]]></description><link>https://zenn.dev/shu223/articles/vision_human</link><guid isPermaLink="true">https://zenn.dev/shu223/articles/vision_human</guid><pubDate>Fri, 22 Dec 2023 00:13:27 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--i5KOZBy6--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Vision%25E3%2581%25AB%25E3%2582%2588%25E3%2582%258B%25E3%2580%258C%25E4%25BA%25BA%25E9%2596%2593%25E3%2580%258D%25E3%2581%25AE%25E6%25A4%259C%25E5%2587%25BA%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:Shuichi%2520Tsutsumi%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2pHcm5LNC1XQ2l0MVBwSUFqSTFFODhnLXRFZUd6UmRfVkcwNlZwRmc9czI1MC1j%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>Shuichi Tsutsumi</dc:creator></item><item><title><![CDATA[Swiftでllama.cppを使いたい！]]></title><description><![CDATA[今年の流行語といえばLLMですが、中でもローカルLLMの技術がプログラマ的には気になります。何かに使えそう！
+そこでローカルLLMの代名詞である（？）llama.cppを眺めていたところ、堂々とPackage.swiftがあるのに気づきました。
+https://github.com/ggerganov/llama.cpp/tree/master
+
+ということは、自力で難しいことをしなくても、簡単にSwiftから利用できそうです。
+今更感もありますが、この記事ではllama.cppをSwiftから使って色々遊んでみたいと思います。
+
+この記事は私のインターン先であるTuringアドベントカ...]]></description><link>https://zenn.dev/turing_motors/articles/59c829daaa3307</link><guid isPermaLink="true">https://zenn.dev/turing_motors/articles/59c829daaa3307</guid><pubDate>Thu, 21 Dec 2023 08:00:00 GMT</pubDate><enclosure url="https://res.cloudinary.com/zenn/image/upload/s--NpNVhGNp--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Swift%25E3%2581%25A7llama.cpp%25E3%2582%2592%25E4%25BD%25BF%25E3%2581%2584%25E3%2581%259F%25E3%2581%2584%25EF%25BC%2581%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_34:Miwa%2520%252F%2520Ensan%2Cx_220%2Cy_108/bo_3px_solid_rgb:d6e3ed%2Cg_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzBhNjYyMDc4ZDMuanBlZw==%2Cr_20%2Cw_90%2Cx_92%2Cy_102/co_rgb:6e7b85%2Cg_south_west%2Cl_text:notosansjp-medium.otf_30:Tech%2520Blog%2520-%2520Turing%2Cx_220%2Cy_160/bo_4px_solid_white%2Cg_south_west%2Ch_50%2Cl_fetch:aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3plbm4tdXNlci11cGxvYWQvYXZhdGFyLzkyNDQ4NzBlMTUuanBlZw==%2Cr_max%2Cw_50%2Cx_139%2Cy_84/v1627283836/default/og-base-w1200-v2.png" length="0" type="image/png"/><dc:creator>Miwa / Ensan</dc:creator></item></channel></rss>

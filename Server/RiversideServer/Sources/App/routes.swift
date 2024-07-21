@@ -1,11 +1,11 @@
+import Payloads
 import Vapor
 
-struct SampleResponse: Content {
-    let message: String
-}
-
 func routes(_ app: Application) throws {
-    app.get { req in
-        SampleResponse(message: "Hello, world!")
+    app.post("feeds") { req in
+        // TODO
+        let requestBody = try req.content.decode(FeedsRequestBody.self)
+        print(requestBody)
+        return FeedsResponseBody(feeds: [:])
     }
 }

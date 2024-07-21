@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:creativeCommons="http://backend.userland.com/creativeCommonsRssModule" xmlns:re="http://purl.org/atompub/rank/1.0">
+    <title type="text">Newest questions tagged swift - Stack Overflow</title>
+    <link rel="self" href="https://stackoverflow.com/feeds/tag?tagnames=swift&amp;sort=newest" type="application/atom+xml" />
+    <link rel="alternate" href="https://stackoverflow.com/questions/tagged/?tagnames=swift&amp;sort=newest" type="text/html" />
+    <subtitle>most recent 30 from stackoverflow.com</subtitle>
+    <updated>2023-12-30T05:02:16Z</updated>
+    <id>https://stackoverflow.com/feeds/tag?tagnames=swift&amp;sort=newest</id>
+    <creativeCommons:license>https://creativecommons.org/licenses/by-sa/4.0/rdf</creativeCommons:license> 
+    <entry>
+        <id>https://stackoverflow.com/q/77734853</id>
+        <re:rank scheme="https://stackoverflow.com">-2</re:rank>
+        <title type="text">SwiftUI ScrollView entire phone screen</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="swiftui" />
+        <author>
+            <name>wanted</name>
+            <uri>https://stackoverflow.com/users/1255775</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77734853/swiftui-scrollview-entire-phone-screen" />
+        <published>2023-12-30T04:23:26Z</published>
+        <updated>2023-12-30T04:23:26Z</updated>
+        <summary type="html">
+            &lt;p&gt;I&#x27;m trying to figure out how to create a Scrolling View that takes about 90% of the height of the phone. The ScrollView only goes up to 300, I&#x27;d need it to go until it reaches the bottom of the viewable screen.&lt;/p&gt;&#xA;&lt;p&gt;I should probably use something else but I can&#x27;t find anywhere the information or I am not using the right keywords.&lt;/p&gt;&#xA;&lt;p&gt;Let&#x27;s say the ScrollView (what I&#x27;m using at the moment) only has a VStack with ~ 50 Text views one under the other.&lt;/p&gt;&#xA;&lt;p&gt;How to achieve this to fill up the entire phone screen from top to bottom?&lt;/p&gt;&#xA;&lt;p&gt;Thanks!&lt;/p&gt;&#xA;&lt;p&gt;G&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77734746</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">How do I check whether a ModelContainer is stored inMemory</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="swift-data" />
+        <author>
+            <name>Wizard of Kneup</name>
+            <uri>https://stackoverflow.com/users/364356</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77734746/how-do-i-check-whether-a-modelcontainer-is-stored-inmemory" />
+        <published>2023-12-30T03:13:28Z</published>
+        <updated>2023-12-30T03:44:36Z</updated>
+        <summary type="html">
+            &lt;p&gt;I want to write something like this:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;fileprivate var container: ModelContainer? = nil&#xA;func sharedModelContainer(inMemory: Bool) -&amp;gt; ModelContainer {&#xA;    if let result = container, result.isInMemory == inMemory {&#xA;        return result&#xA;    }&#xA;&#xA;    let schema = Schema([&#xA;         ModelClass1.self ,ModelClass2.self, ModelClass3.self&#xA;    ])&#xA;    let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)&#xA;&#xA;    do {&#xA;        let result = try ModelContainer(for: schema, configurations: [modelConfiguration])&#xA;        DispatchQueue.main.async {&#xA;            result.mainContext.undoManager = UndoManager()&#xA;        }&#xA;        container = result&#xA;        return result&#xA;    } catch {&#xA;        fatalError(&amp;quot;Could not create ModelContainer: \(error)&amp;quot;)&#xA;    }&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;But I haven&#x27;t yet figured out how to implement&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;extension ModelContainer {&#xA;    var isInMemory: Bool {&#xA;        ???&#xA;    }&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77734639</id>
+        <re:rank scheme="https://stackoverflow.com">-2</re:rank>
+        <title type="text">Xcode No Such Module - but only when building for one device [closed]</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="xcode" />
+        <author>
+            <name>Ben Long</name>
+            <uri>https://stackoverflow.com/users/7159400</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77734639/xcode-no-such-module-but-only-when-building-for-one-device" />
+        <published>2023-12-30T01:59:55Z</published>
+        <updated>2023-12-30T01:59:55Z</updated>
+        <summary type="html">
+            &lt;p&gt;I&#x2019;m working with a GitHub library called Subsonic. Been using it for weeks for development of an iPad app and everything&#x2019;s been fine. Starting yesterday, when I try to build it for my iPad, XCode complains that there&#x2019;s no such module as Subsonic. If I build for the simulator, or for another physical iPad, everything&#x2019;s fine. It&#x2019;s just the one device that causes it to throw the error, and this device was working fine until yesterday. I&#x2019;m at a loss.&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77734632</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">Can Swift apps add appointments to the iOS appointment app via an Apple API call?</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="calendar" />
+        <author>
+            <name>LovComSwiftCoder</name>
+            <uri>https://stackoverflow.com/users/17697411</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77734632/can-swift-apps-add-appointments-to-the-ios-appointment-app-via-an-apple-api-call" />
+        <published>2023-12-30T01:56:43Z</published>
+        <updated>2023-12-30T02:40:10Z</updated>
+        <summary type="html">
+            &lt;p&gt;I am writing a new app in Swift that deals with customer relationships.&lt;/p&gt;&#xA;&lt;p&gt;Is there an Apple supplied API my app can call so that it can add appointments to that Apple supplied Calendar/appointment app?&lt;/p&gt;&#xA;&lt;p&gt;I would rather not build my own appointment piece since Apple devices all have the Apple supplied appointment/calendar app.&lt;/p&gt;&#xA;&lt;p&gt;Thoughts, anyone?&lt;/p&gt;&#xA;&lt;p&gt;I have searched the internet but did not find any recent clues.  Perhaps one of you have been down this road already...&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77734482</id>
+        <re:rank scheme="https://stackoverflow.com">1</re:rank>
+        <title type="text">How to setup test removing a block-based observer via an object&#x27;s deinit?</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="notificationcenter" />
+        <author>
+            <name>Aaron</name>
+            <uri>https://stackoverflow.com/users/2981132</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77734482/how-to-setup-test-removing-a-block-based-observer-via-an-objects-deinit" />
+        <published>2023-12-30T00:30:18Z</published>
+        <updated>2023-12-30T04:19:26Z</updated>
+        <summary type="html">
+            &lt;p&gt;Say I have this code:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;class Foo {&#xA;&#xA;    private let nc: NotificationCenter&#xA;    &#xA;    init(nc: NotificationCenter = .default) {&#xA;        self.nc = nc&#xA;        &#xA;        nc.addObserver(forName: Notification.Name.Foo, object: nil, queue: .main) { _ in&#xA;            Task { [weak self] in&#xA;                self?.doSomething()&#xA;            }&#xA;        }&#xA;    }&#xA;&#xA;    deinit {&#xA;        nc.removeObserver(self, name: Notification.Name.Foo, object: nil)&#xA;    }&#xA;&#xA;    @objc&#xA;    private func doSomething() async {&#xA;        // triggers some async code&#xA;    }&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;I want to write a unit test to ensure this observer is removed when the class is deallocated.&lt;/p&gt;&#xA;&lt;p&gt;The Apple docs specify:&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;If you used addObserver(forName:object:queue:using:) to create your observer, you should call this method or removeObserver(_:name:object:) before the system deallocates any object that addObserver(forName:object:queue:using:) specifies.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;I&#x27;ve mocked a NotificationCenter:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;class MockNotificationCenter: NotificationCenter {&#xA;&#xA;    var notifications: [NSNotification.Name?] = []&#xA;&#xA;    override func addObserver(&#xA;        forName name: NSNotification.Name?,&#xA;        object obj: Any?,&#xA;        queue: OperationQueue?,&#xA;        using block: @escaping (Notification) -&amp;gt; Void) -&amp;gt; NSObjectProtocol&#xA;    {&#xA;        notifications.append(name)&#xA;        return super.addObserver(forName: name, object: obj, queue: queue, using: block)&#xA;    }&#xA;&#xA;    override func removeObserver(&#xA;        _ observer: Any, &#xA;        name aName: NSNotification.Name?, &#xA;        object anObject: Any?&#xA;    ) {&#xA;        notifications = notifications.filter { $0 != aName }&#xA;        super.removeObserver(observer, name: aName, object: anObject)&#xA;    }&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;And here&#x27;s my unit test:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;    func testDeinit_DoesRemoveObserver() {&#xA;        // Given&#xA;        var sut: Foo?&#xA;        let mockNC = MockNotificationCenter()&#xA;        // When&#xA;        sut = Foo(notificationCenter: mockNC)&#xA;        // Then&#xA;        XCTAssertEqual(mockNC.notifications.count, 1) // Succeeds&#xA;        // When&#xA;        sut = nil&#xA;        // Then&#xA;        XCTAssertEqual(mockNC.notifications.count, 0) // Fails&#xA;    }&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;XCTAssertEqual failed: (&amp;quot;1&amp;quot;) is not equal to (&amp;quot;0&amp;quot;)&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;How would I fix this to assert that an observer has been removed from the notification center upon deallocation of my observing object?&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77733955</id>
+        <re:rank scheme="https://stackoverflow.com">-1</re:rank>
+        <title type="text">I&#x27;m trying to use a CoreML action recognition model in a swiftUI project. How do I format the input such that my model accepts videos as input [closed]</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="machine-learning" />
+            <category scheme="https://stackoverflow.com/tags" term="swiftui" />
+            <category scheme="https://stackoverflow.com/tags" term="coreml" />
+            <category scheme="https://stackoverflow.com/tags" term="createml" />
+        <author>
+            <name>cassenav</name>
+            <uri>https://stackoverflow.com/users/14073424</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77733955/im-trying-to-use-a-coreml-action-recognition-model-in-a-swiftui-project-how-do" />
+        <published>2023-12-29T20:42:48Z</published>
+        <updated>2023-12-29T20:51:45Z</updated>
+        <summary type="html">
+            &lt;p&gt;I created a CoreML model using Apple&#x27;s CreateML. Currently, I&#x27;m trying to use this model in a SwiftUI app to perform action recognition on previously recorded videos.&lt;/p&gt;&#xA;&lt;p&gt;I&#x27;ve imported the model to my Xcode project, however I&#x27;m having some trouble figuring out how to actually access and use the model in my project.&lt;/p&gt;&#xA;&lt;p&gt;The model has one parameter &lt;code&gt;poses&lt;/code&gt;, which is of type &lt;code&gt;MLMultiArray&lt;/code&gt; and can be seen in this image &lt;a href=&quot;https://i.stack.imgur.com/mieBF.png&quot; rel=&quot;nofollow noreferrer&quot;&gt;&lt;img src=&quot;https://i.stack.imgur.com/mieBF.png&quot; alt=&quot;ML model input type&quot; /&gt;&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;p&gt;Is there some way to simply convert video files to MultiArrays of poses, or is there a way to modify my model in CreateML to take video sequences as input, rather than poses? The training/testing process was very straightforward using CreateML, but it seems like exporting this model for use is a bit more challenging.&lt;/p&gt;&#xA;&lt;p&gt;Please let me know what the best approach to this would be.&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77733754</id>
+        <re:rank scheme="https://stackoverflow.com">-1</re:rank>
+        <title type="text">How to replace search routine for Apple Mail?</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="apple-mail" />
+        <author>
+            <name>ababo</name>
+            <uri>https://stackoverflow.com/users/2772588</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77733754/how-to-replace-search-routine-for-apple-mail" />
+        <published>2023-12-29T19:45:42Z</published>
+        <updated>2023-12-29T19:45:42Z</updated>
+        <summary type="html">
+            &lt;p&gt;Is there a way to replace the default search logic with a custom one? I mean to trigger my own handler when a text is added/modified in the search query edit box in the top right corner? Is it MailKit to be used?&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77733748</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">How to make SwiftUI TabView visibility conditional on tab selection? [duplicate]</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="swiftui" />
+            <category scheme="https://stackoverflow.com/tags" term="tabview" />
+        <author>
+            <name>mathAndCats</name>
+            <uri>https://stackoverflow.com/users/16933659</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77733748/how-to-make-swiftui-tabview-visibility-conditional-on-tab-selection" />
+        <published>2023-12-29T19:44:28Z</published>
+        <updated>2023-12-29T21:20:13Z</updated>
+        <summary type="html">
+            &lt;p&gt;I want to use a TabView in SwiftUI that is only visible when certain tabs are selected, because I want to use an alternate UI on some tabs.&lt;/p&gt;&#xA;&lt;p&gt;I know that .toolbar(.hidden, for: .tabBar) is supposed to do this, but I can&#x27;t figure out how to make it work. The below example works for a couple of clicks, but then stops changing the visibly of the TabView. What am I missing?&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;&#xA;class SharedViewModel: ObservableObject {&#xA;    &#xA;    @Published var tabSelection = 0&#xA;    &#xA;    // Create the singleton&#xA;    private static var sharedViewModel: SharedViewModel = {&#xA;        let viewModel = SharedViewModel()&#xA;        return viewModel&#xA;    }()&#xA;    &#xA;    @discardableResult&#xA;    class func shared() -&gt; SharedViewModel {&#xA;        return sharedViewModel&#xA;    }&#xA;}&#xA;&#xA;struct View1: View {&#xA;    &#xA;    var body: some View {&#xA;        Text(&quot;View1&quot;)&#xA;    }&#xA;}&#xA;&#xA;struct View2: View {&#xA;    &#xA;    @ObservedObject var sharedViewModel = SharedViewModel.shared()&#xA;    &#xA;    var body: some View {&#xA;        &#xA;        NavigationView {&#xA;            Button(&quot;Go to view 3&quot;) {&#xA;                sharedViewModel.tabSelection = 2&#xA;            }&#xA;            &#xA;            Button(&quot;Go to view 1&quot;) {&#xA;                sharedViewModel.tabSelection = 0&#xA;            }&#xA;        }&#xA;    }&#xA;}&#xA;&#xA;struct View3: View {&#xA;    &#xA;    @ObservedObject var sharedViewModel = SharedViewModel.shared()&#xA;    &#xA;    var body: some View {&#xA;        VStack {&#xA;            Button(&quot;Go to view 2&quot;) {&#xA;                sharedViewModel.tabSelection = 1&#xA;            }&#xA;            &#xA;            Button(&quot;Go to view 1&quot;) {&#xA;                sharedViewModel.tabSelection = 0&#xA;            }&#xA;        }&#xA;    }&#xA;}&#xA;&#xA;struct ContentView: View {&#xA;    &#xA;    @ObservedObject var sharedViewModel = SharedViewModel.shared()&#xA;    &#xA;    var body: some View {&#xA;    &#xA;        Group {&#xA;            TabView(selection: $sharedViewModel.tabSelection) {&#xA;                &#xA;                View1().tabItem {&#xA;                    Text(&quot;View1&quot;)&#xA;                }&#xA;                .tag(0)&#xA;                &#xA;                View2().tabItem {&#xA;                    Text(&quot;View2&quot;)&#xA;                }&#xA;                .tag(1)&#xA;                .toolbar(.hidden, for: .tabBar)&#xA;                &#xA;                View3().tabItem {&#xA;                    Text(&quot;View3&quot;)&#xA;                }&#xA;                .tag(2)&#xA;                .toolbar(.hidden, for: .tabBar)&#xA;            }&#xA;        }&#xA;    }&#xA;}&#xA;&lt;/pre&gt;&lt;/code&gt;&#xA;&lt;p&gt;&lt;a href=&quot;https://i.stack.imgur.com/PeNSD.gif&quot; rel=&quot;nofollow noreferrer&quot;&gt;&lt;img src=&quot;https://i.stack.imgur.com/PeNSD.gif&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;(Note: This is not a duplicate of &lt;a href=&quot;https://stackoverflow.com/questions/73704536/toolbar-bottom-ios-16-swiftui&quot;&gt;Toolbar bottom iOS 16 - SwiftUI&lt;/a&gt;, which is a question about a TabView not showing up altogether. My question is how to make it conditionally visible.)&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77733722</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">When using .searchable modifier with ScrollView, occasionally the view bounces</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="swiftui" />
+        <author>
+            <name>Kihron</name>
+            <uri>https://stackoverflow.com/users/16659902</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77733722/when-using-searchable-modifier-with-scrollview-occasionally-the-view-bounces" />
+        <published>2023-12-29T19:39:00Z</published>
+        <updated>2023-12-29T23:57:52Z</updated>
+        <summary type="html">
+            &lt;p&gt;When using a ScrollView combined with a .searchable modifier within a NavigationStack, there is an inconsistent bounce behavior that occurs. I am currently using iOS 17.2 as the target. I&#x27;ve tried many workarounds to create a more consistent experience but I can&#x27;t seem to eliminate the occasional bounce. This almost always happens when the search bar is first selected as well.&lt;/p&gt;&#xA;&lt;p&gt;Example of the problem:&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&quot;https://i.stack.imgur.com/JTqOG.gif&quot; alt=&quot;Example of the problem.&quot; /&gt;&lt;/p&gt;&#xA;&lt;p&gt;I&#x27;ve created a very simple test view with only a ScrollView with a VStack containing Text:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;struct TestView: View {&#xA;    @State private var query: String = &amp;quot;&amp;quot;&#xA;    &#xA;    var body: some View {&#xA;        NavigationStack {&#xA;            ScrollView {&#xA;                VStack {&#xA;                    Text(&amp;quot;Hey&amp;quot;)&#xA;                }&#xA;            }&#xA;            .searchable(text: $query)&#xA;            .navigationTitle(&amp;quot;Test View&amp;quot;)&#xA;        }&#xA;    }&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;Even with this simple view, the bounce still happens. Does anyone know a way to fix this?&lt;/p&gt;&#xA;&lt;p&gt;I&#x27;ve tried using a geometry reader and other methods to see if it was a framing issue, but even breaking the view down to a simple scenario still produces the issue. I expect it to smoothly animate upwards but it does not.&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77733691</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">How to make annotation clikable SwiftUI MapKit</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="mapkit" />
+            <category scheme="https://stackoverflow.com/tags" term="markerclusterer" />
+        <author>
+            <name>hugo gere</name>
+            <uri>https://stackoverflow.com/users/23173580</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77733691/how-to-make-annotation-clikable-swiftui-mapkit" />
+        <published>2023-12-29T19:27:51Z</published>
+        <updated>2023-12-29T19:27:51Z</updated>
+        <summary type="html">
+            &lt;p&gt;I&#x27;m new to Swift. I managed to integrate a map which allows me to manage the notion of cluster but I cannot make my annotations clickable. In the best of all worlds I would also like to make the clusters clickable and be able to modify their style.&lt;/p&gt;&#xA;&lt;p&gt;struct MapView: UIViewRepresentable {&#xA;@EnvironmentObject private var locationManager: LocationManager&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;var forDisplay = data&#xA;&#xA;class Coordinator: NSObject, MKMapViewDelegate {&#xA;    &#xA;    var parent: MapView&#xA;    &#xA;    init(_ parent: MapView) {&#xA;        self.parent = parent&#xA;    }&#xA;    &#xA;    /// showing annotation on the map&#xA;    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -&amp;gt; MKAnnotationView? {&#xA;        guard let annotation = annotation as? LandmarkAnnotation else { return nil }&#xA;        return CustomAnnotationView(annotation: annotation, reuseIdentifier: CustomAnnotationView.ReuseID)&#xA;    }&#xA;}&#xA;&#xA;&#xA;&#xA;func makeCoordinator() -&amp;gt; Coordinator {&#xA;    MapView.Coordinator(self)&#xA;}&#xA;&#xA;&#xA;func makeUIView(context: Context) -&amp;gt; MKMapView {&#xA;    ///  creating a map&#xA;    let view = MKMapView()&#xA;    /// connecting delegate with the map&#xA;    view.delegate = context.coordinator&#xA;    view.setRegion(locationManager.region, animated: false)&#xA;    view.mapType = .standard&#xA;    &#xA;    for points in forDisplay {&#xA;        let annotation = LandmarkAnnotation(coordinate: points.coordinate, color: points.color)&#xA;        view.addAnnotation(annotation)&#xA;    }&#xA;    &#xA;    &#xA;    return view&#xA;    &#xA;}&#xA;&#xA;func updateUIView(_ uiView: MKMapView, context: Context) {&#xA;    &#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;}&lt;/p&gt;&#xA;&lt;p&gt;struct SampleData: Identifiable {&#xA;var id = UUID()&#xA;var latitude: Double&#xA;var longitude: Double&#xA;var coordinate: CLLocationCoordinate2D {&#xA;CLLocationCoordinate2D(&#xA;latitude: latitude,&#xA;longitude: longitude)&#xA;}&#xA;var color: UIColor&#xA;}&lt;/p&gt;&#xA;&lt;p&gt;var data = [&#xA;SampleData(latitude: 43.70564024126748, longitude: 142.37968945214223,color: UIColor.purple),&#xA;SampleData(latitude: 43.81257464206404, longitude: 142.82112322464369,color: UIColor.green),&#xA;SampleData(latitude: 43.38416585162576, longitude: 141.7252598737476,color: UIColor.yellow),&#xA;SampleData(latitude: 45.29168643283501, longitude: 141.95286751470724,color: UIColor.orange),&#xA;SampleData(latitude: 45.49261392585982, longitude: 141.9343973160499,color: UIColor.red),&#xA;SampleData(latitude: 44.69825427301145, longitude: 141.91227845284203,color: UIColor.blue)&#xA;]&lt;/p&gt;&#xA;&lt;p&gt;class LandmarkAnnotation: NSObject, MKAnnotation {&#xA;let coordinate: CLLocationCoordinate2D&#xA;let color: UIColor&#xA;init(coordinate: CLLocationCoordinate2D, color: UIColor) {&#xA;self.coordinate = coordinate&#xA;self.color = color&#xA;super.init()&#xA;}&#xA;}&lt;/p&gt;&#xA;&lt;p&gt;/// here posible to customize annotation view&#xA;let clusterID = &amp;quot;clustering&amp;quot;&lt;/p&gt;&#xA;&lt;p&gt;class CustomAnnotationView: MKMarkerAnnotationView {&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;static let ReuseID = &amp;quot;customAnnotation&amp;quot;&#xA;&#xA;let customSwiftUIView = LocationMapAnnotationView()&#xA;&#xA;override init(annotation: MKAnnotation?, reuseIdentifier: String?) {&#xA;    super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)&#xA;&#xA;    clusteringIdentifier = &amp;quot;customCluster&amp;quot;&#xA;&#xA;    // D&#xE9;sactivez la superposition par d&#xE9;faut de la bulle d&#x27;annotation&#xA;    canShowCallout = false&#xA;    &#xA;    // Convertissez la vue SwiftUI en UIView&#xA;    let uiViewRepresentable = UIHostingController(rootView: customSwiftUIView)&#xA;    if let uiView = uiViewRepresentable.view {&#xA;        markerTintColor = UIColor.clear&#xA;        glyphText = &amp;quot;&amp;quot;&#xA;        &#xA;        addSubview(uiView)&#xA;            &#xA;    }&#xA;&#xA;}&#xA;&#xA;&#xA;required init?(coder aDecoder: NSCoder) {&#xA;    fatalError(&amp;quot;init(coder:) has not been implemented&amp;quot;)&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;}&lt;/p&gt;&#xA;&lt;p&gt;[&lt;a href=&quot;https://i.stack.imgur.com/GMjAV.png&quot; rel=&quot;nofollow noreferrer&quot;&gt;enter image description here&lt;/a&gt;](&lt;a href=&quot;https://i.stack.imgur.com/TXK58.png&quot; rel=&quot;nofollow noreferrer&quot;&gt;https://i.stack.imgur.com/TXK58.png&lt;/a&gt;)&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77733331</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">How to handle custom/initial values for TextFields in SwiftUI [closed]</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="swiftui" />
+        <author>
+            <name>fs_tigre</name>
+            <uri>https://stackoverflow.com/users/1577308</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77733331/how-to-handle-custom-initial-values-for-textfields-in-swiftui" />
+        <published>2023-12-29T17:49:50Z</published>
+        <updated>2023-12-29T17:49:50Z</updated>
+        <summary type="html">
+            &lt;p&gt;I have 4 &lt;code&gt;textFields&lt;/code&gt; that based on 3 facts would display something different when they first appear on the screen, the facts are the same for all 4 &lt;code&gt;textFields&lt;/code&gt;, I&#x27;m currently evaluating and updating the fields &lt;code&gt;onAppear&lt;/code&gt; as shown in the code below but I feel like I&#x27;m doing something wrong and more like &lt;code&gt;UIKit&lt;/code&gt; and I was wondering if there was a more SwiftUI way.&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;    @ObservedObject var myViewModel: MyViewModel&#xA;&#xA;    @State private var inputField1:String = &amp;quot;&amp;quot;&#xA;    @State private var inputField2:String = &amp;quot;&amp;quot;&#xA;    @State private var inputField3:String = &amp;quot;&amp;quot;&#xA;    @State private var inputField4:String = &amp;quot;&amp;quot;&#xA;&#xA;    var body: some View {&#xA;        VStack{&#xA;            TextField(&amp;quot;text field 1&amp;quot;, text: $inputField1)&#xA;            TextField(&amp;quot;text field 2&amp;quot;, text: $inputField2)&#xA;            TextField(&amp;quot;text field 3&amp;quot;, text: $inputField3)&#xA;            TextField(&amp;quot;text field 4&amp;quot;, text: $inputField4)&#xA;        }&#xA;        .onAppear{&#xA;            if myViewModel.factOne &amp;amp;&amp;amp; myViewModel.factTwo &amp;amp;&amp;amp; myViewModel.factThree{&#xA;                inputField1 = &amp;quot;Some string for field 1&amp;quot;&#xA;                inputField2 = &amp;quot;Some string for field 2&amp;quot;&#xA;                inputField3 = &amp;quot;Some string for field 3&amp;quot;&#xA;                inputField4 = &amp;quot;Some string for field 4&amp;quot;&#xA;            }&#xA;        }&#xA;    }&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;What would be the right or best way to do this in swiftUI?&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77733177</id>
+        <re:rank scheme="https://stackoverflow.com">-1</re:rank>
+        <title type="text">Swift protocol extension not visible to implementing class</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="swift-protocols" />
+        <author>
+            <name>Casey Perkins</name>
+            <uri>https://stackoverflow.com/users/1981978</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77733177/swift-protocol-extension-not-visible-to-implementing-class" />
+        <published>2023-12-29T17:12:46Z</published>
+        <updated>2023-12-29T17:12:46Z</updated>
+        <summary type="html">
+            &lt;p&gt;I have a function on my class that used to take default parameters, but because I&#x27;m making a protocol instead - to facilitate mocking network calls - my function can no longer take default parameters. So I thought I would do an extension of my function with several functions that provide the same function call signatures as used before, so that I don&#x27;t have to change the calls that are made in numerous applications. (This class is part of a Swift Package). The problem is that classes that call the functions in my implementing class cannot see those protocol extension functions. Here is my protocol:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;protocol WebService&amp;lt;EndPointType&amp;gt; {&#xA;    &#xA;    associatedtype EndPointType&#xA;    &#xA;    func request&amp;lt;ResponseType: Decodable&amp;gt;(_ endPoint: EndPointType, _ params: Parameters?, _ moreParams: Parameters?, codable: Codable?) async throws -&amp;gt; ResponseType &#xA;    &#xA;}&#xA;&#xA;extension WebService {&#xA;    public func request&amp;lt;ResponseType: Decodable&amp;gt;(_ endPoint: EndPointType) async throws -&amp;gt; ResponseType {&#xA;        return try await request(endPoint, nil, nil, codable: nil)&#xA;    }&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;(There would eventually be more of these extension functions if this would work).&lt;/p&gt;&#xA;&lt;p&gt;Here is the relevant part of my implementing class:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;public class Router&amp;lt;EndPointType: EndPoint&amp;gt;: WebService {&#xA;    public func request&amp;lt;ResponseType&amp;gt;(_ endPoint: EndPointType, _ params: Parameters?, _ moreParams: Parameters?, codable: Codable?) async throws -&amp;gt; ResponseType where ResponseType : Decodable {&#xA;...&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;And here is an attempt to call the extension function that is failing:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;let appStatusResponses: [AppStatusResponse] = try await router.request(.getStatus)&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;This fails to compile with the message: &amp;quot;Missing arguments for #2, #3, &#x27;codable&#x27; in call&amp;quot;.&lt;/p&gt;&#xA;&lt;p&gt;If I move the extension function into my implementing class, it compiles.&lt;/p&gt;&#xA;&lt;p&gt;Why isn&#x27;t the protocol extension function visible to the calling class? It is visible in the implementing class, but not in the class that calls the implementing class. I have verified the non-visibility in one and the visibility in the other by the auto-suggest in Xcode.&lt;/p&gt;&#xA;&lt;p&gt;Any tips would be appreciated.&lt;/p&gt;&#xA;&lt;p&gt;Thank you.&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77733031</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">Swift, Set extension error: Type of expression is ambiguous without a type annotation?</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="set" />
+        <author>
+            <name>zumzum</name>
+            <uri>https://stackoverflow.com/users/728246</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77733031/swift-set-extension-error-type-of-expression-is-ambiguous-without-a-type-annot" />
+        <published>2023-12-29T16:38:24Z</published>
+        <updated>2023-12-29T17:44:55Z</updated>
+        <summary type="html">
+            &lt;p&gt;In Swift, I would like to make an extension on Set that takes two arrays, and the function needs to add the elements from one array and remove elements found in another array to the called upon Set.&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;extension Set {&#xA;    &#xA;    mutating func update&amp;lt;T&amp;gt;(adding a:[T], removing b:[T]) where T:Hashable {&#xA;        var r = union(Set&amp;lt;T&amp;gt;(a)) // ERROR: Type of expression is ambiguous without a type annotation&#xA;        r.subtract(Set&amp;lt;T&amp;gt;(b))&#xA;        self = r&#xA;    }&#xA;    &#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;I currently get this error: &lt;code&gt;Type of expression is ambiguous without a type annotation&lt;/code&gt;.&lt;/p&gt;&#xA;&lt;p&gt;How can I fix this so that the Set instance I call this on will update accordingly?&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77732959</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">Is it acceptable if the CLIENT_ID and the REVERSED_CLIENT_ID change in the Firebase console project?</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="xcode" />
+        <author>
+            <name>Vampavi</name>
+            <uri>https://stackoverflow.com/users/7906214</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77732959/is-it-acceptable-if-the-client-id-and-the-reversed-client-id-change-in-the-fireb" />
+        <published>2023-12-29T16:24:03Z</published>
+        <updated>2023-12-29T16:24:03Z</updated>
+        <summary type="html">
+            &lt;p&gt;I have been developing an iOS project and using Firebase for logging in and sending push notifications to my application. My login function is working perfectly, and I was attempting to implement the push notification service from Firebase when I identified that the &lt;code&gt;CLIENT_ID&lt;/code&gt; and &lt;code&gt;REVERSED_CLIENT_ID&lt;/code&gt; in the &lt;code&gt;GoogleService-Info.plist&lt;/code&gt; file is different from my Firebase console i.e. there are new values in &lt;code&gt;GoogleService-Info.plist&lt;/code&gt; in the console. However, this change has not impacted my login function. I am confused about why this change occurred and have been unable to rectify it. Currently, I am unable to receive push notifications from Firebase on my real device in the TestFlight app (although I did receive them on my emulator using xcrun simctl push). My questions are:&lt;/p&gt;&#xA;&lt;p&gt;Is it acceptable that the &lt;code&gt;CLIENT_ID&lt;/code&gt; and &lt;code&gt;REVERSED_CLIENT_ID&lt;/code&gt; have changed? If not, why is my login function still operational?&lt;/p&gt;&#xA;&lt;p&gt;There has been a creation of another &lt;code&gt;&amp;lt;my_project_name&amp;gt;-info.plist&lt;/code&gt; file which contains few more keys. I manually change the values of &lt;code&gt;CLIENT_ID&lt;/code&gt; and &lt;code&gt;REVERSED_CLIENT_ID&lt;/code&gt; in my &lt;code&gt;GoogleService-Info.plist&lt;/code&gt; and my login too started to fail, so I reverted the change.&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77732786</id>
+        <re:rank scheme="https://stackoverflow.com">-1</re:rank>
+        <title type="text">Why can&#x27;t &#x27;completion&#x27; be found in this function? [closed]</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="completion" />
+        <author>
+            <name>Alligator</name>
+            <uri>https://stackoverflow.com/users/1012010</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77732786/why-cant-completion-be-found-in-this-function" />
+        <published>2023-12-29T15:43:13Z</published>
+        <updated>2023-12-29T16:57:30Z</updated>
+        <summary type="html">
+            &lt;p&gt;I&#x27;m trying to parse JSON with Swift, and I can correctly print the value I need in the function.  But when I try to return the value to be used elsewhere in my code with a completion handler, it fails with the error &amp;quot;cannot find &#x27;completion&#x27; in scope.&amp;quot;&lt;/p&gt;&#xA;&lt;p&gt;Here is the function:&lt;/p&gt;&#xA;&lt;pre class=&quot;lang-swift prettyprint-override&quot;&gt;&lt;code&gt;func getData(from url: String, completion: (String) -&amp;gt; Void) {&#xA;    let task = URLSession.shared.dataTask(with: URL(string: url)!, completionHandler: {data, response, error in&#xA;        guard let data = data, error == nil else {&#xA;            print(&amp;quot;An error occurred.&amp;quot;)&#xA;            return&#xA;        }&#xA;        &#xA;        var result: Returned?&#xA;        print(&amp;quot;Setting var &#x27;result&#x27; as type &#x27;Returned&#x27;.&amp;quot;)&#xA;        do {&#xA;            result = try JSONDecoder().decode(Returned.self, from: data)&#xA;            print(&amp;quot;Decoding JSON...&amp;quot;)&#xA;        }&#xA;        &#xA;        catch {&#xA;            print(&amp;quot;Error: \(error)&amp;quot;)&#xA;        }&#xA;        &#xA;        guard let json = result else {&#xA;            return&#xA;        }&#xA;        &#xA;        print(&amp;quot;Success!&amp;quot;)&#xA;        print(json.response.paste.content)&#xA;        completion()&#xA;    })&#xA;    task.resume()&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;How can I correct the completion handler so I can cause this function to return the value of json.response.paste.content so I can use it elsewhere in my code?&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77732767</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">How to specify the element type in an array in an associated type protocol</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="rx-swift" />
+        <author>
+            <name>Hellen</name>
+            <uri>https://stackoverflow.com/users/23172859</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77732767/how-to-specify-the-element-type-in-an-array-in-an-associated-type-protocol" />
+        <published>2023-12-29T15:38:05Z</published>
+        <updated>2023-12-29T18:45:00Z</updated>
+        <summary type="html">
+            &lt;pre&gt;&lt;code&gt;struct ApiResult: HandyJSON {}&#xA;&#xA;struct Api: BaseRequest {&#xA;    typealias DataType = [ApiResult]&#xA;}&#xA;&#xA;let api = Api()&#xA;&#xA;api.call.subscribe { onSuccess: result&#xA;    // i hope get a array of ApiResult class&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;&lt;a href=&quot;https://i.stack.imgur.com/AfkWt.png&quot; rel=&quot;nofollow noreferrer&quot;&gt;error!&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;How can I achieve the same result as below?&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&quot;https://i.stack.imgur.com/jpqpI.png&quot; rel=&quot;nofollow noreferrer&quot;&gt;enter image description here&lt;/a&gt;&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77732649</id>
+        <re:rank scheme="https://stackoverflow.com">1</re:rank>
+        <title type="text">Transforming XML file by using XSLT on iOS(Swift)</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="xml" />
+            <category scheme="https://stackoverflow.com/tags" term="xslt" />
+        <author>
+            <name>Paczek Ro&#x17C;ki</name>
+            <uri>https://stackoverflow.com/users/23172789</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77732649/transforming-xml-file-by-using-xslt-on-iosswift" />
+        <published>2023-12-29T15:04:22Z</published>
+        <updated>2023-12-29T15:04:22Z</updated>
+        <summary type="html">
+            &lt;p&gt;New to iOS development.&#xA;I&#x27;m looking for a way to transform an xml file by using an xslt file for iOS.&#xA;I&#x27;ve managed to do that on android, but with no luck on iOS.&lt;/p&gt;&#xA;&lt;p&gt;Anyone know any solution to that?&lt;/p&gt;&#xA;&lt;p&gt;I&#x27;ve looked into XMLDocument files, bu they are not available on iOS Swift.&#xA;Found some old informations from 2015, 2016 but the solutions are not possible now.&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77732536</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">How to track onReachBottom event in PDFKit</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="pdfkit" />
+        <author>
+            <name>Konstantin.Efimenko</name>
+            <uri>https://stackoverflow.com/users/1752613</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77732536/how-to-track-onreachbottom-event-in-pdfkit" />
+        <published>2023-12-29T14:41:44Z</published>
+        <updated>2023-12-29T15:43:33Z</updated>
+        <summary type="html">
+            &lt;p&gt;I want to unlock Button, when user scroll to the end of document.&#xA;I create PDFView like:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;import PDFKit&#xA;import SwiftUI&#xA;&#xA;struct PDFDocumentView: UIViewRepresentable {&#xA;&#xA;    private var url: URL?&#xA;    private let pdfDocumentDelegate: PdfDocumentDelegate = PdfDocumentDelegate()&#xA;&#xA;    init(url: URL) {&#xA;        self.url = url&#xA;    }&#xA;&#xA;    func makeUIView(context: Context) -&amp;gt; PDFView {&#xA;        let pdfView = PDFView()&#xA;        if let url {&#xA;            pdfView.document = PDFDocument(url: url)&#xA;            pdfView.autoScales = true&#xA;            pdfView.setNeedsLayout()&#xA;            pdfView.layoutIfNeeded()&#xA;            pdfView.maxScaleFactor = 3.0&#xA;            pdfView.minScaleFactor = pdfView.scaleFactorForSizeToFit&#xA;        }&#xA;        return pdfView&#xA;    }&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77732292</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">AccessDeniedException when trying to login as guest user in AWS Webrtc sample</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="amazon-web-services" />
+            <category scheme="https://stackoverflow.com/tags" term="webrtc" />
+        <author>
+            <name>viki</name>
+            <uri>https://stackoverflow.com/users/11265720</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77732292/accessdeniedexception-when-trying-to-login-as-guest-user-in-aws-webrtc-sample" />
+        <published>2023-12-29T13:41:22Z</published>
+        <updated>2023-12-29T13:41:22Z</updated>
+        <summary type="html">
+            &lt;p&gt;I was testing the sample app for AWS Webrtc from the given link, &lt;a href=&quot;https://docs.aws.amazon.com/kinesisvideostreams-webrtc-dg/latest/devguide/kvswebrtc-sdk-ios.html&quot; rel=&quot;nofollow noreferrer&quot;&gt;AWS Webrtc iOS&lt;/a&gt;. The sample is working fine when the user is authenticated. I was planning to implement guest user functionality but i am getting the following issue:&lt;/p&gt;&#xA;&lt;p&gt;Error creating channel Error Domain=com.amazonaws.AWSKinesisVideoErrorDomain Code=1 &amp;quot;null&amp;quot; UserInfo={NSLocalizedDescription=null, NSLocalizedFailureReason=AccessDeniedException:&lt;a href=&quot;http://internal.amazon.com/coral/com.amazon.coral.service/%7D&quot; rel=&quot;nofollow noreferrer&quot;&gt;http://internal.amazon.com/coral/com.amazon.coral.service/}&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;I have enabled the guest user option in the identity pool. Is there something more I have to do to get the webrtc sample working without the user logging in.&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77732043</id>
+        <re:rank scheme="https://stackoverflow.com">-3</re:rank>
+        <title type="text">Twilio Voice SDK usage with SwiftUI example [closed]</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="swiftui" />
+            <category scheme="https://stackoverflow.com/tags" term="twilio" />
+            <category scheme="https://stackoverflow.com/tags" term="twilio-api" />
+        <author>
+            <name>Fikuszka</name>
+            <uri>https://stackoverflow.com/users/17638432</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77732043/twilio-voice-sdk-usage-with-swiftui-example" />
+        <published>2023-12-29T12:38:51Z</published>
+        <updated>2023-12-29T12:38:51Z</updated>
+        <summary type="html">
+            &lt;p&gt;I am a complete beginner in SwiftUI and I would like to see an example of a phone calling with Twilio IOS SDK. Can someone help me how to do that? I saw the docs but it was in Objective-C. Preferably provide the code that you used to create a simple voice calling.&lt;/p&gt;&#xA;&lt;p&gt;I already downloaded the TwilioVoice package, but I couldn&#x27;t get more further.&lt;/p&gt;&#xA;&lt;p&gt;Please don&#x27;t attach UIKit solutions, only with SwiftUI.&lt;/p&gt;&#xA;&lt;p&gt;Thanks in advance!&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77731837</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">Storing multiple images in swift data</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="swift-data" />
+        <author>
+            <name>Typical_0</name>
+            <uri>https://stackoverflow.com/users/18834714</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77731837/storing-multiple-images-in-swift-data" />
+        <published>2023-12-29T11:55:35Z</published>
+        <updated>2023-12-29T12:40:58Z</updated>
+        <summary type="html">
+            &lt;p&gt;I am currently working on a project that needs to allow users to store multiple images in swift data! I was wondering if anyone knew how to do this. below is my current model&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;import Foundation&#xA;import SwiftData&#xA;&#xA;@Model&#xA;class SwiftDataModel {&#xA;    // Session Data&#xA;    var record_type: WorkRecordType&#xA;    var amount: Int&#xA;    var nameOfSession: String&#xA;    var date: Date&#xA;    var canvas: Data&#xA;    var taps: Int&#xA;    @Attribute(.externalStorage) var photo: Data?&#xA;    // Doc Scan Data&#xA;   &#xA;    // Event Data&#xA;    var subject_type: EventType&#xA;    var name_of_event: String&#xA;    var event_date: Date&#xA;    var is_notified: Bool&#xA;    &#xA;    init(amount: Int = 0, nameOfSession: String = &amp;quot;&amp;quot;, Date: Date = .now, /*canvas: Data = Data(),*/ record_type: WorkRecordType = .dont_record, taps: Int = 0, name_of_event: String = &amp;quot;&amp;quot;, event_date: Date = .now, subject_type: EventType = .other, is_notified: Bool = false) {&#xA;        // Session Data&#xA;        self.amount = amount&#xA;        self.nameOfSession = nameOfSession&#xA;        self.date = Date&#xA;        self.canvas = Data()&#xA;        self.record_type = record_type&#xA;        self.taps = taps&#xA;        // Event Data&#xA;        self.name_of_event = nameOfSession&#xA;        self.event_date = Date&#xA;        self.subject_type = subject_type&#xA;        self.is_notified = is_notified&#xA;        //Doc Scan Data&#xA;        &#xA;    }&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;I know how to store one image in swift data but I dont know how to store an array of images in swift data.&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77731700</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">event handler for button click not getting triggered</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="xcode" />
+            <category scheme="https://stackoverflow.com/tags" term="tvos" />
+        <author>
+            <name>Abhishek</name>
+            <uri>https://stackoverflow.com/users/16549228</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77731700/event-handler-for-button-click-not-getting-triggered" />
+        <published>2023-12-29T11:23:50Z</published>
+        <updated>2023-12-29T11:23:50Z</updated>
+        <summary type="html">
+            &lt;p&gt;when i am adding new view to replace viewcontroller&#x27;s view like this :&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;let viewcontroller: UIViewController!&#xA;let rootview:UIView!&#xA;&#xA;viewcontroller = UIViewController ()&#xA;&#xA;rootview = UIView (frame:viewcontroller.view.bounds)&#xA;&#xA;viewcontroller.view = rootview&#xA;&#xA;// Adding a button&#xA;let button = UIButton(type: .system)&#xA;button.setTitle(&amp;quot;Tap Me&amp;quot;, for: .normal)&#xA;button.titleLabel?.font = UIFont.systemFont(ofSize: 18)&#xA;button.addTarget(self, action: #selector(buttonTapped), for:.allEvents)&#xA;&#xA;viewcontroller.view.addSubview(button)&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;For ios(iPhone/ipad) , i am able to get button click event .&#xA;But in case of tvOS , i am not getting button click event.&lt;/p&gt;&#xA;&lt;p&gt;But in case of tvOS if use the default view of viewcontroller like this , i am getting button click events and things works fine:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;let viewcontroller: UIViewController!&#xA;&#xA;viewcontroller = UIViewController ()&#xA;&#xA;// Adding a button&#xA;let button = UIButton(type: .system)&#xA;button.setTitle(&amp;quot;Tap Me&amp;quot;, for: .normal)&#xA;button.titleLabel?.font = UIFont.systemFont(ofSize: 18)&#xA;button.addTarget(self, action: #selector(buttonTapped), for:.allEvents)&#xA;&#xA;viewcontroller.view.addSubview(button)&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;Is this some bug for tvOS or for tvOS this suppose to happen this way ?&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77731666</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">Swift Core Data Crash when invoking loadPersistentStores</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="core-data" />
+            <category scheme="https://stackoverflow.com/tags" term="crash" />
+        <author>
+            <name>smartinrubio</name>
+            <uri>https://stackoverflow.com/users/15395217</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77731666/swift-core-data-crash-when-invoking-loadpersistentstores" />
+        <published>2023-12-29T11:16:09Z</published>
+        <updated>2023-12-29T11:16:09Z</updated>
+        <summary type="html">
+            &lt;p&gt;Core Data randomly crashes when &lt;code&gt;NSPersistentContainer.loadPersistentStores&lt;/code&gt; is invoked.&lt;/p&gt;&#xA;&lt;p&gt;This is how I&#x27;m loading the persistence store:&lt;/p&gt;&#xA;&lt;pre class=&quot;lang-swift prettyprint-override&quot;&gt;&lt;code&gt;self.container.loadPersistentStores { storeDescription, error in&#xA;    if let error = error as NSError? {&#xA;         fatalError(&amp;quot;Unresolved error  \(error), \(error.userInfo)&amp;quot;)&#xA;    }&#xA;            &#xA;    self.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy&#xA;    self.container.viewContext.automaticallyMergesChangesFromParent = true&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;and this is the crash:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;0   libswiftCore.dylib              0x000000019ea4b86c _assertionFailure(_:_:file:line:flags:) &#x2B; 264 (AssertCommon.swift:144)&#xA;1   App             0x0000000100e1938c closure #1 in PersistenceController.init(inMemory:) &#x2B; 504 (PersistenceController.swift:41)&#xA;2   App             0x0000000100e193e0 thunk for @escaping @callee_guaranteed (@guaranteed NSPersistentStoreDescription, @guaranteed Error?) -&amp;gt; () &#x2B; 80 (&amp;lt;compiler-generated&amp;gt;:0)&#xA;3   CoreData                        0x00000001ad76cf20 -[NSPersistentStoreCoordinator _doAddPersistentStoreWithDescription:privateCopy:completeOnMainThread:withHandler:] &#x2B; 668 (NSPersistentStoreCoordinator.m:1402)&#xA;4   CoreData                        0x00000001ad76cc2c -[NSPersistentStoreCoordinator addPersistentStoreWithDescription:completionHandler:] &#x2B; 228 (NSPersistentStoreCoordinator.m:1448)&#xA;5   CoreData                        0x00000001ad76ca28 -[NSPersistentContainer _loadStoreDescriptions:withCompletionHandler:] &#x2B; 184 (NSPersistentContainer.m:291)&#xA;6   CoreData                        0x00000001ad83c098 -[NSPersistentCloudKitContainer _loadStoreDescriptions:withCompletionHandler:] &#x2B; 536 (NSPersistentCloudKitContainer.m:163)&#xA;7   CoreData                        0x00000001ad6db398 -[NSPersistentContainer loadPersistentStoresWithCompletionHandler:] &#x2B; 248 (NSPersistentContainer.m:274)&#xA;8   App             0x0000000100e1914c PersistenceController.init(inMemory:) &#x2B; 928 (PersistenceController.swift:39)&#xA;9   App             0x0000000100e18d2c PersistenceController.__allocating_init(inMemory:) &#x2B; 28 (PersistenceController.swift:0)&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;This has happened quite a few times on different devices like iPad7, iPhone14 and iPhone15, but I cannot reproduce it on the simulator or my own device.&lt;/p&gt;&#xA;&lt;p&gt;Has anyone seen this crash before? The only thread I found about this issue is this one: &lt;a href=&quot;https://developer.apple.com/forums/thread/120158&quot; rel=&quot;nofollow noreferrer&quot;&gt;https://developer.apple.com/forums/thread/120158&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;Any tips for troubleshooting this kind of crashes that randomly happen in production?&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77731514</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">Push view controller from List in SwiftUI</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="xcode" />
+            <category scheme="https://stackoverflow.com/tags" term="swiftui" />
+            <category scheme="https://stackoverflow.com/tags" term="swiftui-list" />
+        <author>
+            <name>Sagar</name>
+            <uri>https://stackoverflow.com/users/1917822</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77731514/push-view-controller-from-list-in-swiftui" />
+        <published>2023-12-29T10:51:09Z</published>
+        <updated>2023-12-29T12:00:51Z</updated>
+        <summary type="html">
+            &lt;p&gt;I am in learning phase of &lt;code&gt;SwiftUI&lt;/code&gt;&lt;/p&gt;&#xA;&lt;p&gt;during which I have created one tab view which has 4 tabs, out of which on last tab, there is list which has following array&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;struct NavItem {&#xA;    let id: String&#xA;    let text: String&#xA;}&#xA;&#xA;struct ServicesView: View {&#xA;&#xA;    @State private var listItems: [NavItem] = [NavItem(id: &amp;quot;1&amp;quot;, text: &amp;quot;Profile&amp;quot;),&#xA;                                                      NavItem(id: &amp;quot;2&amp;quot;, text: &amp;quot;Leave&amp;quot;),&#xA;                                                      NavItem(id: &amp;quot;3&amp;quot;, text: &amp;quot;How to use&amp;quot;),&#xA;                                                      NavItem(id: &amp;quot;4&amp;quot;, text: &amp;quot;About Us&amp;quot;),&#xA;                                                   NavItem(id: &amp;quot;5&amp;quot;, text: &amp;quot;Logout&amp;quot;)]&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;Using &lt;code&gt;LIST&lt;/code&gt; I am able to display the same in view correctly, only problem I am facing is I am not able to push the new on selection of any item&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt; var body: some View {&#xA;&#xA;                NavigationView {&#xA;                    List (selection: $selection) {&#xA;                                ForEach(listItems, id:\.id) { item in&#xA;                                    Button(action: {&#xA;                                        if(item.id == &amp;quot;1&amp;quot;){&#xA;                                            print(&amp;quot;navigate to ----&amp;gt; &amp;quot; &#x2B; item.text)&#xA;                                            NavigationLink(destination: ProfileView()) {&#xA;                                                Text(&amp;quot;Show Detail View&amp;quot;)&#xA;                                            }&#xA;                                        }&#xA;                                    }) {&#xA;                                        Text(item.text)&#xA;                                            .foregroundStyle(.black)&#xA;                                    }&#xA;                                    .padding(10)&#xA;                                    .listRowInsets(.init(top: 0,leading: -5, bottom: 0, trailing: -5))&#xA;                                    .frame(minWidth: 111, idealWidth: .infinity, maxWidth: .infinity, alignment: .leading)&#xA;                                    .tag(item.id)&#xA;                                    .background(Color.clear)&#xA;                                }&#xA;                            }&#xA;                }&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;When I add navigationLink inside LIST, it gives me warning like below,&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;Result of &#x27;NavigationLink&amp;lt;Label, Destination&amp;gt;&#x27; initializer is unused&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;I am able to print on console, but my list is not navigating to Profileview.&lt;/p&gt;&#xA;&lt;p&gt;Can anyone will please help me to understand what I am doing wrong.&#xA;Any help will be appreciated.&lt;/p&gt;&#xA;&lt;p&gt;Thanks in advance.&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77731226</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">Xcode - Disable Swift Package(arm64) for iOS Simulator</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="xcode" />
+            <category scheme="https://stackoverflow.com/tags" term="ios-simulator" />
+            <category scheme="https://stackoverflow.com/tags" term="arm64" />
+            <category scheme="https://stackoverflow.com/tags" term="swift-package-manager" />
+        <author>
+            <name>Thomas Finbom</name>
+            <uri>https://stackoverflow.com/users/23171642</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77731226/xcode-disable-swift-packagearm64-for-ios-simulator" />
+        <published>2023-12-29T09:40:58Z</published>
+        <updated>2023-12-29T09:40:58Z</updated>
+        <summary type="html">
+            &lt;p&gt;I have installed a Swift Package in my iOS app. This package only supports &lt;code&gt;arm64&lt;/code&gt; for the moment. This means I cant run my app on a iOS Simulator that has another architecture.&lt;/p&gt;&#xA;&lt;p&gt;Is it possible to disable a Swift Package only for iOS Simulator? So this library is not linked with my binary during build? I want to keep this library still activated on a physical device.&lt;/p&gt;&#xA;&lt;p&gt;Im using this code in my app, but it is not enough:&lt;/p&gt;&#xA;&lt;pre class=&quot;lang-swift prettyprint-override&quot;&gt;&lt;code&gt;#if !targetEnvironment(simulator) &amp;amp;&amp;amp; canImport(MyLibrary)&#xA;import MyLibrary&#xA;// Code for physical device&#xA;#else&#xA;// Code for iOS Simulator&#xA;#endif&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;When running my app on iOS Simulator I get this error:&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;While building for iOS Simulator, no library for this platform was found in &#x27;MyLibrary.xcframework&#x27;.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77731206</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">HTML tags in UILabel don&#x27;t work and instead got shown</title>
+            <category scheme="https://stackoverflow.com/tags" term="html" />
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="uilabel" />
+            <category scheme="https://stackoverflow.com/tags" term="nsattributedstring" />
+        <author>
+            <name>Bawenang Rukmoko Pardian Putra</name>
+            <uri>https://stackoverflow.com/users/4124849</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77731206/html-tags-in-uilabel-dont-work-and-instead-got-shown" />
+        <published>2023-12-29T09:36:05Z</published>
+        <updated>2023-12-29T10:16:12Z</updated>
+        <summary type="html">
+            &lt;p&gt;I&#x27;ve got this HTML text:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;&amp;quot;&amp;lt;style&amp;gt;* {font-size: 12pt !important;color: #000000 !important;font-family: Montserrat-Regular !important;}&amp;lt;/style&amp;gt;Perform the following steps:&amp;lt;br&amp;gt;&amp;lt;u&amp;gt;Option 1:&amp;lt;/u&amp;gt;&amp;lt;br&amp;gt;&amp;lt;p&amp;gt;1) Upon receiving a push notification alert, tap on the push notification to launch BIMB Authenticator&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;2) Verify the transaction details and choose \&amp;quot;Approve\&amp;quot;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;3) Complete&amp;lt;/p&amp;gt;&amp;lt;br&amp;gt;&amp;lt;u&amp;gt;Option 2:&amp;lt;/u&amp;gt;&amp;lt;br&amp;gt;&amp;lt;ol&amp;gt;&amp;lt;p&amp;gt;1) If you didn&#x2019;t receive push notification, you may launch BIMB Authenticator&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;2) Verify the transaction details and choose \&amp;quot;Approve\&amp;quot;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;3) Complete&amp;lt;/p&amp;gt;&amp;quot;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;I&#x27;m trying to show this HTML text properly in a &lt;code&gt;UILabel&lt;/code&gt;. I have set the &lt;code&gt;UILabel&lt;/code&gt; to &lt;code&gt;Attributed&lt;/code&gt; This is my extension to convert String to NSAttributedString with HTML format:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;extension String {&#xA;    func attributedStringFromHTML() -&amp;gt; NSAttributedString? {&#xA;        guard let data = &amp;quot;\(self)&amp;quot;&#xA;            .data(using: .utf8, allowLossyConversion: false) else {&#xA;            Log.error(category: .transaction, message: &amp;quot;Unable to decode data from html string: %@&amp;quot;, self)&#xA;            return nil&#xA;        }&#xA;        &#xA;        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [&#xA;            .documentType: NSAttributedString.DocumentType.html,&#xA;            .characterEncoding: String.Encoding.utf8.rawValue&#xA;        ]&#xA;        &#xA;        if let attributedString = try? NSAttributedString(data: data, options: options, documentAttributes: nil) {&#xA;            return attributedString&#xA;        } else {&#xA;            Log.error(category: .transaction,&#xA;                      message: &amp;quot;Unable to create attributed string from html string: %@&amp;quot;,&#xA;                      self)&#xA;            return nil&#xA;        }&#xA;    }&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;This is the result. As you can see, the CSS style is not shown and the font is changed so CSS worked. However, the tags are shown and not giving the effects that they should provide:&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&quot;https://i.stack.imgur.com/zuzAR.png&quot; rel=&quot;nofollow noreferrer&quot;&gt;&lt;img src=&quot;https://i.stack.imgur.com/zuzAR.png&quot; alt=&quot;HTML text&quot; /&gt;&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;Can you help me with this? Thanks.&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77731142</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">Why I am getting TCF Error 3.3 to my AdMob account?</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+        <author>
+            <name>Mansi Golakiya</name>
+            <uri>https://stackoverflow.com/users/22991019</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77731142/why-i-am-getting-tcf-error-3-3-to-my-admob-account" />
+        <published>2023-12-29T09:20:41Z</published>
+        <updated>2023-12-29T09:26:14Z</updated>
+        <summary type="html">
+            &lt;p&gt;I am getting TCF Error 3.3&lt;/p&gt;&#xA;&lt;p&gt;And as I found error 3.3 indicates that The TC string last updated date was more than 13 months ago. and the suggested action is CMP should delete the old TC string and reobtain consent.&#xA;And I am using funding choices as a CMP, so what is the status of the issue?&#xA;Do I need to do any changes to the app for it?&lt;/p&gt;&#xA;&lt;p&gt;I am using below code to display EU Consent&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;func openEUConsent() {&#xA;        &#xA;        let parameters = UMPRequestParameters()&#xA;        parameters.tagForUnderAgeOfConsent = false&#xA;        DispatchQueue.main.async { [weak self] in&#xA;            UMPConsentInformation.sharedInstance.requestConsentInfoUpdate(with: parameters,completionHandler: { [weak self] error in&#xA;                if error != nil{&#xA;                    nonFatalLog(title: requestConsentErrorTitle, description: error?.localizedDescription ?? &amp;quot;nil&amp;quot;)&#xA;                }else{&#xA;                    let formStatus = UMPConsentInformation.sharedInstance.formStatus&#xA;                    switch formStatus {&#xA;                    case .available:&#xA;                        self?.loadForm()&#xA;                    case .unknown:&#xA;                        self?.openEUConsent()&#xA;                        print(&amp;quot;Form Status unknown&amp;quot;)&#xA;                        nonFatalLog(title: consentFormStatusUnknown, description: &amp;quot;nil&amp;quot;)&#xA;                    case .unavailable:&#xA;                        self?.requestIDFA()&#xA;                    default:&#xA;                        break&#xA;                    }&#xA;                }&#xA;            })&#xA;        }&#xA;    }&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;Please guide me for this issue.&lt;/p&gt;&#xA;&lt;p&gt;Thanks&lt;/p&gt;&#xA;&lt;p&gt;I&#x27;ve used this same code in my other apps but there is no issue.&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77730941</id>
+        <re:rank scheme="https://stackoverflow.com">-1</re:rank>
+        <title type="text">Instagram Image Picker [closed]</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="github" />
+            <category scheme="https://stackoverflow.com/tags" term="mobile" />
+            <category scheme="https://stackoverflow.com/tags" term="instagram" />
+        <author>
+            <name>TheBlackSail</name>
+            <uri>https://stackoverflow.com/users/11985960</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77730941/instagram-image-picker" />
+        <published>2023-12-29T08:26:50Z</published>
+        <updated>2023-12-29T08:26:50Z</updated>
+        <summary type="html">
+            &lt;p&gt;Im not to programming. I&#x27;m trying to implement somethign similar to Instagrams image picker process into my application - using swift UI - does anyone know of any open source repos or projects that havee already been built?&lt;/p&gt;&#xA;&lt;p&gt;Much appreciated in advance&lt;/p&gt;&#xA;&lt;p&gt;I tried using repos on github but they were built using React native - i&#x27;ve already coded mot of the project using Swift in xcode&lt;/p&gt;&#xA;&lt;p&gt;i tried these 3 repos&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;https://github.com/baronha/react-native-multiple-image-picker?tab=readme-ov-file&#xA;https://github.com/Yummypets/YPImagePicker/commits?author=NikKovIos&#xA;https://github.com/KoreanThinker/react-native-instagram-like-image-cropper&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77730919</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">VisionOS Immersive Space quit unexpectedly</title>
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="simulator" />
+            <category scheme="https://stackoverflow.com/tags" term="visionos" />
+            <category scheme="https://stackoverflow.com/tags" term="vision-pro" />
+        <author>
+            <name>Joy</name>
+            <uri>https://stackoverflow.com/users/15101679</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77730919/visionos-immersive-space-quit-unexpectedly" />
+        <published>2023-12-29T08:19:47Z</published>
+        <updated>2023-12-29T08:26:09Z</updated>
+        <summary type="html">
+            &lt;p&gt;&lt;a href=&quot;https://i.stack.imgur.com/TVYkc.png&quot; rel=&quot;nofollow noreferrer&quot;&gt;enter image description here&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&quot;https://i.stack.imgur.com/S3TDF.png&quot; rel=&quot;nofollow noreferrer&quot;&gt;enter image description here&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;I don&#x27;t know why it isn&#x27;t working now.&#xA;At first, when I clicked the button, it works well but now it seems struggle to handle Immersive space.&#xA;I&#x27;ve also tried other examples, hello world, doesn&#x27;t work at all.&#xA;I checked Immersive view and contents don&#x27;t appear as well.&#xA;However, when I check realityComposer and RealityKitContent, there are clearly contents exist...&#xA;same error occurred in 15.1 beta&lt;/p&gt;&#xA;&lt;p&gt;Hardware spec:&#xA;M1 mackbook air 2020&#xA;Memory - 8 GB&#xA;Mac os - 14.0 (23A344)&#xA;Xcode - Version 15.2 beta (15C5500c)&lt;/p&gt;&#xA;&lt;p&gt;I expect Immersive space appeared&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+    <entry>
+        <id>https://stackoverflow.com/q/77730641</id>
+        <re:rank scheme="https://stackoverflow.com">0</re:rank>
+        <title type="text">Solving warning &quot;Publishing changes from within view updates is not allowed, this will cause undefined behavior.&quot; in SwiftUI</title>
+            <category scheme="https://stackoverflow.com/tags" term="ios" />
+            <category scheme="https://stackoverflow.com/tags" term="swift" />
+            <category scheme="https://stackoverflow.com/tags" term="swiftui" />
+            <category scheme="https://stackoverflow.com/tags" term="observableobject" />
+        <author>
+            <name>Deepak Sharma</name>
+            <uri>https://stackoverflow.com/users/917521</uri>
+        </author>
+        <link rel="alternate" href="https://stackoverflow.com/questions/77730641/solving-warning-publishing-changes-from-within-view-updates-is-not-allowed-thi" />
+        <published>2023-12-29T06:56:26Z</published>
+        <updated>2023-12-29T09:33:48Z</updated>
+        <summary type="html">
+            &lt;p&gt;I am getting the following purple warning in my SwiftUI view update:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;  &amp;quot;Publishing changes from within view updates is not allowed, this will cause undefined behavior.&amp;quot;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;The warning is caused due to the following in my &lt;code&gt;ObservableObject&lt;/code&gt; code:&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;    fileprivate func set(_ value: Any?, forKey key: Key) {&#xA;    &#xA;           if peerDeviceSettings != nil {&#xA;               peerDeviceSettings?[key.rawValue] = value&#xA;           } else {&#xA;               UserDefaults.standard.set(value, forKey: key.rawValue)&#xA;           }&#xA;&#xA;             objectWillChange.send() //&amp;lt;--- This line causes warning&#xA;      }&#xA;&#xA;     var someProperty:Array&amp;lt;MyPropertyType&amp;gt; {&#xA;    &#xA;       get {&#xA;           var allValues:Array&amp;lt;MyPropertyType &amp;gt; = []&#xA;        &#xA;           if let storedValues = setting(forKey: Key.myValues) as? Array&amp;lt;[String:Any]&amp;gt; {&#xA;                 allValues = storedValues.map { MyPropertyType($0) }&#xA;           } else {&#xA;               //Install default values now&#xA;               let allValuesDictionary = MyPropertyType.defaultValuesArray()&#xA;               set(allValuesDictionary, forKey: Key.myValues)&#xA;               allValues = self.someProperty&#xA;            }&#xA;        &#xA;            return allValues&#xA;        }&#xA;    &#xA;        set (newValue) {&#xA;            var dictionaries:Array&amp;lt;Dictionary&amp;lt;String, Any&amp;gt;&amp;gt; = []&#xA;            dictionaries = newValue.map { $0.dictionary() }&#xA;            set(dictionaries, forKey: Key.myValues)&#xA;         }&#xA;      }&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;So basically I am reading a setting property from &lt;code&gt;body&lt;/code&gt; var and the settings code is trying to install default values if nothing was found at the startup and the setter code is triggering &lt;code&gt;objectWillChange.send()&lt;/code&gt; . To solve it, I have modified the setter code to notify changes on the main queue.&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;  fileprivate func set(_ value: Any?, forKey key: Key) {&#xA;     if peerDeviceSettings != nil {&#xA;         peerDeviceSettings?[key.rawValue] = value&#xA;     } else {&#xA;         UserDefaults.standard.set(value, forKey: key.rawValue)&#xA;     }&#xA;    &#xA;     DispatchQueue.main.async {&#xA;         self.objectWillChange.send() //&amp;lt;-- This fixes the warning&#xA;     }&#xA;  }&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;I want to know if this solution has any pitfalls or there is a better solution?&lt;/p&gt;&#xA;
+        </summary>
+    </entry>
+</feed>
