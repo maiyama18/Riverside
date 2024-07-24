@@ -4,11 +4,7 @@ import Logging
 import Payloads
 import SwiftSoup
 
-public protocol FeedClientProtocol: Sendable {
-    func fetch(url: URL) async throws ->Payloads.Feed
-}
-
-public actor FeedClient: FeedClientProtocol {
+public actor FeedFetcher {
     enum ContentType {
         case html
         case feed
@@ -30,7 +26,7 @@ public actor FeedClient: FeedClientProtocol {
                 case .html:
                     let feedURL = try extractFeedURL(data: data).insertBaseURLIfNeeded(referenceURL: url)
                     let (feedData, feedContentType) = try await fetchDataAndContentType(url: feedURL)
-                    guard feedContentType == .feed else { throw NSError(domain: "FeedClient", code: -4) }
+                    guard feedContentType == .feed else { throw NSError(domain: "FeedFetcher", code: -4) }
                     let rawFeed = try await FeedParser(data: feedData).parseFeed()
                     var feed = rawFeed.convert(url: feedURL)
                     if feed.imageURL == nil {
@@ -59,7 +55,7 @@ public actor FeedClient: FeedClientProtocol {
         guard let response = response as? HTTPURLResponse,
               response.statusCode == 200,
               let contentTypeString = response.allHeaderFields["Content-Type"] as? String else {
-            throw NSError(domain: "FeedClient", code: -1)
+            throw NSError(domain: "FeedFetcher", code: -1)
         }
         
         let contentType: ContentType = try {
@@ -74,7 +70,7 @@ public actor FeedClient: FeedClientProtocol {
                 } else if string.hasPrefix("<?xml") || string.hasPrefix("<rss") || string.hasPrefix("{") {
                     return .feed
                 } else {
-                    throw NSError(domain: "FeedClient", code: -2, userInfo: [
+                    throw NSError(domain: "FeedFetcher", code: -2, userInfo: [
                         NSLocalizedDescriptionKey: "Failed to determine content type from response",
                     ])
                 }
@@ -88,7 +84,7 @@ public actor FeedClient: FeedClientProtocol {
         let html = try SwiftSoup.parse(String(decoding: data, as: UTF8.self))
         let links = try html.select("link[rel=alternate][type=application/rss+xml], link[rel=alternate][type=application/atom+xml]")
         guard let link = try links.compactMap({ try URL(string: $0.attr("href")) }).first else {
-            throw NSError(domain: "FeedClient", code: -3, userInfo: [
+            throw NSError(domain: "FeedFetcher", code: -3, userInfo: [
                 NSLocalizedDescriptionKey: "Cannot find feed URL",
             ])
         }

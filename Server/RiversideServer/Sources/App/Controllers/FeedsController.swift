@@ -1,5 +1,5 @@
 import Foundation
-import FeedClient
+import FeedFetcher
 import Payloads
 import Vapor
 
@@ -17,20 +17,20 @@ struct FeedsController: RouteCollection {
     
     @Sendable
     func post(req: Request) async throws -> FeedsResponseBody {
-        let feedClient = FeedClient(urlSession: .shared, logger: req.logger)
+        let feedFetcher = FeedFetcher(urlSession: .shared, logger: req.logger)
         
         let requestBody = try req.content.decode(FeedsRequestBody.self)
         req.logger.notice("request: \(requestBody)")
-        let feeds = try await fetchFeeds(logger: req.logger, feedClient: feedClient, urls: requestBody.urls)
+        let feeds = try await fetchFeeds(logger: req.logger, feedFetcher: feedFetcher, urls: requestBody.urls)
         return FeedsResponseBody(feeds: feeds)
     }
     
     private func fetchFeeds(
         logger: Logger,
-        feedClient: FeedClient,
+        feedFetcher: FeedFetcher,
         urls: [String]
     ) async throws -> [String:FeedsResponseBody.FeedResult] {
-        await withTaskGroup(of: Result<(String, Feed), FeedsError>.self) { [feedClient] group in
+        await withTaskGroup(of: Result<(String, Feed), FeedsError>.self) { [feedFetcher] group in
             for urlString in urls {
                 group.addTask {
                     guard let url = URL(string: urlString) else {
@@ -38,7 +38,7 @@ struct FeedsController: RouteCollection {
                     }
                     
                     do {
-                        return try await .success((urlString, feedClient.fetch(url: url)))
+                        return try await .success((urlString, feedFetcher.fetch(url: url)))
                     } catch {
                         logger.warning("failed to fetch \(urlString): \(error)")
                         return .failure(FeedsError(url: urlString, description: "failed to fetch \(urlString): \(error)"))

@@ -10,7 +10,7 @@ let targets: [PackageDescription.Target] = [
         name: "Payloads"
     ),
     .target(
-        name: "FeedClient",
+        name: "FeedFetcher",
         dependencies: [
             "Payloads",
             .product(name: "FeedKit", package: "FeedKit"),
@@ -22,7 +22,7 @@ let targets: [PackageDescription.Target] = [
         name: "App",
         dependencies: [
             "Payloads",
-            "FeedClient",
+            "FeedFetcher",
             .product(name: "Vapor", package: "vapor"),
             .product(name: "NIOCore", package: "swift-nio"),
             .product(name: "NIOPosix", package: "swift-nio"),
@@ -32,9 +32,9 @@ let targets: [PackageDescription.Target] = [
     // Tests
     
     .testTarget(
-        name: "FeedClientTests",
+        name: "FeedFetcherTests",
         dependencies: [
-            "FeedClient",
+            "FeedFetcher",
         ],
         resources: [.process("Resources")]
     ),
@@ -70,7 +70,7 @@ let package = Package(
        .macOS(.v13)
     ],
     products: [
-        .library(name: "FeedClient", targets: ["FeedClient"]),
+        .library(name: "FeedFetcher", targets: ["FeedFetcher"]),
         .library(name: "Payloads", targets: ["Payloads"]),
     ],
     dependencies: [

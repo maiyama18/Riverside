@@ -1,9 +1,9 @@
-@testable import FeedClient
+@testable import FeedFetcher
 
 import Foundation
 import XCTest
 
-final class FeedClientTests: XCTestCase {
+final class FeedFetcherTests: XCTestCase {
     // HTML
     private static let maiyama4HTMLURL = URL(string: "https://maiyama4.hatenablog.com")!
     private static let iOSDevWeeklyHTMLURL = URL(string: "https://iosdevweekly.com/issues")!
@@ -47,7 +47,7 @@ final class FeedClientTests: XCTestCase {
     // JSON
     private static let jessesquiresJSONURL = URL(string: "https://www.jessesquires.com/feed.json")!
 
-    private var client: FeedClient!
+    private var fetcher: FeedFetcher!
 
     override func setUp() async throws {
         enum ResponseType {
@@ -158,13 +158,13 @@ final class FeedClientTests: XCTestCase {
         try setFeedData(to: &responses, url: Self.jessesquiresJSONURL, responseType: .jsonFeed, resourceName: "jessesquires")
 
         URLProtocolStub.setResponses(responses)
-        client = .init(urlSession: urlSession, logger: .init(label: "FeedClientTests"))
+        fetcher = .init(urlSession: urlSession, logger: .init(label: "FeedFetcherTests"))
     }
     
     // MARK: - HTML -> Atom
 
     func test_maiyama4_html() async throws {
-        let feed = try await client.fetch(url: Self.maiyama4HTMLURL)
+        let feed = try await fetcher.fetch(url: Self.maiyama4HTMLURL)
         XCTAssertEqual(feed.url, Self.maiyama4AtomURL)
         XCTAssertEqual(feed.title, "maiyama log")
         XCTAssertEqual(feed.overview, "")
@@ -182,7 +182,7 @@ final class FeedClientTests: XCTestCase {
     // MARK: - RSS
 
     func test_maiyama4_rss() async throws {
-        let feed = try await client.fetch(url: Self.maiyama4RSSURL)
+        let feed = try await fetcher.fetch(url: Self.maiyama4RSSURL)
         XCTAssertEqual(feed.url, Self.maiyama4RSSURL)
         XCTAssertEqual(feed.title, "maiyama log")
         XCTAssertEqual(feed.overview, "")
@@ -198,7 +198,7 @@ final class FeedClientTests: XCTestCase {
     }
     
     func test_magnolia() async throws {
-        let feed = try await client.fetch(url: Self.magnoliaURL)
+        let feed = try await fetcher.fetch(url: Self.magnoliaURL)
         XCTAssertEqual(feed.url, Self.magnoliaURL)
         XCTAssertEqual(feed.title, "Magnolia Tech")
         XCTAssertEqual(feed.overview, "いつもコードのことばかり考えている人のために。")
@@ -213,7 +213,7 @@ final class FeedClientTests: XCTestCase {
    }
 
     func test_iOSDevWeekly() async throws {
-        let feed = try await client.fetch(url: Self.iOSDevWeeklyURL)
+        let feed = try await fetcher.fetch(url: Self.iOSDevWeeklyURL)
         XCTAssertEqual(feed.url, Self.iOSDevWeeklyURL)
         XCTAssertEqual(feed.title, "iOS Dev Weekly")
         XCTAssertEqual(feed.overview, "Subscribe to a hand-picked round-up of the best iOS development links every week. Curated by Dave Verwer and published every Friday. Free.")
@@ -229,7 +229,7 @@ final class FeedClientTests: XCTestCase {
     }
 
     func test_iOSCodeReview() async throws {
-        let feed = try await client.fetch(url: Self.iOSCodeReviewURL)
+        let feed = try await fetcher.fetch(url: Self.iOSCodeReviewURL)
         XCTAssertEqual(feed.url, Self.iOSCodeReviewURL)
         XCTAssertEqual(feed.title, " iOS Code Review | Curated code improvement tips")
         XCTAssertEqual(feed.overview, "Bi-weekly newsletter amplifying code improvement tips from the Apple developer community in a bite-sized format. Swift, Objective-C, iOS, macOS, SwiftUI, UIKit and more.  Curated by Marina Gornostaeva and published every other Thursday. ")
@@ -245,7 +245,7 @@ final class FeedClientTests: XCTestCase {
     }
 
     func test_r7kamura() async throws {
-        let feed = try await client.fetch(url: Self.r7kamuraURL)
+        let feed = try await fetcher.fetch(url: Self.r7kamuraURL)
         XCTAssertEqual(feed.url, Self.r7kamuraURL)
         XCTAssertEqual(feed.title, "r7kamura.com")
         XCTAssertEqual(feed.overview, "r7kamuraの生活やプログラミングに関するウェブサイト")
@@ -261,7 +261,7 @@ final class FeedClientTests: XCTestCase {
     }
 
     func test_swiftUILab() async throws {
-        let feed = try await client.fetch(url: Self.swiftUILabURL)
+        let feed = try await fetcher.fetch(url: Self.swiftUILabURL)
         XCTAssertEqual(feed.url, Self.swiftUILabURL)
         XCTAssertEqual(feed.title, "The SwiftUI Lab")
         XCTAssertEqual(feed.overview, "When the documentation is missing, we experiment.")
@@ -277,7 +277,7 @@ final class FeedClientTests: XCTestCase {
     }
 
     func test_zennSwift() async throws {
-        let feed = try await client.fetch(url: Self.zennSwiftURL)
+        let feed = try await fetcher.fetch(url: Self.zennSwiftURL)
         XCTAssertEqual(feed.url, Self.zennSwiftURL)
         XCTAssertEqual(feed.title, "Zennの「Swift」のフィード")
         XCTAssertEqual(feed.overview, "Zennのトピック「Swift」のRSSフィードです")
@@ -293,7 +293,7 @@ final class FeedClientTests: XCTestCase {
     }
 
     func test_qiitaSwift() async throws {
-        let feed = try await client.fetch(url: Self.qiitaSwiftURL)
+        let feed = try await fetcher.fetch(url: Self.qiitaSwiftURL)
         XCTAssertEqual(feed.url, Self.qiitaSwiftURL)
         XCTAssertEqual(feed.title, "Swiftタグが付けられた新着記事 - Qiita")
         XCTAssertEqual(feed.overview, "")
@@ -309,7 +309,7 @@ final class FeedClientTests: XCTestCase {
     }
 
     func test_stackoverflowSwift() async throws {
-        let feed = try await client.fetch(url: Self.stackoverflowSwiftURL)
+        let feed = try await fetcher.fetch(url: Self.stackoverflowSwiftURL)
         XCTAssertEqual(feed.url, Self.stackoverflowSwiftURL)
         XCTAssertEqual(feed.title, "Newest questions tagged swift - Stack Overflow")
         XCTAssertEqual(feed.overview, "most recent 30 from stackoverflow.com")
@@ -325,7 +325,7 @@ final class FeedClientTests: XCTestCase {
     }
 
     func test_phaNote() async throws {
-        let feed = try await client.fetch(url: Self.phaNoteURL)
+        let feed = try await fetcher.fetch(url: Self.phaNoteURL)
         XCTAssertEqual(feed.url, Self.phaNoteURL)
         XCTAssertEqual(feed.title, "pha")
         XCTAssertEqual(feed.overview, "毎日寝て暮らしたい。読んだ本の感想やだらだらした日常のことを書いている日記です。毎回最初の1日分は無料で読めるようにしています。雑誌などに書いた文章もここに載せたりします。")
@@ -341,7 +341,7 @@ final class FeedClientTests: XCTestCase {
     }
 
     func test_naoyaSizume() async throws {
-        let feed = try await client.fetch(url: Self.naoyaSizumeURL)
+        let feed = try await fetcher.fetch(url: Self.naoyaSizumeURL)
         XCTAssertEqual(feed.url, Self.naoyaSizumeURL)
         XCTAssertEqual(feed.title, "naoya - しずかなインターネット")
         XCTAssertEqual(feed.overview, "naoya さんの記事一覧のRSSフィードです")
@@ -359,7 +359,7 @@ final class FeedClientTests: XCTestCase {
     // MARK: - Atom
     
     func test_maiyama4_atom() async throws {
-        let feed = try await client.fetch(url: Self.maiyama4AtomURL)
+        let feed = try await fetcher.fetch(url: Self.maiyama4AtomURL)
         XCTAssertEqual(feed.url, Self.maiyama4AtomURL)
         XCTAssertEqual(feed.title, "maiyama log")
         XCTAssertEqual(feed.overview, "")
@@ -375,7 +375,7 @@ final class FeedClientTests: XCTestCase {
     }
 
     func test_jessesquires_atom() async throws {
-        let feed = try await client.fetch(url: Self.jessesquiresAtomURL)
+        let feed = try await fetcher.fetch(url: Self.jessesquiresAtomURL)
         XCTAssertEqual(feed.url, Self.jessesquiresAtomURL)
         XCTAssertEqual(feed.title, "Jesse Squires")
         XCTAssertEqual(feed.overview, "Turing complete with a stack of 0xdeadbeef")
@@ -391,7 +391,7 @@ final class FeedClientTests: XCTestCase {
     }
 
     func test_andante() async throws {
-        let feed = try await client.fetch(url: Self.andanteURL)
+        let feed = try await fetcher.fetch(url: Self.andanteURL)
         XCTAssertEqual(feed.url, Self.andanteURL)
         XCTAssertEqual(feed.title, "andante")
         XCTAssertEqual(feed.overview, "個人的な日記です")
@@ -410,7 +410,7 @@ final class FeedClientTests: XCTestCase {
     }
 
     func test_jxck() async throws {
-        let feed = try await client.fetch(url: Self.jxckURL)
+        let feed = try await fetcher.fetch(url: Self.jxckURL)
         XCTAssertEqual(feed.url, Self.jxckURL)
         XCTAssertEqual(feed.title, "blog.jxck.io")
         XCTAssertEqual(feed.overview, "")
@@ -428,7 +428,7 @@ final class FeedClientTests: XCTestCase {
     // MARK: - RDF
 
     func test_asahi() async throws {
-        let feed = try await client.fetch(url: Self.asahiURL)
+        let feed = try await fetcher.fetch(url: Self.asahiURL)
         XCTAssertEqual(feed.url, Self.asahiURL)
         XCTAssertEqual(feed.title, "朝日新聞デジタル")
         XCTAssertEqual(feed.overview, "朝日新聞デジタル")
@@ -443,7 +443,7 @@ final class FeedClientTests: XCTestCase {
     }
     
     func test_avWatch() async throws {
-        let feed = try await client.fetch(url: Self.avWatchURL)
+        let feed = try await fetcher.fetch(url: Self.avWatchURL)
         XCTAssertEqual(feed.url, Self.avWatchURL)
         XCTAssertEqual(feed.title, "AV Watch")
         XCTAssertEqual(feed.overview, "オーディオ・ビジュアル総合情報サイト")
@@ -459,7 +459,7 @@ final class FeedClientTests: XCTestCase {
     }
     
     func test_toiroiro() async throws {
-        let feed = try await client.fetch(url: Self.toiroiroURL)
+        let feed = try await fetcher.fetch(url: Self.toiroiroURL)
         XCTAssertEqual(feed.url, Self.toiroiroURL)
         XCTAssertEqual(feed.title, "トイロ公式ブログ【日々のこと～暮らしを彩る料理とモノ～】")
         XCTAssertEqual(feed.overview, "おうちごはんや、お弁当、手作りおやつ、あったら便利なグッズ、好きなモノ・場所のことなど。暮らしを楽しむ様々なアイデアや日々のことを綴る、トイロのオフィシャルブログです。\n")
@@ -476,7 +476,7 @@ final class FeedClientTests: XCTestCase {
     // MARK: - JSON
 
     func test_jessesquires_json() async throws {
-        let feed = try await client.fetch(url: Self.jessesquiresJSONURL)
+        let feed = try await fetcher.fetch(url: Self.jessesquiresJSONURL)
         XCTAssertEqual(feed.url, Self.jessesquiresJSONURL)
         XCTAssertEqual(feed.title, "Jesse Squires")
         XCTAssertEqual(feed.overview, "Turing complete with a stack of 0xdeadbeef")
