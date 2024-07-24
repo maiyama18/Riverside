@@ -12,9 +12,19 @@ public struct FeedsRequestBody: Codable, Sendable {
 
 
 public struct FeedsResponseBody: Codable, Sendable {
-    public let feeds: [String: Feed]
+    public struct FeedResult: Codable, Sendable {
+        public var feed: Feed?
+        public var error: String?
+        
+        public init(feed: Feed? = nil, error: String? = nil) {
+            self.feed = feed
+            self.error = error
+        }
+    }
     
-    public init(feeds: [String: Feed]) {
+    public let feeds: [String: FeedResult]
+    
+    public init(feeds: [String: FeedResult]) {
         self.feeds = feeds
     }
 }

@@ -4,6 +4,11 @@ import Payloads
 import Vapor
 
 struct FeedsController: RouteCollection {
+    struct FeedsError: Error {
+        var url: String
+        var description: String
+    }
+    
     func boot(routes: any RoutesBuilder) throws {
         let feeds = routes.grouped("feeds")
         
@@ -24,23 +29,30 @@ struct FeedsController: RouteCollection {
         logger: Logger,
         feedClient: FeedClient,
         urls: [String]
-    ) async throws -> [String:Feed] {
-        await withTaskGroup(of: Optional<(String, Feed)>.self, returning: [String:Feed].self) { [feedClient] group in
+    ) async throws -> [String:FeedsResponseBody.FeedResult] {
+        await withTaskGroup(of: Result<(String, Feed), FeedsError>.self) { [feedClient] group in
             for urlString in urls {
                 group.addTask {
-                    guard let url = URL(string: urlString) else { return nil }
+                    guard let url = URL(string: urlString) else {
+                        return .failure(FeedsError(url: urlString, description: "invalid url: \(urlString)"))
+                    }
                     
                     do {
-                        return try await (urlString, feedClient.fetch(url: url))
+                        return try await .success((urlString, feedClient.fetch(url: url)))
                     } catch {
                         logger.warning("failed to fetch \(urlString): \(error)")
-                        return nil
+                        return .failure(FeedsError(url: urlString, description: "failed to fetch \(urlString): \(error)"))
                     }
                 }
             }
             
-            return await group.compactMap { $0 }.reduce(into: [:]) { result, pair in
-                result[pair.0] = pair.1
+            return await group.reduce(into: [:]) { dict, result in
+                switch result {
+                case .success((let url, let feed)):
+                    dict[url] = .init(feed: feed)
+                case .failure(let error):
+                    dict[error.url] = .init(error: error.description)
+                }
             }
         }
     }
