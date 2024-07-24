@@ -17,7 +17,7 @@ public actor FeedClient: FeedClientProtocol {
     private let urlSession: URLSession
     private let logger: Logger
     
-    init(urlSession: URLSession, logger: Logger) {
+    public init(urlSession: URLSession, logger: Logger) {
         self.urlSession = urlSession
         self.logger = logger
     }

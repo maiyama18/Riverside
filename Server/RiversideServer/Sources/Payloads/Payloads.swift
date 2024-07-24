@@ -1,6 +1,6 @@
 import Foundation
 
-public struct FeedsRequestBody: Codable {
+public struct FeedsRequestBody: Codable, Sendable {
     public let urls: [String]
     public let forceRefresh: Bool
 
@@ -11,7 +11,7 @@ public struct FeedsRequestBody: Codable {
 }
 
 
-public struct FeedsResponseBody: Codable {
+public struct FeedsResponseBody: Codable, Sendable {
     public let feeds: [String: Feed]
     
     public init(feeds: [String: Feed]) {

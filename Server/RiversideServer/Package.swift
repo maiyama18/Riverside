@@ -16,13 +16,13 @@ let targets: [PackageDescription.Target] = [
             .product(name: "FeedKit", package: "FeedKit"),
             .product(name: "SwiftSoup", package: "SwiftSoup"),
             .product(name: "Vapor", package: "vapor"),
-        ],
-        exclude: ["FeedClient.xctestplan"]
+        ]
     ),
     .executableTarget(
         name: "App",
         dependencies: [
             "Payloads",
+            "FeedClient",
             .product(name: "Vapor", package: "vapor"),
             .product(name: "NIOCore", package: "swift-nio"),
             .product(name: "NIOPosix", package: "swift-nio"),
