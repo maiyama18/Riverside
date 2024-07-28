@@ -6,6 +6,7 @@ import Utilities
 
 public struct FeedClient: Sendable {
     public var fetchFeed: @Sendable (_ feedURL: URL) async throws -> Feed
+    public var fetchFeeds: @Sendable (_ feedURLs: [URL]) async throws -> [Feed]
 }
 
 extension FeedClient {
@@ -16,21 +17,27 @@ extension FeedClient {
         return decoder
     }()
     static private let jsonEncoder: JSONEncoder = .init()
-
+    
     static func live(serverBaseURL: URL) -> FeedClient {
-        let endpointURL: URL = serverBaseURL.appending(path: "feeds")
+        @Sendable
+        func request(urls: [URL]) async throws -> FeedsResponseBody {
+            let endpointURL: URL = serverBaseURL.appending(path: "feeds")
+            
+            var request = URLRequest(url: endpointURL)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = try jsonEncoder.encode(
+                FeedsRequestBody(urls: urls.map(\.absoluteString))
+            )
+            
+            let (data, _) = try await urlSession.data(for: request)
+            return try jsonDecoder.decode(FeedsResponseBody.self, from: data)
+        }
         
         return FeedClient(
             fetchFeed: { feedURL in
-                var request = URLRequest(url: endpointURL)
-                request.httpMethod = "POST"
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.httpBody = try jsonEncoder.encode(
-                    FeedsRequestBody(urls: [feedURL.absoluteString])
-                )
+                let response = try await request(urls: [feedURL])
                 
-                let (data, _) = try await urlSession.data(for: request)
-                let response = try jsonDecoder.decode(FeedsResponseBody.self, from: data)
                 guard let feedResult = response.feeds[feedURL.absoluteString] else {
                     throw NSError(domain: "invalid response", code: 0)
                 }
@@ -41,6 +48,20 @@ extension FeedClient {
                         throw NSError(domain: feedError, code: 0)
                     } else {
                         throw NSError(domain: "invalid response", code: 0)
+                    }
+                }
+            },
+            fetchFeeds: { feedURLs in
+                @Dependency(\.logger[.feedModel]) var logger
+                
+                let response = try await request(urls: feedURLs)
+                
+                return response.feeds.compactMap {
+                    if let feed = $0.value.feed {
+                        return feed
+                    } else {
+                        logger.warning("failed to fetch \($0.key): \($0.value.error ?? "no error")")
+                        return nil
                     }
                 }
             }
