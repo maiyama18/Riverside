@@ -5,7 +5,6 @@ import Dependencies
 import Entities
 import ForegroundRefreshState
 import AddNewEntriesUseCase
-import FlashClient
 import NavigationState
 import SwiftUI
 import UIComponents
@@ -13,9 +12,6 @@ import Utilities
 
 @MainActor
 public struct StreamScreen: View {
-    @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
-    @Dependency(\.flashClient) private var flashClient
-    
     @Environment(CloudSyncState.self) private var cloudSyncState
     @Environment(ForegroundRefreshState.self) private var foregroundRefreshState
     @Environment(NavigationState.self) private var navigationState
