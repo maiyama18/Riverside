@@ -5,7 +5,7 @@ import Combine
 import Dependencies
 import Entities
 import LocalPushNotificationClient
-import Logging
+import RiversideLogging
 import Utilities
 import WidgetKit
 

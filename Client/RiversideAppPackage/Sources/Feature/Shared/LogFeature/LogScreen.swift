@@ -1,5 +1,5 @@
 import Dependencies
-import Logging
+import RiversideLogging
 import FlashClient
 import OSLog
 import SwiftUI

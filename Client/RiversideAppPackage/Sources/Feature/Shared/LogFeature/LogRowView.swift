@@ -1,5 +1,5 @@
 import SwiftUI
-import Logging
+import RiversideLogging
 import OSLog
 import Utilities
 

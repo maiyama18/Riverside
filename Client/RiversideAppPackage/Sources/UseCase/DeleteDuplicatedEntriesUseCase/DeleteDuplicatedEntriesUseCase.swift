@@ -1,7 +1,7 @@
 import CoreData
 import Dependencies
 import Entities
-import Logging
+import RiversideLogging
 
 public struct DeleteDuplicatedEntriesUseCase: Sendable {
     public var execute: @Sendable (_ context: NSManagedObjectContext) throws -> Void

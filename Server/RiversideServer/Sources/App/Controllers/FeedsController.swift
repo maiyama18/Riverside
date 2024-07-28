@@ -22,7 +22,9 @@ struct FeedsController: RouteCollection {
         let requestBody = try req.content.decode(FeedsRequestBody.self)
         req.logger.notice("request: \(requestBody)")
         let feeds = try await fetchFeeds(logger: req.logger, feedFetcher: feedFetcher, urls: requestBody.urls)
-        return FeedsResponseBody(feeds: feeds)
+        let responseBody = FeedsResponseBody(feeds: feeds)
+        req.logger.notice("response: \(responseBody)")
+        return responseBody
     }
     
     private func fetchFeeds(

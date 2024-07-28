@@ -5,7 +5,7 @@ import Entities
 import FlashClient
 import ForegroundRefreshState
 import LicensesFeature
-import Logging
+import RiversideLogging
 import LogFeature
 import MacRootFeature
 import SystemNotification

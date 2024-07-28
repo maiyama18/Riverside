@@ -6,6 +6,7 @@ import FlashClient
 import SubscribeFeedUseCase
 import SwiftUI
 import Utilities
+import Payloads
 
 @MainActor
 public struct SubscribeFeedScreen: View {

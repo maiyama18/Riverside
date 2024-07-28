@@ -1,7 +1,7 @@
 import CoreData
 import Dependencies
 import Entities
-import Logging
+import RiversideLogging
 import WidgetKit
 
 struct Provider: TimelineProvider {

@@ -2,7 +2,7 @@ import CoreData
 import Combine
 import Dependencies
 import Foundation
-import Logging
+import RiversideLogging
 import Observation
 
 @Observable

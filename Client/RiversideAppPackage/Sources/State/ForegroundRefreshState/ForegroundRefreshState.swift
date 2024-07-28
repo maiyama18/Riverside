@@ -4,7 +4,7 @@ import CloudSyncState
 import Dependencies
 import Entities
 import Foundation
-import Logging
+import RiversideLogging
 import Observation
 import Utilities
 import WidgetKit

@@ -6,8 +6,8 @@ import PackageDescription
 
 let dependencies: [PackageDescription.Package.Dependency] = [
     // Libraries
-    .package(url: "https://github.com/nmdias/FeedKit", exact: "9.1.2"),
-    .package(url: "https://github.com/scinfu/SwiftSoup", exact: "2.6.1"),
+    .package(path: "../../Server/RiversideServer"),
+    
     .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.1.5"),
     .package(url: "https://github.com/pointfreeco/swift-custom-dump", exact: "1.1.2"),
     .package(url: "https://github.com/apple/swift-algorithms", exact: "1.2.0"),
@@ -19,8 +19,8 @@ let dependencies: [PackageDescription.Package.Dependency] = [
 ]
 
 extension PackageDescription.Target.Dependency {
-    static let feedKit: Self = .product(name: "FeedKit", package: "FeedKit")
-    static let swiftSoup: Self = .product(name: "SwiftSoup", package: "SwiftSoup")
+    static let payloads: Self = .product(name: "Payloads", package: "RiversideServer")
+    
     static let dependencies: Self = .product(name: "Dependencies", package: "swift-dependencies")
     static let algorithms: Self = .product(name: "Algorithms", package: "swift-algorithms")
     static let systemNotification: Self = .product(name: "SystemNotification", package: "SystemNotification")
@@ -56,6 +56,7 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "IOSWidgetExtension",
         dependencies: [
+            .payloads,
             "Entities",
         ],
         path: "Sources/App/IOSWidgetExtension",
@@ -262,14 +263,12 @@ let targets: [PackageDescription.Target] = [
     .target(
         name: "FeedClient",
         dependencies: [
-            .feedKit,
-            .swiftSoup,
             .dependencies,
+            .payloads,
             "Entities",
             "Utilities",
         ],
-        path: "Sources/Client/FeedClient",
-        exclude: ["FeedClient.xctestplan"]
+        path: "Sources/Client/FeedClient"
     ),
     .target(
         name: "FlashClient",
@@ -302,11 +301,11 @@ let targets: [PackageDescription.Target] = [
         path: "Sources/Core/Entities"
     ),
     .target(
-        name: "Logging",
+        name: "RiversideLogging",
         dependencies: [
             .dependencies,
         ],
-        path: "Sources/Core/Logging"
+        path: "Sources/Core/RiversideLogging"
     ),
     .target(
         name: "Utilities",
@@ -350,14 +349,6 @@ let targets: [PackageDescription.Target] = [
         path: "Tests/State/CloudSyncStateTests"
     ),
     .testTarget(
-        name: "FeedClientTests",
-        dependencies: [
-            "FeedClient",
-        ],
-        path: "Tests/Client/FeedClientTests",
-        resources: [.process("Resources")]
-    ),
-    .testTarget(
         name: "EntitiesTests",
         dependencies: [
             "Entities",
@@ -392,9 +383,9 @@ let targets: [PackageDescription.Target] = [
         dependencies.append(contentsOf: [.customDump, "TestHelpers"])
         target.dependencies = dependencies
     }
-    if target.name != "Logging" {
+    if target.name != "RiversideLogging" {
         var dependencies = target.dependencies
-        dependencies.append("Logging")
+        dependencies.append("RiversideLogging")
         target.dependencies = dependencies
     }
     

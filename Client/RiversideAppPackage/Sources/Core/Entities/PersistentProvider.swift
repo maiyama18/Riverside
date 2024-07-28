@@ -1,7 +1,7 @@
 import AppConfig
 import CoreData
 import Dependencies
-import Logging
+import RiversideLogging
 
 public final class PersistentProvider {
     public static let cloud: PersistentProvider = .init(
