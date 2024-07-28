@@ -49,7 +49,7 @@ extension AddNewEntriesUseCase {
             guard let feedURL = feed.url else {
                 throw NSError(domain: "FeedUseCase", code: -1)
             }
-            return try await feedClient.fetch(feedURL)
+            return try await feedClient.fetchFeed(feedURL)
         }
         
         return .init(

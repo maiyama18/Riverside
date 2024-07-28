@@ -138,7 +138,7 @@ public struct SubscribeFeedScreen: View {
         
         feedState = .fetching
         do {
-            let feed = try await feedClient.fetch(url)
+            let feed = try await feedClient.fetchFeed(url)
             withAnimation {
                 feedState = .fetched(feed)
             }

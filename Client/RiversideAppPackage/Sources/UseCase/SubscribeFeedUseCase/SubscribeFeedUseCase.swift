@@ -26,7 +26,7 @@ extension SubscribeFeedUseCase {
                 case .feed(let feed):
                     feed
                 case .url(let url):
-                    try await feedClient.fetch(url)
+                    try await feedClient.fetchFeed(url)
                 }
                 
                 let existingFeedURLs = try context.fetch(FeedModel.all).compactMap(\.url)

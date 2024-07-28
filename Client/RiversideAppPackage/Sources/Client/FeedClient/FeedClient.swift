@@ -5,7 +5,7 @@ import RiversideLogging
 import Utilities
 
 public struct FeedClient: Sendable {
-    public var fetch: @Sendable (_ feedURL: URL) async throws -> Feed
+    public var fetchFeed: @Sendable (_ feedURL: URL) async throws -> Feed
 }
 
 extension FeedClient {
@@ -21,7 +21,7 @@ extension FeedClient {
         let endpointURL: URL = serverBaseURL.appending(path: "feeds")
         
         return FeedClient(
-            fetch: { feedURL in
+            fetchFeed: { feedURL in
                 var request = URLRequest(url: endpointURL)
                 request.httpMethod = "POST"
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
