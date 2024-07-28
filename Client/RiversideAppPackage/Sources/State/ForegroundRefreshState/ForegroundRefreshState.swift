@@ -1,9 +1,9 @@
-import AddNewEntriesUseCase
 @preconcurrency import CoreData
 import CloudSyncState
 import Dependencies
 import Entities
 import Foundation
+import FeedClient
 import RiversideLogging
 import Observation
 import Utilities
@@ -12,32 +12,13 @@ import WidgetKit
 @Observable
 @MainActor
 public final class ForegroundRefreshState {
-    enum FetchResult {
-        case success([EntryInformation])
-        case timeout
-        case error(any Error)
-    }
-    
-    public enum State {
-        case idle
-        case refreshing(progress: Double)
-        
-        public var isRefreshing: Bool {
-            if case .refreshing = self {
-                true
-            } else {
-                false
-            }
-        }
-    }
-    
     @ObservationIgnored
-    @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
-    
+    @Dependency(\.feedClient) private var feedClient
+
     @ObservationIgnored
     @Dependency(\.logger[.foregroundRefresh]) private var logger
 
-    public var state: State = .idle
+    public var isRefreshing: Bool = false
     
     private var userDefaults: UserDefaults
     
@@ -54,9 +35,11 @@ public final class ForegroundRefreshState {
     ) async {
         let startedAt: Date = .now
         
-        guard !state.isRefreshing else { return }
-        state = .refreshing(progress: 0)
-        defer { state = .idle }
+        guard !isRefreshing else { return }
+        isRefreshing = true
+        defer {
+            isRefreshing = false
+        }
         
         if force {
             deleteLastAddExecutionDate()
@@ -79,7 +62,7 @@ public final class ForegroundRefreshState {
                 logger.error("failed to save refresh history: \(error, privacy: .public)")
             }
             
-            await withTimeout(for: .seconds(10)) {
+            try? await withTimeout(for: .seconds(10)) {
                 try? await cloudSyncState.eventDebouncedPublisher.nextValue()
             }
         }
@@ -90,71 +73,18 @@ public final class ForegroundRefreshState {
         }
         
         logger.notice("starting add new entries")
-        guard let feeds = try? context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled() else {
+        guard let existingFeeds = try? context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled() else {
             return
         }
-        let result = await withTaskGroup(
-            of: FetchResult.self,
-            returning: ([EntryInformation], Int, Int, Int).self
-        ) { group in
-            let batchSize = 8
-            @Sendable func addNewEntries(feed: FeedModel) async -> FetchResult {
-                do {
-                    let entries = try await withRetry(count: retryCount) {
-                        try await withTimeout(for: timeout) {
-                            try await self.addNewEntriesUseCase.execute(context, feed)
-                        }
-                    }
-                    return .success(entries)
-                } catch {
-                    if error is TimeoutError {
-                        await self.logger.debug("timeout to fetch new entries for '\(feed.title ?? "", privacy: .public)'")
-                        return .timeout
-                    } else {
-                        await self.logger.debug("failed to fetch new entries for '\(feed.title ?? "")': \(error, privacy: .public)")
-                        return .error(error)
-                    }
-                }
+        do {
+            let fetchedFeeds = try await feedClient.fetchFeeds(existingFeeds.compactMap(\.url))
+            for fetchedFeed in fetchedFeeds {
+                guard let existingFeed = existingFeeds.first(where: { $0.url == fetchedFeed.url }) else { continue }
+                _ = existingFeed.addNewEntries(fetchedFeed.entries)
             }
-            
-            for i in 0..<batchSize {
-                group.addTask {
-                    await addNewEntries(feed: feeds[i])
-                }
-            }
-            var index = batchSize
-            
-            var allEntries: [EntryInformation] = []
-            var successCount = 0
-            var timeoutCount = 0
-            var errorCount = 0
-            for await result in group {
-                switch result {
-                case .success(let entries):
-                    allEntries.append(contentsOf: entries)
-                    successCount += 1
-                case .timeout:
-                    timeoutCount += 1
-                case .error:
-                    errorCount += 1
-                }
-                self.state = .refreshing(progress: Double(successCount + timeoutCount + errorCount) / Double(feeds.count))
-                
-                if index < feeds.count {
-                    let feed = feeds[index]
-                    group.addTask {
-                        await addNewEntries(feed: feed)
-                    }
-                    index += 1
-                }
-            }
-            self.state = .idle
-            try? context.saveWithRollback()
-            WidgetCenter.shared.reloadAllTimelines()
-            setLastAddExecutionDate(date: .now)
-            return (allEntries, successCount, timeoutCount, errorCount)
+        } catch {
+            logger.error("failed to fetch feeds: \(error, privacy: .public)")
         }
-        logger.notice("finished foreground refresh (\(Date.now.timeIntervalSince(startedAt)) s): success \(result.1), timeout \(result.2), error \(result.3)")
     }
     
     private func getLastAddExecutionDate() -> Date? {

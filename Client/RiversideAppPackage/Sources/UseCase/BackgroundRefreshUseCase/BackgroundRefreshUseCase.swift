@@ -1,9 +1,9 @@
-import AddNewEntriesUseCase
 import BackgroundTasks
 @preconcurrency import CoreData
 import Combine
 import Dependencies
 import Entities
+import FeedClient
 import LocalPushNotificationClient
 import RiversideLogging
 import Utilities
@@ -21,7 +21,7 @@ public struct BackgroundRefreshUseCase: Sendable {
 
 extension BackgroundRefreshUseCase {
     public static func live(taskIdentifier: String) -> BackgroundRefreshUseCase {
-        @Dependency(\.addNewEntriesUseCase) var addNewEntriesUseCase
+        @Dependency(\.feedClient) var feedClient
         @Dependency(\.localPushNotificationClient) var localPushNotificationClient
         @Dependency(\.logger[.background]) var logger
         
@@ -39,42 +39,14 @@ extension BackgroundRefreshUseCase {
             }
         }
         
-        @Sendable
-        func addNewEntries(context: NSManagedObjectContext, history: BackgroundRefreshHistoryModel) async throws -> [EntryInformation] {
-            let feeds = try context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled()
-            
-            history.warningMessages = []
-            return await withTaskGroup(of: [EntryInformation].self) { group in
-                for feed in feeds {
-                    group.addTask {
-                        do {
-                            let entries = try await withRetry(count: 3) {
-                                try await withTimeout(for: .seconds(10)) {
-                                    try await addNewEntriesUseCase.executeInBackground(context, feed)
-                                }
-                            }
-                            return entries
-                        } catch {
-                            history.warningMessages?.append("'\(feed.title ?? "")': \(error.localizedDescription)")
-                            return []
-                        }
-                    }
-                }
-                
-                var allEntries: [EntryInformation] = []
-                for await entries in group {
-                    allEntries.append(contentsOf: entries)
-                }
-                try? context.saveWithRollback()
-                WidgetCenter.shared.reloadAllTimelines()
-                return allEntries
-            }
-        }
-        
         return BackgroundRefreshUseCase(
             taskIdentifier: taskIdentifier,
             schedule: schedule,
             execute: { task, context, iCloudEventDebouncedPublisher in
+                defer {
+                    WidgetCenter.shared.reloadAllTimelines()
+                }
+                
                 schedule()
                 
                 let history = BackgroundRefreshHistoryModel(context: context)
@@ -94,29 +66,17 @@ extension BackgroundRefreshUseCase {
                     try? context.saveWithRollback()
                 }
 
-                await withTimeout(for: .seconds(10)) {
+                try? await withTimeout(for: .seconds(10)) {
                     try? await iCloudEventDebouncedPublisher.nextValue()
                 }
                 
                 do {
-                    let addedEntries = try await addNewEntries(context: context, history: history)
-                    history.addedEntryTitles = addedEntries.map(\.title)
-                    if addedEntries.count > 0 {
-                        let visibleEntryCount = 3
-                        var addedEntryStrings = addedEntries.sorted(by: { $0.publishedAt > $1.publishedAt }).prefix(visibleEntryCount).map {
-                            let title = $0.title.count > 20 ? $0.title.prefix(20) + "..." : $0.title
-                            return "\(title) | \($0.feedTitle)"
-                        }
-                        if addedEntries.count > visibleEntryCount {
-                            addedEntryStrings.append("and more!")
-                        }
-                        
-                        localPushNotificationClient.send(
-                            "\(addedEntries.count) new entries published",
-                            addedEntryStrings.joined(separator: "\n")
-                        )
+                    let existingFeeds = try context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled()
+                    let fetchedFeeds = try await feedClient.fetchFeeds(existingFeeds.compactMap(\.url))
+                    for fetchedFeed in fetchedFeeds {
+                        guard let existingFeed = existingFeeds.first(where: { $0.url == fetchedFeed.url }) else { continue }
+                        _ = existingFeed.addNewEntries(fetchedFeed.entries)
                     }
-                    logger.notice("complete foreground refresh: \(addedEntries.count) entries added")
                 } catch {
                     history.errorMessage = error.localizedDescription
                     logger.error("failed to execute foreground refresh: \(error, privacy: .public)")

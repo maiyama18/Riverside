@@ -1,4 +1,3 @@
-import AddNewEntriesUseCase
 import Algorithms
 @preconcurrency import CoreData
 import CloudSyncState
@@ -14,7 +13,6 @@ import UIComponents
 public struct RootScreen: View {
     @AppStorage("unread-only") private var unreadOnly: Bool = true
     
-    @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
     @Dependency(\.flashClient) private var flashClient
     
     @Environment(CloudSyncState.self) private var cloudSyncState
@@ -60,7 +58,7 @@ public struct RootScreen: View {
                         
                         CloudSyncStateButton()
                         
-                        let loading = cloudSyncState.syncing || foregroundRefreshState.state.isRefreshing
+                        let loading = cloudSyncState.syncing || foregroundRefreshState.isRefreshing
                         Button {
                             Task {
                                 await foregroundRefreshState.refresh(

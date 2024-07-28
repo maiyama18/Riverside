@@ -4,7 +4,7 @@ import CloudSyncState
 import CoreData
 import Dependencies
 import Entities
-import AddNewEntriesUseCase
+import FeedClient
 import FlashClient
 import NavigationState
 import SwiftUI
@@ -15,8 +15,8 @@ import UIComponents
 struct FeedDetailScreen: View {
     private let feed: FeedModel
     
-    @Dependency(\.addNewEntriesUseCase) private var addNewEntriesUseCase
     @Dependency(\.clipboardClient) private var clipboardClient
+    @Dependency(\.feedClient) private var feedClient
     @Dependency(\.flashClient) private var flashClient
     
     @Environment(CloudSyncState.self) private var cloudSyncState
@@ -73,7 +73,9 @@ struct FeedDetailScreen: View {
                 .listStyle(.plain)
                 .refreshable {
                     do {
-                        _ = try await addNewEntriesUseCase.execute(context, feed)
+                        guard let feedURL = feed.url else { return }
+                        let fetchedFeed = try await feedClient.fetchFeed(feedURL)
+                        _ = feed.addNewEntries(fetchedFeed.entries)
                     } catch {
                         flashClient.present(
                             type: .error,
@@ -85,7 +87,9 @@ struct FeedDetailScreen: View {
         }
         .task {
             do {
-                _ = try await addNewEntriesUseCase.execute(context, feed)
+                guard let feedURL = feed.url else { return }
+                let fetchedFeed = try await feedClient.fetchFeed(feedURL)
+                _ = feed.addNewEntries(fetchedFeed.entries)
             } catch {}
         }
         .navigationTitle(feed.title ?? "")

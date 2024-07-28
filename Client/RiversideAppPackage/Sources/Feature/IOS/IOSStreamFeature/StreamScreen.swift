@@ -4,7 +4,6 @@ import CoreData
 import Dependencies
 import Entities
 import ForegroundRefreshState
-import AddNewEntriesUseCase
 import NavigationState
 import SwiftUI
 import UIComponents
@@ -168,7 +167,7 @@ public struct StreamScreen: View {
         } label: {
             Text("Refresh")
         }
-        .disabled(cloudSyncState.syncing || foregroundRefreshState.state.isRefreshing)
+        .disabled(cloudSyncState.syncing || foregroundRefreshState.isRefreshing)
     }
     
     private var sections: [StreamSection] {

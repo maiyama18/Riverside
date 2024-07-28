@@ -21,7 +21,7 @@ struct DeleteDuplicatedEntriesOnBackgroundModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .onBackground { [context, deleteDuplicatedEntriesUseCase, refreshing = cloudSyncState.syncing || foregroundRefreshState.state.isRefreshing] in
+            .onBackground { [context, deleteDuplicatedEntriesUseCase, refreshing = cloudSyncState.syncing || foregroundRefreshState.isRefreshing] in
                 guard !refreshing else { return }
                 do {
                     try deleteDuplicatedEntriesUseCase.execute(context)
