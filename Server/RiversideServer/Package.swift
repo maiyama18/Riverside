@@ -24,6 +24,8 @@ let targets: [PackageDescription.Target] = [
             "Payloads",
             "FeedFetcher",
             .product(name: "Vapor", package: "vapor"),
+            .product(name: "Fluent", package: "fluent"),
+            .product(name: "FluentSQLiteDriver", package: "fluent-sqlite-driver"),
             .product(name: "NIOCore", package: "swift-nio"),
             .product(name: "NIOPosix", package: "swift-nio"),
         ]
@@ -75,8 +77,10 @@ let package = Package(
         .library(name: "Payloads", targets: ["Payloads"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor.git", exact: "4.99.3"),
-        .package(url: "https://github.com/apple/swift-nio.git", exact: "2.65.0"),
+        .package(url: "https://github.com/vapor/vapor.git", exact: "4.102.1"),
+        .package(url: "https://github.com/vapor/fluent.git", exact: "4.11.0"),
+        .package(url: "https://github.com/vapor/fluent-sqlite-driver.git", exact: "4.7.4"),
+        .package(url: "https://github.com/apple/swift-nio.git", exact: "2.69.0"),
         .package(url: "https://github.com/nmdias/FeedKit", exact: "9.1.2"),
         .package(url: "https://github.com/scinfu/SwiftSoup", exact: "2.6.1"),
     ],
