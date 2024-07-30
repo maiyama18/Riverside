@@ -67,7 +67,8 @@ let targets: [PackageDescription.Target] = [
 let package = Package(
     name: "RiversideServer",
     platforms: [
-       .macOS(.v13)
+       .macOS(.v13),
+       .iOS(.v17),
     ],
     products: [
         .library(name: "FeedFetcher", targets: ["FeedFetcher"]),

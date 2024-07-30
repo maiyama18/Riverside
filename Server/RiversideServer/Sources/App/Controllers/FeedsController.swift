@@ -17,7 +17,7 @@ struct FeedsController: RouteCollection {
     
     @Sendable
     func post(req: Request) async throws -> FeedsResponseBody {
-        let feedFetcher = FeedFetcher(urlSession: .shared, logger: req.logger)
+        let feedFetcher = FeedFetcher(client: req.client, logger: req.logger)
         
         let requestBody = try req.content.decode(FeedsRequestBody.self)
         req.logger.notice("request: \(requestBody)")

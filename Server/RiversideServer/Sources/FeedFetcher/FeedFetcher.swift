@@ -1,8 +1,8 @@
 @preconcurrency import FeedKit
-import Foundation
 import Logging
 import Payloads
 import SwiftSoup
+@preconcurrency import Vapor
 
 public actor FeedFetcher {
     enum ContentType {
@@ -10,11 +10,11 @@ public actor FeedFetcher {
         case feed
     }
     
-    private let urlSession: URLSession
+    private let client: any Client
     private let logger: Logger
     
-    public init(urlSession: URLSession, logger: Logger) {
-        self.urlSession = urlSession
+    public init(client: any Client, logger: Logger) {
+        self.client = client
         self.logger = logger
     }
     
@@ -51,23 +51,24 @@ public actor FeedFetcher {
     }
     
     private func fetchDataAndContentType(url: URL) async throws -> (Data, ContentType) {
-        let (data, response) = try await urlSession.data(from: url)
-        guard let response = response as? HTTPURLResponse,
-              response.statusCode == 200,
-              let contentTypeString = response.allHeaderFields["Content-Type"] as? String else {
+        let response = try await client.get(.init(string: url.absoluteString))
+        guard response.status == .ok,
+              let responseBody = response.body,
+              let responseData = responseBody.getData(at: responseBody.readerIndex, length: responseBody.readableBytes),
+              let headerContentType = response.headers.contentType else {
             throw NSError(domain: "FeedFetcher", code: -1)
         }
         
         let contentType: ContentType = try {
-            if contentTypeString.contains("html") {
+            if headerContentType == .html {
                 return .html
-            } else if contentTypeString.contains(/(xml|json)/) {
+            } else if headerContentType == .xml || headerContentType == .json || headerContentType.subType == "rss+xml" {
                 return .feed
             } else {
-                let string = String(decoding: data, as: UTF8.self).lowercased()
+                let string = String(buffer: responseBody)
                 if string.hasPrefix("<!DOCTYPE html") || string.hasPrefix("<html") {
                     return .html
-                } else if string.hasPrefix("<?xml") || string.hasPrefix("<rss") || string.hasPrefix("{") {
+                } else if string.hasPrefix("<?xml") || string.hasPrefix("<rss") || string.hasPrefix("<feed") || string.hasPrefix("{") {
                     return .feed
                 } else {
                     throw NSError(domain: "FeedFetcher", code: -2, userInfo: [
@@ -77,7 +78,7 @@ public actor FeedFetcher {
             }
         }()
         
-        return (data, contentType)
+        return (responseData, contentType)
     }
     
     private func extractFeedURL(data: Data) throws -> URL {
@@ -149,13 +150,8 @@ public actor FeedFetcher {
     
     private func isResponseOK(url: URL) async -> Bool {
         do {
-            let (_, response) = try await urlSession.data(from: url)
-            if let response = response as? HTTPURLResponse,
-               response.statusCode == 200 {
-                return true
-            } else {
-                return false
-            }
+            let response = try await client.get(.init(string: url.absoluteString))
+            return response.status == .ok
         } catch {
             return false
         }

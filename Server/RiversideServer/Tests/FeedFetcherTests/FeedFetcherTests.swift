@@ -1,174 +1,121 @@
 @testable import FeedFetcher
 
 import Foundation
+import Vapor
 import XCTest
 
 final class FeedFetcherTests: XCTestCase {
     // HTML
-    private static let maiyama4HTMLURL = URL(string: "https://maiyama4.hatenablog.com")!
-    private static let iOSDevWeeklyHTMLURL = URL(string: "https://iosdevweekly.com/issues")!
-    private static let r7kamuraHTMLURL = URL(string: "https://r7kamura.com/")!
-    private static let swiftUILabHTMLURL = URL(string: "https://swiftui-lab.com/")!
-    private static let qiitaHTMLURL = URL(string: "https://qiita.com/")!
-    private static let stackoverflowSwiftHTMLURL = URL(string: "https://stackoverflow.com/questions/tagged/?tagnames=swift&sort=newest")!
-    private static let phaNoteHTMLURL = URL(string: "https://note.com/pha/")!
-    private static let andanteHTMLURL = URL(string: "https://ofni.necocen.info/")!
-    private static let jxckHTMLURL = URL(string: "https://blog.jxck.io/")!
+    private static let maiyama4HTMLURI = URI(string: "https://maiyama4.hatenablog.com")
+    private static let iOSDevWeeklyHTMLURI = URI(string: "https://iosdevweekly.com/issues")
+    private static let r7kamuraHTMLURI = URI(string: "https://r7kamura.com/")
+    private static let swiftUILabHTMLURI = URI(string: "https://swiftui-lab.com/")
+    private static let qiitaHTMLURI = URI(string: "https://qiita.com/")
+    private static let stackoverflowSwiftHTMLURI = URI(string: "https://stackoverflow.com/questions/tagged/?tagnames=swift&sort=newest")
+    private static let phaNoteHTMLURI = URI(string: "https://note.com/pha/")
+    private static let andanteHTMLURI = URI(string: "https://ofni.necocen.info/")
+    private static let jxckHTMLURI = URI(string: "https://blog.jxck.io/")
     
     // Favicon
-    private static let maiyama4FaviconURL = URL(string: "https://maiyama4.hatenablog.com/icon/favicon")!
-    private static let r7kamuraFaviconURL = URL(string: "https://r7kamura.com/favicon.ico")!
-    private static let swiftUILabFaviconURL = URL(string: "https://swiftui-lab.com/favicon.ico")!
+    private static let maiyama4FaviconURI = URI(string: "https://maiyama4.hatenablog.com/icon/favicon")
+    private static let r7kamuraFaviconURI = URI(string: "https://r7kamura.com/favicon.ico")
+    private static let swiftUILabFaviconURI = URI(string: "https://swiftui-lab.com/favicon.ico")
     
     // RSS
-    private static let maiyama4RSSURL = URL(string: "https://maiyama4.hatenablog.com/rss")!
-    private static let magnoliaURL = URL(string: "https://blog.magnolia.tech/rss")!
-    private static let iOSDevWeeklyURL = URL(string: "https://iosdevweekly.com/issues.rss")!
-    private static let iOSCodeReviewURL = URL(string: "https://ioscodereview.com/feed.xml/")!
-    private static let r7kamuraURL = URL(string: "https://r7kamura.com/feed.xml")!
-    private static let swiftUILabURL = URL(string: "https://swiftui-lab.com/feed/")!
-    private static let zennSwiftURL = URL(string: "https://zenn.dev/topics/swift/feed")!
-    private static let qiitaSwiftURL = URL(string: "https://qiita.com/tags/swift/feed")!
-    private static let stackoverflowSwiftURL = URL(string: "https://stackoverflow.com/feeds/tag?tagnames=swift&sort=newest")!
-    private static let phaNoteURL = URL(string: "https://note.com/pha/rss")!
-    private static let naoyaSizumeURL = URL(string: "https://sizu.me/naoya/rss")!
+    private static let maiyama4RSSURI = URI(string: "https://maiyama4.hatenablog.com/rss")
+    private static let magnoliaURI = URI(string: "https://blog.magnolia.tech/rss")
+    private static let iOSDevWeeklyURI = URI(string: "https://iosdevweekly.com/issues.rss")
+    private static let iOSCodeReviewURI = URI(string: "https://ioscodereview.com/feed.xml/")
+    private static let r7kamuraURI = URI(string: "https://r7kamura.com/feed.xml")
+    private static let swiftUILabURI = URI(string: "https://swiftui-lab.com/feed/")
+    private static let zennSwiftURI = URI(string: "https://zenn.dev/topics/swift/feed")
+    private static let qiitaSwiftURI = URI(string: "https://qiita.com/tags/swift/feed")
+    private static let stackoverflowSwiftURI = URI(string: "https://stackoverflow.com/feeds/tag?tagnames=swift&sort=newest")
+    private static let phaNoteURI = URI(string: "https://note.com/pha/rss")
+    private static let naoyaSizumeURI = URI(string: "https://sizu.me/naoya/rss")
     
     // RDF
-    private static let asahiURL = URL(string: "https://www.asahi.com/rss/asahi/newsheadlines.rdf")!
-    private static let avWatchURL = URL(string: "https://av.watch.impress.co.jp/data/rss/1.0/avw/feed.rdf")!
-    private static let toiroiroURL = URL(string: "https://toiroiro.blog.jp/index.rdf")!
+    private static let asahiURI = URI(string: "https://www.asahi.com/rss/asahi/newsheadlines.rdf")
+    private static let avWatchURI = URI(string: "https://av.watch.impress.co.jp/data/rss/1.0/avw/feed.rdf")
+    private static let toiroiroURI = URI(string: "https://toiroiro.blog.jp/index.rdf")
 
     // Atom
-    private static let maiyama4AtomURL = URL(string: "https://maiyama4.hatenablog.com/feed")!
-    private static let jessesquiresAtomURL = URL(string: "https://www.jessesquires.com/feed.xml")!
-    private static let andanteURL = URL(string: "https://ofni.necocen.info/atom")!
-    private static let jxckURL = URL(string: "https://blog.jxck.io/feeds/atom.xml")!
+    private static let maiyama4AtomURI = URI(string: "https://maiyama4.hatenablog.com/feed")
+    private static let jessesquiresAtomURI = URI(string: "https://www.jessesquires.com/feed.xml")
+    private static let andanteURI = URI(string: "https://ofni.necocen.info/atom")
+    private static let jxckURI = URI(string: "https://blog.jxck.io/feeds/atom.xml")
 
     // JSON
-    private static let jessesquiresJSONURL = URL(string: "https://www.jessesquires.com/feed.json")!
+    private static let jessesquiresJSONURI = URI(string: "https://www.jessesquires.com/feed.json")
 
     private var fetcher: FeedFetcher!
+    private var app: Application!
 
     override func setUp() async throws {
-        enum ResponseType {
-            case rssFeed
-            case rdfFeed
-            case atomFeed
-            case jsonFeed
-            case html
-            
-            var contentType: String {
-                switch self {
-                case .rssFeed, .atomFeed:
-                    "application/rss+xml"
-                case .rdfFeed:
-                    "text/xml"
-                case .jsonFeed:
-                    "application/json"
-                case .html:
-                    "text/html"
-                }
-            }
-            
-            var resourceExtension: String {
-                switch self {
-                case .rssFeed, .atomFeed:
-                    "xml"
-                case .rdfFeed:
-                    "rdf"
-                case .jsonFeed:
-                    "json"
-                case .html:
-                    "html"
-                }
-            }
-        }
-        
-        func setFeedData(to responses: inout [URL: Result<StubResponse, any Error>], url: URL, responseType: ResponseType, resourceName: String) throws {
-            let resourceURL = try XCTUnwrap(Bundle.module.url(forResource: resourceName, withExtension: responseType.resourceExtension))
-            let data = try Data(contentsOf: resourceURL)
-            
-            responses[url] = .success(
-                .init(
-                    statusCode: 200,
-                    data: data,
-                    headerFields: ["Content-Type": responseType.contentType]
-                )
-            )
-        }
-        
         try await super.setUp()
 
-        let config = URLSessionConfiguration.ephemeral
-        config.protocolClasses = [URLProtocolStub.self]
-        let urlSession = URLSession(configuration: config)
+        let responses: [URI: MockResponse] = try [
+            // HTML
+            Self.maiyama4HTMLURI: .init(type: .html, dataResourceName: "maiyama4"),
+            Self.iOSDevWeeklyHTMLURI: .init(type: .html, dataResourceName: "iOSDevWeekly"),
+            Self.r7kamuraHTMLURI: .init(type: .html, dataResourceName: "r7kamura"),
+            Self.swiftUILabHTMLURI: .init(type: .html, dataResourceName: "swiftUILab"),
+            Self.qiitaHTMLURI: .init(type: .html, dataResourceName: "qiita"),
+            Self.stackoverflowSwiftHTMLURI: .init(type: .html, dataResourceName: "stackoverflowSwift"),
+            Self.phaNoteHTMLURI: .init(type: .html, dataResourceName: "phaNote"),
+            Self.andanteHTMLURI: .init(type: .html, dataResourceName: "andante"),
+            Self.jxckHTMLURI: .init(type: .html, dataResourceName: "jxck"),
+            
+            // Favicon
+            Self.maiyama4FaviconURI: .init(type: .png, dataResourceName: "dummy"),
+            Self.r7kamuraFaviconURI: .init(type: .png, dataResourceName: "dummy"),
+            Self.swiftUILabFaviconURI: .init(type: .png, dataResourceName: "dummy"),
+            
+            // RSS
+            Self.maiyama4RSSURI: .init(type: .rssFeed, dataResourceName: "maiyama4_rss"),
+            Self.magnoliaURI: .init(type: .rssFeed, dataResourceName: "magnolia"),
+            Self.iOSDevWeeklyURI: .init(type: .rssFeed, dataResourceName: "iOSDevWeekly"),
+            Self.iOSCodeReviewURI: .init(type: .rssFeed, dataResourceName: "iOSCodeReview"),
+            Self.r7kamuraURI: .init(type: .rssFeed, dataResourceName: "r7kamura"),
+            Self.swiftUILabURI: .init(type: .rssFeed, dataResourceName: "swiftUILab"),
+            Self.zennSwiftURI: .init(type: .rssFeed, dataResourceName: "zennSwift"),
+            Self.qiitaSwiftURI: .init(type: .rssFeed, dataResourceName: "qiitaSwift"),
+            Self.stackoverflowSwiftURI: .init(type: .rssFeed, dataResourceName: "stackoverflowSwift"),
+            Self.phaNoteURI: .init(type: .rssFeed, dataResourceName: "phaNote"),
+            Self.naoyaSizumeURI: .init(type: .rssFeed, dataResourceName: "naoyaSizume"),
+            
+            // RDF
+            Self.asahiURI: .init(type: .rdfFeed, dataResourceName: "asahi"),
+            Self.avWatchURI: .init(type: .rdfFeed, dataResourceName: "avWatch"),
+            Self.toiroiroURI: .init(type: .rdfFeed, dataResourceName: "toiroiro"),
 
-        var responses: [URL: Result<StubResponse, any Error>] = [:]
+            // Atom
+            Self.maiyama4AtomURI: .init(type: .atomFeed, dataResourceName: "maiyama4_atom"),
+            Self.jessesquiresAtomURI: .init(type: .atomFeed, dataResourceName: "jessesquires"),
+            Self.andanteURI: .init(type: .atomFeed, dataResourceName: "andante"),
+            Self.jxckURI: .init(type: .atomFeed, dataResourceName: "jxck"),
 
-        // HTML
-        try setFeedData(to: &responses, url: Self.maiyama4HTMLURL, responseType: .html, resourceName: "maiyama4")
-        try setFeedData(to: &responses, url: Self.iOSDevWeeklyHTMLURL, responseType: .html, resourceName: "iOSDevWeekly")
-        try setFeedData(to: &responses, url: Self.r7kamuraHTMLURL, responseType: .html, resourceName: "r7kamura")
-        try setFeedData(to: &responses, url: Self.swiftUILabHTMLURL, responseType: .html, resourceName: "swiftUILab")
-        try setFeedData(to: &responses, url: Self.qiitaHTMLURL, responseType: .html, resourceName: "qiita")
-        try setFeedData(to: &responses, url: Self.stackoverflowSwiftHTMLURL, responseType: .html, resourceName: "stackoverflowSwift")
-        try setFeedData(to: &responses, url: Self.phaNoteHTMLURL, responseType: .html, resourceName: "phaNote")
-        try setFeedData(to: &responses, url: Self.andanteHTMLURL, responseType: .html, resourceName: "andante")
-        try setFeedData(to: &responses, url: Self.jxckHTMLURL, responseType: .html, resourceName: "jxck")
+            // JSON
+            Self.jessesquiresJSONURI: .init(type: .jsonFeed, dataResourceName: "jessesquires"),
+        ]
         
-        // Favicon
-        for url in [
-            Self.maiyama4FaviconURL,
-            Self.r7kamuraFaviconURL,
-            Self.swiftUILabFaviconURL,
-        ] {
-            responses[url] = .success(
-                .init(
-                    statusCode: 200, data: Data(),
-                    headerFields: ["Content-Type": "image/png"]
-                )
-            )
-        }
-        
-        // RSS
-        try setFeedData(to: &responses, url: Self.maiyama4RSSURL, responseType: .rssFeed, resourceName: "maiyama4_rss")
-        try setFeedData(to: &responses, url: Self.magnoliaURL, responseType: .rssFeed, resourceName: "magnolia")
-        try setFeedData(to: &responses, url: Self.iOSDevWeeklyURL, responseType: .rssFeed, resourceName: "iOSDevWeekly")
-        try setFeedData(to: &responses, url: Self.iOSCodeReviewURL, responseType: .rssFeed, resourceName: "iOSCodeReview")
-        try setFeedData(to: &responses, url: Self.r7kamuraURL, responseType: .rssFeed, resourceName: "r7kamura")
-        try setFeedData(to: &responses, url: Self.swiftUILabURL, responseType: .rssFeed, resourceName: "swiftUILab")
-        try setFeedData(to: &responses, url: Self.zennSwiftURL, responseType: .rssFeed, resourceName: "zennSwift")
-        try setFeedData(to: &responses, url: Self.qiitaSwiftURL, responseType: .rssFeed, resourceName: "qiitaSwift")
-        try setFeedData(to: &responses, url: Self.stackoverflowSwiftURL, responseType: .rssFeed, resourceName: "stackoverflowSwift")
-        try setFeedData(to: &responses, url: Self.phaNoteURL, responseType: .rssFeed, resourceName: "phaNote")
-        try setFeedData(to: &responses, url: Self.naoyaSizumeURL, responseType: .rssFeed, resourceName: "naoyaSizume")
-
-        // RDF
-        try setFeedData(to: &responses, url: Self.asahiURL, responseType: .rdfFeed, resourceName: "asahi")
-        try setFeedData(to: &responses, url: Self.avWatchURL, responseType: .rdfFeed, resourceName: "avWatch")
-        try setFeedData(to: &responses, url: Self.toiroiroURL, responseType: .rdfFeed, resourceName: "toiroiro")
-
-        // Atom
-        try setFeedData(to: &responses, url: Self.maiyama4AtomURL, responseType: .atomFeed, resourceName: "maiyama4_atom")
-        try setFeedData(to: &responses, url: Self.jessesquiresAtomURL, responseType: .atomFeed, resourceName: "jessesquires")
-        try setFeedData(to: &responses, url: Self.andanteURL, responseType: .atomFeed, resourceName: "andante")
-        try setFeedData(to: &responses, url: Self.jxckURL, responseType: .atomFeed, resourceName: "jxck")
-
-        // JSON
-        try setFeedData(to: &responses, url: Self.jessesquiresJSONURL, responseType: .jsonFeed, resourceName: "jessesquires")
-
-        URLProtocolStub.setResponses(responses)
-        fetcher = .init(urlSession: urlSession, logger: .init(label: "FeedFetcherTests"))
+        self.app = try await Application.make(.testing)
+        self.fetcher = .init(client: MockClient(eventLoop: app.eventLoopGroup.next(), responses: responses), logger: .init(label: "FeedFetcherTests"))
+    }
+    
+    override func tearDown() {
+        app.shutdown()
+        super.tearDown()
     }
     
     // MARK: - HTML -> Atom
 
     func test_maiyama4_html() async throws {
-        let feed = try await fetcher.fetch(url: Self.maiyama4HTMLURL)
-        XCTAssertEqual(feed.url, Self.maiyama4AtomURL)
+        let feed = try await fetcher.fetch(url: Self.maiyama4HTMLURI.url)
+        XCTAssertEqual(feed.url, Self.maiyama4AtomURI.url)
         XCTAssertEqual(feed.title, "maiyama log")
         XCTAssertEqual(feed.overview, "")
-        XCTAssertEqual(feed.imageURL, URL(string: "https://maiyama4.hatenablog.com/icon/favicon")!)
+        XCTAssertEqual(feed.imageURL, URL(string: "https://maiyama4.hatenablog.com/icon/favicon"))
 
         XCTAssertEqual(feed.entries.count, 4)
         let entry = try XCTUnwrap(feed.entries.first)
@@ -182,8 +129,8 @@ final class FeedFetcherTests: XCTestCase {
     // MARK: - RSS
 
     func test_maiyama4_rss() async throws {
-        let feed = try await fetcher.fetch(url: Self.maiyama4RSSURL)
-        XCTAssertEqual(feed.url, Self.maiyama4RSSURL)
+        let feed = try await fetcher.fetch(url: Self.maiyama4RSSURI.url)
+        XCTAssertEqual(feed.url, Self.maiyama4RSSURI.url)
         XCTAssertEqual(feed.title, "maiyama log")
         XCTAssertEqual(feed.overview, "")
         XCTAssertEqual(feed.imageURL, URL(string: "https://maiyama4.hatenablog.com/icon/favicon")!)
@@ -198,8 +145,8 @@ final class FeedFetcherTests: XCTestCase {
     }
     
     func test_magnolia() async throws {
-        let feed = try await fetcher.fetch(url: Self.magnoliaURL)
-        XCTAssertEqual(feed.url, Self.magnoliaURL)
+        let feed = try await fetcher.fetch(url: Self.magnoliaURI.url)
+        XCTAssertEqual(feed.url, Self.magnoliaURI.url)
         XCTAssertEqual(feed.title, "Magnolia Tech")
         XCTAssertEqual(feed.overview, "いつもコードのことばかり考えている人のために。")
 
@@ -213,8 +160,8 @@ final class FeedFetcherTests: XCTestCase {
    }
 
     func test_iOSDevWeekly() async throws {
-        let feed = try await fetcher.fetch(url: Self.iOSDevWeeklyURL)
-        XCTAssertEqual(feed.url, Self.iOSDevWeeklyURL)
+        let feed = try await fetcher.fetch(url: Self.iOSDevWeeklyURI.url)
+        XCTAssertEqual(feed.url, Self.iOSDevWeeklyURI.url)
         XCTAssertEqual(feed.title, "iOS Dev Weekly")
         XCTAssertEqual(feed.overview, "Subscribe to a hand-picked round-up of the best iOS development links every week. Curated by Dave Verwer and published every Friday. Free.")
         XCTAssertEqual(feed.imageURL, URL(string: "https://dxj7eshgz03ln.cloudfront.net/production/publication/publication_icon/1/favicon_442526aa-1e62-489a-87ac-8f09b5f0f867.png")!)
@@ -229,8 +176,8 @@ final class FeedFetcherTests: XCTestCase {
     }
 
     func test_iOSCodeReview() async throws {
-        let feed = try await fetcher.fetch(url: Self.iOSCodeReviewURL)
-        XCTAssertEqual(feed.url, Self.iOSCodeReviewURL)
+        let feed = try await fetcher.fetch(url: Self.iOSCodeReviewURI.url)
+        XCTAssertEqual(feed.url, Self.iOSCodeReviewURI.url)
         XCTAssertEqual(feed.title, " iOS Code Review | Curated code improvement tips")
         XCTAssertEqual(feed.overview, "Bi-weekly newsletter amplifying code improvement tips from the Apple developer community in a bite-sized format. Swift, Objective-C, iOS, macOS, SwiftUI, UIKit and more.  Curated by Marina Gornostaeva and published every other Thursday. ")
         XCTAssertEqual(feed.imageURL, URL(string: "https://ioscodereview.com/favicon.png")!)
@@ -245,8 +192,8 @@ final class FeedFetcherTests: XCTestCase {
     }
 
     func test_r7kamura() async throws {
-        let feed = try await fetcher.fetch(url: Self.r7kamuraURL)
-        XCTAssertEqual(feed.url, Self.r7kamuraURL)
+        let feed = try await fetcher.fetch(url: Self.r7kamuraURI.url)
+        XCTAssertEqual(feed.url, Self.r7kamuraURI.url)
         XCTAssertEqual(feed.title, "r7kamura.com")
         XCTAssertEqual(feed.overview, "r7kamuraの生活やプログラミングに関するウェブサイト")
         XCTAssertEqual(feed.imageURL, URL(string: "https://r7kamura.com/favicon.ico")!)
@@ -261,8 +208,8 @@ final class FeedFetcherTests: XCTestCase {
     }
 
     func test_swiftUILab() async throws {
-        let feed = try await fetcher.fetch(url: Self.swiftUILabURL)
-        XCTAssertEqual(feed.url, Self.swiftUILabURL)
+        let feed = try await fetcher.fetch(url: Self.swiftUILabURI.url)
+        XCTAssertEqual(feed.url, Self.swiftUILabURI.url)
         XCTAssertEqual(feed.title, "The SwiftUI Lab")
         XCTAssertEqual(feed.overview, "When the documentation is missing, we experiment.")
         XCTAssertEqual(feed.imageURL, URL(string: "https://swiftui-lab.com/favicon.ico")!)
@@ -277,8 +224,8 @@ final class FeedFetcherTests: XCTestCase {
     }
 
     func test_zennSwift() async throws {
-        let feed = try await fetcher.fetch(url: Self.zennSwiftURL)
-        XCTAssertEqual(feed.url, Self.zennSwiftURL)
+        let feed = try await fetcher.fetch(url: Self.zennSwiftURI.url)
+        XCTAssertEqual(feed.url, Self.zennSwiftURI.url)
         XCTAssertEqual(feed.title, "Zennの「Swift」のフィード")
         XCTAssertEqual(feed.overview, "Zennのトピック「Swift」のRSSフィードです")
         XCTAssertEqual(feed.imageURL, URL(string: "https://storage.googleapis.com/zenn-user-upload/topics/84dd786118.png")!)
@@ -293,8 +240,8 @@ final class FeedFetcherTests: XCTestCase {
     }
 
     func test_qiitaSwift() async throws {
-        let feed = try await fetcher.fetch(url: Self.qiitaSwiftURL)
-        XCTAssertEqual(feed.url, Self.qiitaSwiftURL)
+        let feed = try await fetcher.fetch(url: Self.qiitaSwiftURI.url)
+        XCTAssertEqual(feed.url, Self.qiitaSwiftURI.url)
         XCTAssertEqual(feed.title, "Swiftタグが付けられた新着記事 - Qiita")
         XCTAssertEqual(feed.overview, "")
         XCTAssertEqual(feed.imageURL, URL(string: "https://cdn.qiita.com/assets/favicons/public/production-c620d3e403342b1022967ba5e3db1aaa.ico")!)
@@ -309,8 +256,8 @@ final class FeedFetcherTests: XCTestCase {
     }
 
     func test_stackoverflowSwift() async throws {
-        let feed = try await fetcher.fetch(url: Self.stackoverflowSwiftURL)
-        XCTAssertEqual(feed.url, Self.stackoverflowSwiftURL)
+        let feed = try await fetcher.fetch(url: Self.stackoverflowSwiftURI.url)
+        XCTAssertEqual(feed.url, Self.stackoverflowSwiftURI.url)
         XCTAssertEqual(feed.title, "Newest questions tagged swift - Stack Overflow")
         XCTAssertEqual(feed.overview, "most recent 30 from stackoverflow.com")
         XCTAssertEqual(feed.imageURL, URL(string: "https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico?v=ec617d715196")!)
@@ -325,8 +272,8 @@ final class FeedFetcherTests: XCTestCase {
     }
 
     func test_phaNote() async throws {
-        let feed = try await fetcher.fetch(url: Self.phaNoteURL)
-        XCTAssertEqual(feed.url, Self.phaNoteURL)
+        let feed = try await fetcher.fetch(url: Self.phaNoteURI.url)
+        XCTAssertEqual(feed.url, Self.phaNoteURI.url)
         XCTAssertEqual(feed.title, "pha")
         XCTAssertEqual(feed.overview, "毎日寝て暮らしたい。読んだ本の感想やだらだらした日常のことを書いている日記です。毎回最初の1日分は無料で読めるようにしています。雑誌などに書いた文章もここに載せたりします。")
         XCTAssertEqual(feed.imageURL, URL(string: "https://assets.st-note.com/poc-image/manual/note-common-images/production/icons/android-chrome-192x192.png")!)
@@ -341,8 +288,8 @@ final class FeedFetcherTests: XCTestCase {
     }
 
     func test_naoyaSizume() async throws {
-        let feed = try await fetcher.fetch(url: Self.naoyaSizumeURL)
-        XCTAssertEqual(feed.url, Self.naoyaSizumeURL)
+        let feed = try await fetcher.fetch(url: Self.naoyaSizumeURI.url)
+        XCTAssertEqual(feed.url, Self.naoyaSizumeURI.url)
         XCTAssertEqual(feed.title, "naoya - しずかなインターネット")
         XCTAssertEqual(feed.overview, "naoya さんの記事一覧のRSSフィードです")
         XCTAssertEqual(feed.imageURL, URL(string: "https://r2.sizu.me/users/15658/avatar.jpeg?v=1701072017204")!)
@@ -359,8 +306,8 @@ final class FeedFetcherTests: XCTestCase {
     // MARK: - Atom
     
     func test_maiyama4_atom() async throws {
-        let feed = try await fetcher.fetch(url: Self.maiyama4AtomURL)
-        XCTAssertEqual(feed.url, Self.maiyama4AtomURL)
+        let feed = try await fetcher.fetch(url: Self.maiyama4AtomURI.url)
+        XCTAssertEqual(feed.url, Self.maiyama4AtomURI.url)
         XCTAssertEqual(feed.title, "maiyama log")
         XCTAssertEqual(feed.overview, "")
         XCTAssertEqual(feed.imageURL, URL(string: "https://maiyama4.hatenablog.com/icon/favicon")!)
@@ -375,8 +322,8 @@ final class FeedFetcherTests: XCTestCase {
     }
 
     func test_jessesquires_atom() async throws {
-        let feed = try await fetcher.fetch(url: Self.jessesquiresAtomURL)
-        XCTAssertEqual(feed.url, Self.jessesquiresAtomURL)
+        let feed = try await fetcher.fetch(url: Self.jessesquiresAtomURI.url)
+        XCTAssertEqual(feed.url, Self.jessesquiresAtomURI.url)
         XCTAssertEqual(feed.title, "Jesse Squires")
         XCTAssertEqual(feed.overview, "Turing complete with a stack of 0xdeadbeef")
         XCTAssertEqual(feed.imageURL, URL(string: "https://www.jessesquires.com/img/logo.png")!)
@@ -391,8 +338,8 @@ final class FeedFetcherTests: XCTestCase {
     }
 
     func test_andante() async throws {
-        let feed = try await fetcher.fetch(url: Self.andanteURL)
-        XCTAssertEqual(feed.url, Self.andanteURL)
+        let feed = try await fetcher.fetch(url: Self.andanteURI.url)
+        XCTAssertEqual(feed.url, Self.andanteURI.url)
         XCTAssertEqual(feed.title, "andante")
         XCTAssertEqual(feed.overview, "個人的な日記です")
         XCTAssertEqual(feed.imageURL, URL(string: "https://ofni.necocen.info/static/favicon.png")!)
@@ -410,8 +357,8 @@ final class FeedFetcherTests: XCTestCase {
     }
 
     func test_jxck() async throws {
-        let feed = try await fetcher.fetch(url: Self.jxckURL)
-        XCTAssertEqual(feed.url, Self.jxckURL)
+        let feed = try await fetcher.fetch(url: Self.jxckURI.url)
+        XCTAssertEqual(feed.url, Self.jxckURI.url)
         XCTAssertEqual(feed.title, "blog.jxck.io")
         XCTAssertEqual(feed.overview, "")
         XCTAssertEqual(feed.imageURL, URL(string: "https://blog.jxck.io/assets/img/jxck.120x120.png")!)
@@ -428,8 +375,8 @@ final class FeedFetcherTests: XCTestCase {
     // MARK: - RDF
 
     func test_asahi() async throws {
-        let feed = try await fetcher.fetch(url: Self.asahiURL)
-        XCTAssertEqual(feed.url, Self.asahiURL)
+        let feed = try await fetcher.fetch(url: Self.asahiURI.url)
+        XCTAssertEqual(feed.url, Self.asahiURI.url)
         XCTAssertEqual(feed.title, "朝日新聞デジタル")
         XCTAssertEqual(feed.overview, "朝日新聞デジタル")
         XCTAssertNil(feed.imageURL)
@@ -443,8 +390,8 @@ final class FeedFetcherTests: XCTestCase {
     }
     
     func test_avWatch() async throws {
-        let feed = try await fetcher.fetch(url: Self.avWatchURL)
-        XCTAssertEqual(feed.url, Self.avWatchURL)
+        let feed = try await fetcher.fetch(url: Self.avWatchURI.url)
+        XCTAssertEqual(feed.url, Self.avWatchURI.url)
         XCTAssertEqual(feed.title, "AV Watch")
         XCTAssertEqual(feed.overview, "オーディオ・ビジュアル総合情報サイト")
         XCTAssertNil(feed.imageURL)
@@ -459,8 +406,8 @@ final class FeedFetcherTests: XCTestCase {
     }
     
     func test_toiroiro() async throws {
-        let feed = try await fetcher.fetch(url: Self.toiroiroURL)
-        XCTAssertEqual(feed.url, Self.toiroiroURL)
+        let feed = try await fetcher.fetch(url: Self.toiroiroURI.url)
+        XCTAssertEqual(feed.url, Self.toiroiroURI.url)
         XCTAssertEqual(feed.title, "トイロ公式ブログ【日々のこと～暮らしを彩る料理とモノ～】")
         XCTAssertEqual(feed.overview, "おうちごはんや、お弁当、手作りおやつ、あったら便利なグッズ、好きなモノ・場所のことなど。暮らしを楽しむ様々なアイデアや日々のことを綴る、トイロのオフィシャルブログです。\n")
         XCTAssertNil(feed.imageURL)
@@ -476,8 +423,8 @@ final class FeedFetcherTests: XCTestCase {
     // MARK: - JSON
 
     func test_jessesquires_json() async throws {
-        let feed = try await fetcher.fetch(url: Self.jessesquiresJSONURL)
-        XCTAssertEqual(feed.url, Self.jessesquiresJSONURL)
+        let feed = try await fetcher.fetch(url: Self.jessesquiresJSONURI.url)
+        XCTAssertEqual(feed.url, Self.jessesquiresJSONURI.url)
         XCTAssertEqual(feed.title, "Jesse Squires")
         XCTAssertEqual(feed.overview, "Turing complete with a stack of 0xdeadbeef")
         XCTAssertEqual(feed.imageURL, URL(string: "https://www.jessesquires.com/favicon.ico")!)
@@ -490,4 +437,8 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.content?.prefix(50), "Continuing another tradition, here are the books I")
         try XCTAssertEqual(entry.publishedAt, Date("2023-12-30T05:02:14+09:00", strategy: .iso8601))
     }
+}
+
+extension URI {
+    var url: URL { URL(string: string)! }
 }
