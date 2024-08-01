@@ -17,7 +17,7 @@ extension URL {
     }
     
     func insertBaseURLIfNeeded(referenceURL: URL) -> URL {
-        if scheme != nil && host() != nil { return self }
+        if scheme != nil && host != nil { return self }
         
         if let baseURL = referenceURL.getBaseURL() {
             guard var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
