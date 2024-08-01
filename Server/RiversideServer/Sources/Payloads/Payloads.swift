@@ -28,3 +28,15 @@ public struct FeedsResponseBody: Codable, Sendable {
         self.feeds = feeds
     }
 }
+
+extension FeedsResponseBody: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        feeds.map { url, result in
+            if let feed = result.feed {
+                "\(url): \(feed.title) (\(feed.entries.count) entries)"
+            } else {
+                "\(url): error \(result.error ?? "")\n"
+            }
+        }.joined(separator: "\n")
+    }
+}
