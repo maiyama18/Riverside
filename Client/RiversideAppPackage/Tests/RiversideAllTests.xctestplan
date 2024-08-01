@@ -15,13 +15,6 @@
     {
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "FeedClientTests",
-        "name" : "FeedClientTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:",
         "identifier" : "UtilitiesTests",
         "name" : "UtilitiesTests"
       }
@@ -29,8 +22,8 @@
     {
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "DeleteDuplicatedEntriesUseCaseTests",
-        "name" : "DeleteDuplicatedEntriesUseCaseTests"
+        "identifier" : "EntitiesTests",
+        "name" : "EntitiesTests"
       }
     },
     {
@@ -43,8 +36,8 @@
     {
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "EntitiesTests",
-        "name" : "EntitiesTests"
+        "identifier" : "DeleteDuplicatedEntriesUseCaseTests",
+        "name" : "DeleteDuplicatedEntriesUseCaseTests"
       }
     }
   ],

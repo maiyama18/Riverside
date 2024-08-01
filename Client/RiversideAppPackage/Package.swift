@@ -287,7 +287,9 @@ let targets: [PackageDescription.Target] = [
         name: "Entities",
         dependencies: [
             .algorithms,
+            .payloads,
             "AppConfig",
+            "Utilities",
         ],
         path: "Sources/Core/Entities"
     ),
