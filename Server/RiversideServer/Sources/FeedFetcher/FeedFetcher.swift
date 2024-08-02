@@ -132,7 +132,7 @@ public actor FeedFetcher {
                     return imageURL
                 }
             } catch {
-                logger.error("failed to fetch favicon: \(error)")
+                logger.warning("failed to fetch favicon: \(error)")
             }
             return await defaultURLOrNil(originalURL: pageURL)
         }

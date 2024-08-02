@@ -1,4 +1,4 @@
-@preconcurrency import Vapor
+import Vapor
 import XCTest
 
 struct MockResponse {
