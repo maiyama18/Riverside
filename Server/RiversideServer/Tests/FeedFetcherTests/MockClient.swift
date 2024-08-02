@@ -66,7 +66,7 @@ final class MockClient: Client {
     
     func send(_ request: ClientRequest) -> EventLoopFuture<ClientResponse> {
         guard let response = responses[request.url] ?? responses[toggleTrailingSlash(request.url)] else {
-            return eventLoop.makeFailedFuture(NSError(domain: "response not found", code: 0))
+            return eventLoop.makeFailedFuture(NSError(domain: "response not found for url: \(request.url)", code: 0))
         }
         
         return eventLoop.makeSucceededFuture(response.clientResponse)
