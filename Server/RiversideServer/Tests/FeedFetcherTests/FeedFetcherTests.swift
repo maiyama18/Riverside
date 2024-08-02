@@ -123,7 +123,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "個人開発の SwiftUI アプリのアーキテクチャを MVVM から MV にした")
         XCTAssertEqual(entry.content?.count, 500)
         XCTAssertEqual(entry.content?.prefix(50), "概要 SwiftUI Advent Calendar 2023 の 21 日目です。 最近趣味で i")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-27T14:26:25+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-27T14:26:25+09:00"))
     }
 
     // MARK: - RSS
@@ -141,7 +141,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "個人開発の SwiftUI アプリのアーキテクチャを MVVM から MV にした")
         XCTAssertEqual(entry.content?.count, 500)
         XCTAssertEqual(entry.content?.prefix(50), "概要 SwiftUI Advent Calendar 2023 の 21 日目です。 最近趣味で i")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-27T14:26:25+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-27T14:26:25+09:00"))
     }
     
     func test_magnolia() async throws {
@@ -156,7 +156,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "Keychron Q60 MAXを買った")
         XCTAssertEqual(entry.content?.count, 500)
         XCTAssertEqual(entry.content?.prefix(100), "Keychron Q60 Max QMK/VIA ワイヤレス カスタム メカニカルキーボード（US ANSI 配列） – Keychron Japan 去年は、Keychron Q60はいいぞ！と言い")
-        try XCTAssertEqual(entry.publishedAt, Date("2024-01-27T10:54:44+00:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2024-01-27T10:54:44+00:00"))
    }
 
     func test_iOSDevWeekly() async throws {
@@ -172,7 +172,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "iOS Dev Weekly - Issue 641 - Dec 29th 2023")
         XCTAssertEqual(entry.content?.count, 500)
         XCTAssertEqual(entry.content?.prefix(50), "Comment Here we are at the end of another year, an")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-30T00:00:00+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-30T00:00:00+09:00"))
     }
 
     func test_iOSCodeReview() async throws {
@@ -188,7 +188,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, " Issue #61 ")
         XCTAssertEqual(entry.content?.count, 500)
         XCTAssertEqual(entry.content?.prefix(50), "Hi there, welcome to the 61st issue of iOS Code Re")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-07T22:38:43+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-07T22:38:43+09:00"))
     }
 
     func test_r7kamura() async throws {
@@ -204,7 +204,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "vscode-ruby-light開発日記 - Prismパーサー導入編")
         XCTAssertEqual(entry.content?.count, 500)
         XCTAssertEqual(entry.content?.prefix(50), "vscode-ruby-lightの開発中に考えたことを書いていきます。今回は、内部で利用しているR")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-29T00:00:00+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-29T00:00:00+09:00"))
     }
 
     func test_swiftUILab() async throws {
@@ -220,7 +220,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "Advanced SwiftUI Animations – Part 7: PhaseAnimator")
         XCTAssertEqual(entry.content?.count, 500)
         XCTAssertEqual(entry.content?.prefix(50), "In part 6 of the Advanced SwiftUI Animations serie")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-10-31T00:41:54+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-10-31T00:41:54+09:00"))
     }
 
     func test_zennSwift() async throws {
@@ -236,7 +236,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "[SF-0001] Calendar Sequence Enumeration の解説")
         XCTAssertEqual(entry.content?.count, 298)
         XCTAssertEqual(entry.content?.prefix(50), "この記事はSwiftWednesday Advent Calendar 2023の21日目の記事です")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-29T12:17:53+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-29T12:17:53+09:00"))
     }
 
     func test_qiitaSwift() async throws {
@@ -252,7 +252,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "[Swift]むりやりPoint-Free Style")
         XCTAssertEqual(entry.content?.count, 100)
         XCTAssertEqual(entry.content?.prefix(50), "Point-Free Styleとは 関数を渡す関数を使う時にTrailing closureを使わ")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-30T09:55:43+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-30T09:55:43+09:00"))
     }
 
     func test_stackoverflowSwift() async throws {
@@ -268,7 +268,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "SwiftUI ScrollView entire phone screen")
         XCTAssertEqual(entry.content?.count, 500)
         XCTAssertEqual(entry.content?.prefix(50), "I'm trying to figure out how to create a Scrolling")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-30T13:23:26+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-30T13:23:26+09:00"))
     }
 
     func test_phaNote() async throws {
@@ -284,7 +284,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "11月25日（土）～12月1日（金） 調べずに海沿いを")
         XCTAssertEqual(entry.content?.count, 184)
         XCTAssertEqual(entry.content?.prefix(50), "11月25日（土） 起きると疲れている。Titleに文フリで出した2冊を納品してから、店へ。明日の日")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-22T19:23:55+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-22T19:23:55+09:00"))
     }
 
     func test_naoyaSizume() async throws {
@@ -300,7 +300,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "自分を救うプログラミング")
         XCTAssertEqual(entry.content?.count, 201)
         XCTAssertEqual(entry.content?.prefix(50), "子どものころは絵を描くのが好きだった。 学校の休み時間は、クラスメートはみな外にサッカーをしにいって")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-28T07:39:45+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-28T07:39:45+09:00"))
     }
 
     // MARK: - Atom
@@ -318,7 +318,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "個人開発の SwiftUI アプリのアーキテクチャを MVVM から MV にした")
         XCTAssertEqual(entry.content?.count, 500)
         XCTAssertEqual(entry.content?.prefix(50), "概要 SwiftUI Advent Calendar 2023 の 21 日目です。 最近趣味で i")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-27T14:26:25+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-27T14:26:25+09:00"))
     }
 
     func test_jessesquires_atom() async throws {
@@ -334,7 +334,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "A list of books I read in 2023")
         XCTAssertEqual(entry.content?.count, 500)
         XCTAssertEqual(entry.content?.prefix(50), "Continuing another tradition, here are the books I")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-30T05:02:14+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-30T05:02:14+09:00"))
     }
 
     func test_andante() async throws {
@@ -349,9 +349,9 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.url, URL(string: "https://ofni.necocen.info/5006"))
         XCTAssertEqual(entry.title, "1229")
         XCTAssertEqual(entry.content?.count, 0)
-        try XCTAssertEqual(
+        XCTAssertEqual(
             entry.publishedAt.timeIntervalSince1970,
-            Date("2023-12-30T01:23:48+09:00", strategy: .iso8601).timeIntervalSince1970,
+            Date.fromISO8601String("2023-12-30T01:23:48+09:00").timeIntervalSince1970,
             accuracy: 1
         )
     }
@@ -369,7 +369,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "3PCA 最終日: 3rd Party Cookie 亡き後の Web はどうなるか?")
         XCTAssertEqual(entry.content?.count, 308)
         XCTAssertEqual(entry.content?.prefix(50), "このエントリは、 3rd Party Cookie Advent Calendar の最終日である。")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-30T09:00:00+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-30T09:00:00+09:00"))
     }
     
     // MARK: - RDF
@@ -386,7 +386,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.url, URL(string: "http://www.asahi.com/articles/ASS4X4VWGS4XUDCB00KM.html?ref=rss"))
         XCTAssertEqual(entry.title, "JR内房線で女児が電車にはねられ搬送　千葉・館山")
         XCTAssertEqual(entry.content?.count, 0)
-        try XCTAssertEqual(entry.publishedAt, Date("2024-04-29T00:20:00+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2024-04-29T00:20:00+09:00"))
     }
     
     func test_avWatch() async throws {
@@ -402,7 +402,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "究極ポータブルオーディオ「FUGAKU」、ティアックのディスクリートDAC兼ヘッドフォンアンプも")
         XCTAssertEqual(entry.content?.count, 140)
         XCTAssertEqual(entry.content?.prefix(50), "「春のヘッドフォン祭 2024」が4月27日に東京駅八重洲直結のステーションコンファレンス東京で開催")
-        try XCTAssertEqual(entry.publishedAt, Date("2024-04-27T18:37:10+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2024-04-27T18:37:10+09:00"))
     }
     
     func test_toiroiro() async throws {
@@ -417,7 +417,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.url, URL(string: "https://toiroiro.blog.jp/archives/27826149.html"))
         XCTAssertEqual(entry.title, "とり天＆おにぎりランチと、今日のVoicy")
         XCTAssertEqual(entry.content?.count, 500)
-        try XCTAssertEqual(entry.publishedAt, Date("2024-04-27T22:27:13+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2024-04-27T22:27:13+09:00"))
     }
 
     // MARK: - JSON
@@ -435,7 +435,7 @@ final class FeedFetcherTests: XCTestCase {
         XCTAssertEqual(entry.title, "A list of books I read in 2023")
         XCTAssertEqual(entry.content?.count, 500)
         XCTAssertEqual(entry.content?.prefix(50), "Continuing another tradition, here are the books I")
-        try XCTAssertEqual(entry.publishedAt, Date("2023-12-30T05:02:14+09:00", strategy: .iso8601))
+        XCTAssertEqual(entry.publishedAt, Date.fromISO8601String("2023-12-30T05:02:14+09:00"))
     }
 }
 

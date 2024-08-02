@@ -390,7 +390,7 @@ let targets: [PackageDescription.Target] = [
 let package = Package(
     name: "RiversideAppPackage",
     defaultLocalization: "en",
-    platforms: [.iOS(.v17), .macOS(.v14)],
+    platforms: [.iOS(.v17), .macOS(.v13)],
     products: [
         .library(name: "IOSApp", targets: ["IOSApp"]),
         .library(name: "IOSActionExtension", targets: ["IOSActionExtension"]),
@@ -415,6 +415,7 @@ let package = Package(
         .library(name: "Entities", targets: ["Entities"]),
         .library(name: "Utilities", targets: ["Utilities"]),
         .library(name: "UIComponents", targets: ["UIComponents"]),
+        .library(name: "TestHelpers", targets: ["TestHelpers"]),
     ],
     dependencies: dependencies,
     targets: targets

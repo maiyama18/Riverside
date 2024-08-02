@@ -2,6 +2,7 @@
 
 import CustomDump
 import CoreData
+import TestHelpers
 import XCTest
 
 final class StreamSectionBuilderTests: XCTestCase {
@@ -50,15 +51,15 @@ final class StreamSectionBuilderTests: XCTestCase {
             StreamSectionBuilder.build(entries: entries, calendar: calendar),
             [
                 .init(
-                    publishedDate: try! Date("2024-01-02T00:00:00+09:00", strategy: .iso8601),
+                    publishedDate: Date.fromISO8601String("2024-01-02T00:00:00+09:00"),
                     entries: [entry5]
                 ),
                 .init(
-                    publishedDate: try! Date("2024-01-01T00:00:00+09:00", strategy: .iso8601),
+                    publishedDate: Date.fromISO8601String("2024-01-01T00:00:00+09:00"),
                     entries: [entry4, entry3, entry2]
                 ),
                 .init(
-                    publishedDate: try! Date("2023-12-31T00:00:00+09:00", strategy: .iso8601),
+                    publishedDate: Date.fromISO8601String("2023-12-31T00:00:00+09:00"),
                     entries: [entry1]
                 ),
             ]
