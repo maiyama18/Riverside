@@ -1,12 +1,9 @@
 # ================================
 # Build image
 # ================================
-FROM swift:5.10-noble as build
+FROM swiftlang/swift:nightly-6.0-jammy as build
 
-RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
-    && apt-get -q update \
-    && apt-get -q dist-upgrade -y \
-    && apt-get install -y libjemalloc-dev
+RUN apt-get update && apt-get install -y libjemalloc-dev
 
 WORKDIR /build
 
@@ -21,16 +18,9 @@ RUN swift build -c release \
 # ================================
 # Run image
 # ================================
-FROM ubuntu:noble
+FROM ubuntu:jammy
 
-RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
-    && apt-get -q update \
-    && apt-get -q dist-upgrade -y \
-    && apt-get -q install -y \
-      libjemalloc2 \
-      ca-certificates \
-      tzdata \
-    && rm -r /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libjemalloc2 ca-certificates tzdata && rm -r /var/lib/apt/lists/*
 
 RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app vapor
 

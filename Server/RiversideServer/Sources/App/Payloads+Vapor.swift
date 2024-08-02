@@ -1,5 +1,5 @@
 import Payloads
 import Vapor
 
-extension FeedsRequestBody: Content {}
-extension FeedsResponseBody: Content {}
+extension FeedsRequestBody: @retroactive Content {}
+extension FeedsResponseBody: @retroactive Content {}
