@@ -69,7 +69,7 @@ let targets: [PackageDescription.Target] = [
 let package = Package(
     name: "RiversideServer",
     platforms: [
-       .macOS(.v13),
+       .macOS(.v14),
        .iOS(.v17),
     ],
     products: [
