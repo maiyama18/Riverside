@@ -104,7 +104,6 @@ final class FeedFetcherTests: XCTestCase {
     }
     
     override func tearDown() {
-        app.shutdown()
         super.tearDown()
     }
     
