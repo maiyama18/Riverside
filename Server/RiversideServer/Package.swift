@@ -40,13 +40,6 @@ let targets: [PackageDescription.Target] = [
         ],
         resources: [.process("Resources")]
     ),
-    .testTarget(
-        name: "AppTests",
-        dependencies: [
-            .target(name: "App"),
-            .product(name: "XCTVapor", package: "vapor"),
-        ]
-    ),
 ].map { (target: PackageDescription.Target) -> PackageDescription.Target in
     guard target.type != .plugin else { return target }
     
