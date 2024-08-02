@@ -20,7 +20,7 @@ RUN swift build -c release \
 # ================================
 FROM ubuntu:jammy
 
-RUN apt-get update && apt-get install -y libjemalloc2 ca-certificates tzdata libcurl3 && rm -r /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libjemalloc2 ca-certificates tzdata libcurl4 && rm -r /var/lib/apt/lists/*
 
 RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app vapor
 
