@@ -33,8 +33,6 @@ public final class ForegroundRefreshState {
         timeout: Duration,
         retryCount: Int = 1
     ) async {
-        let startedAt: Date = .now
-        
         guard !isRefreshing else { return }
         isRefreshing = true
         defer {
@@ -77,7 +75,7 @@ public final class ForegroundRefreshState {
             return
         }
         do {
-            let fetchedFeeds = try await feedClient.fetchFeeds(existingFeeds.compactMap(\.url))
+            let fetchedFeeds = try await feedClient.fetchFeeds(existingFeeds.compactMap(\.url), force)
             for fetchedFeed in fetchedFeeds {
                 guard let existingFeed = existingFeeds.first(where: { $0.url == fetchedFeed.url }) else { continue }
                 _ = existingFeed.addNewEntries(fetchedFeed.entries)

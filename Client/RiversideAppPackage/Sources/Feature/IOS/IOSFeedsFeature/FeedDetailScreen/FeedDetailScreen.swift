@@ -74,7 +74,7 @@ struct FeedDetailScreen: View {
                 .refreshable {
                     do {
                         guard let feedURL = feed.url else { return }
-                        let fetchedFeed = try await feedClient.fetchFeed(feedURL)
+                        let fetchedFeed = try await feedClient.fetchFeed(feedURL, true)
                         _ = feed.addNewEntries(fetchedFeed.entries)
                     } catch {
                         flashClient.present(
@@ -88,7 +88,7 @@ struct FeedDetailScreen: View {
         .task {
             do {
                 guard let feedURL = feed.url else { return }
-                let fetchedFeed = try await feedClient.fetchFeed(feedURL)
+                let fetchedFeed = try await feedClient.fetchFeed(feedURL, false)
                 _ = feed.addNewEntries(fetchedFeed.entries)
             } catch {}
         }

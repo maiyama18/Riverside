@@ -63,7 +63,7 @@ struct FeedsController: RouteCollection {
         logger: Logger
     ) async throws -> [String:Result<(origin: FeedOrigin, feed: Payloads.Feed), any Error>] {
         await withTaskGroup(of: Result<(String, FeedOrigin, Payloads.Feed), FeedsError>.self) { [feedFetcher] group in
-            for urlString in urls {
+            func addTask(urlString: String) {
                 group.addTask {
                     guard let url = URL(string: urlString) else {
                         return .failure(FeedsError(url: urlString, description: "invalid url: \(urlString)"))
@@ -86,7 +86,22 @@ struct FeedsController: RouteCollection {
                 }
             }
             
-            return await group.reduce(into: [:]) { dict, result in
+            let concurrentTaskLimit = min(urls.count, 8)
+            for index in 0..<concurrentTaskLimit {
+                addTask(urlString: urls[index])
+            }
+            
+            var results: [Result<(String, FeedOrigin, Payloads.Feed), FeedsError>] = []
+            var nextIndex = concurrentTaskLimit
+            for await result in group {
+                if nextIndex < urls.count {
+                    addTask(urlString: urls[nextIndex])
+                    nextIndex += 1
+                }
+                results.append(result)
+            }
+            
+            return results.reduce(into: [:]) { dict, result in
                 switch result {
                 case .success((let url, let origin, let feed)):
                     dict[url] = .success((origin, feed))

@@ -72,7 +72,7 @@ extension BackgroundRefreshUseCase {
                 
                 do {
                     let existingFeeds = try context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled()
-                    let fetchedFeeds = try await feedClient.fetchFeeds(existingFeeds.compactMap(\.url))
+                    let fetchedFeeds = try await feedClient.fetchFeeds(existingFeeds.compactMap(\.url), false)
                     for fetchedFeed in fetchedFeeds {
                         guard let existingFeed = existingFeeds.first(where: { $0.url == fetchedFeed.url }) else { continue }
                         _ = existingFeed.addNewEntries(fetchedFeed.entries)

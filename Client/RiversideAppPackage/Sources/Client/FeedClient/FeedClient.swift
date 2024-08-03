@@ -5,8 +5,8 @@ import RiversideLogging
 import Utilities
 
 public struct FeedClient: Sendable {
-    public var fetchFeed: @Sendable (_ feedURL: URL) async throws -> Feed
-    public var fetchFeeds: @Sendable (_ feedURLs: [URL]) async throws -> [Feed]
+    public var fetchFeed: @Sendable (_ feedURL: URL, _ force: Bool) async throws -> Feed
+    public var fetchFeeds: @Sendable (_ feedURLs: [URL], _ force: Bool) async throws -> [Feed]
 }
 
 extension FeedClient {
@@ -20,14 +20,14 @@ extension FeedClient {
     
     static func live(serverBaseURL: URL) -> FeedClient {
         @Sendable
-        func request(urls: [URL]) async throws -> FeedsResponseBody {
+        func request(urls: [URL], forceRefresh: Bool) async throws -> FeedsResponseBody {
             let endpointURL: URL = serverBaseURL.appending(path: "feeds")
             
             var request = URLRequest(url: endpointURL)
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.httpBody = try jsonEncoder.encode(
-                FeedsRequestBody(urls: urls.map(\.absoluteString))
+                FeedsRequestBody(urls: urls.map(\.absoluteString), forceRefresh: forceRefresh)
             )
             
             let (data, _) = try await urlSession.data(for: request)
@@ -35,8 +35,8 @@ extension FeedClient {
         }
         
         return FeedClient(
-            fetchFeed: { feedURL in
-                let response = try await request(urls: [feedURL])
+            fetchFeed: { feedURL, force in
+                let response = try await request(urls: [feedURL], forceRefresh: force)
                 
                 guard let feedResult = response.feeds[feedURL.absoluteString] else {
                     throw NSError(domain: "invalid response", code: 0)
@@ -51,10 +51,10 @@ extension FeedClient {
                     }
                 }
             },
-            fetchFeeds: { feedURLs in
+            fetchFeeds: { feedURLs, force in
                 @Dependency(\.logger[.feedModel]) var logger
                 
-                let response = try await request(urls: feedURLs)
+                let response = try await request(urls: feedURLs, forceRefresh: force)
                 
                 return response.feeds.compactMap {
                     if let feed = $0.value.feed {
