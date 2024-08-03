@@ -80,7 +80,11 @@ private enum FeedClientKey: DependencyKey {
     static let liveValue: FeedClient = .live(
         serverBaseURL: {
             #if targetEnvironment(simulator)
+            if ProcessInfo.processInfo.environment["USE_LOCAL_SERVER"] == "true" {
                 URL(string: "http://localhost:8080")!
+            } else {
+                URL(string: "https://riverside-server-kzf5jitskq-an.a.run.app")!
+            }
             #else
                 URL(string: "https://riverside-server-kzf5jitskq-an.a.run.app")!
             #endif
