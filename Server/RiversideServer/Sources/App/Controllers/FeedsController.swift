@@ -76,7 +76,9 @@ struct FeedsController: RouteCollection {
                             logger.notice("database records used for \(urlString)")
                             return .success((urlString, .local, feed.feedPayload()))
                         }
-                        return try await .success((urlString, .remote, feedFetcher.fetch(url: url)))
+                        return try await withTimeout(for: .seconds(10)) {
+                            try await .success((urlString, .remote, feedFetcher.fetch(url: url)))
+                        }
                     } catch {
                         logger.warning("failed to fetch \(urlString): \(error)")
                         return .failure(FeedsError(url: urlString, description: "failed to fetch \(urlString): \(error)"))
@@ -141,6 +143,31 @@ struct FeedsController: RouteCollection {
             }
         } catch {
             logger.warning("failed to save feeds: \(error)")
+        }
+    }
+}
+
+// TODO: RiversideAppPackage/Sources/Core/Utilities/ConcurrencyUtils と共通化する
+struct TimeoutError: LocalizedError {
+    var localizedDescription: String { "Timeout" }
+}
+func withTimeout<T: Sendable>(for duration: Duration, _ operation: @Sendable @escaping () async throws -> T) async throws -> T {
+    return try await withThrowingTaskGroup(of: T?.self) { group in
+        group.addTask {
+            try await Task.sleep(for: duration)
+            return nil
+        }
+        
+        group.addTask {
+            try await operation()
+        }
+        
+        let value = try await group.next()!
+        group.cancelAll()
+        if let value {
+            return value
+        } else {
+            throw TimeoutError()
         }
     }
 }
