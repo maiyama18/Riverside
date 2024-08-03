@@ -76,6 +76,8 @@ struct FeedsController: RouteCollection {
                             logger.notice("database records used for \(urlString)")
                             return .success((urlString, .local, feed.feedPayload()))
                         }
+                        logger.notice("fetching \(urlString)")
+                        defer { logger.notice("fetching finished \(urlString)") }
                         return try await withTimeout(for: .seconds(10)) {
                             try await .success((urlString, .remote, feedFetcher.fetch(url: url)))
                         }

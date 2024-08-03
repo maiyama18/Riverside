@@ -35,8 +35,8 @@ extension FeedsResponseBody: CustomDebugStringConvertible {
             if let feed = result.feed {
                 "\(url): \(feed.title) (\(feed.entries.count) entries)"
             } else {
-                "\(url): error \(result.error ?? "")\n"
+                "\(url): error \(result.error ?? "")"
             }
-        }.joined(separator: "\n")
+        }.joined(separator: ",")
     }
 }
