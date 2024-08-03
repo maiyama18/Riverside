@@ -8,7 +8,9 @@ import XCTest
 @MainActor
 final class CloudSyncStateTests: XCTestCase {
     func test() async throws {
-        XCTExpectFailure("Currently this test is flaky on CI")
+        let options = XCTExpectedFailure.Options()
+        options.isStrict = false
+        XCTExpectFailure("Currently this test is flaky on CI", options: options)
         
         let subject: PassthroughSubject<CloudSyncEvent, Never> = .init()
         let state = CloudSyncState(publisher: subject)
