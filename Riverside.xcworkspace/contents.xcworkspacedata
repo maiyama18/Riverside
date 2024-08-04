@@ -7,7 +7,4 @@
    <FileRef
       location = "group:Client/RiversideAppPackage">
    </FileRef>
-   <FileRef
-      location = "group:Server/RiversideServer">
-   </FileRef>
 </Workspace>

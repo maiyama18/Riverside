@@ -6,8 +6,7 @@ import PackageDescription
 
 let dependencies: [PackageDescription.Package.Dependency] = [
     // Libraries
-    .package(path: "../../Server/RiversideServer"),
-    
+    .package(url: "https://github.com/maiyama18/RiversideShared.git", exact: "0.9.0"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.1.5"),
     .package(url: "https://github.com/pointfreeco/swift-custom-dump", exact: "1.1.2"),
     .package(url: "https://github.com/apple/swift-algorithms", exact: "1.2.0"),
@@ -19,7 +18,7 @@ let dependencies: [PackageDescription.Package.Dependency] = [
 ]
 
 extension PackageDescription.Target.Dependency {
-    static let payloads: Self = .product(name: "Payloads", package: "RiversideServer")
+    static let payloads: Self = .product(name: "Payloads", package: "RiversideShared")
     
     static let dependencies: Self = .product(name: "Dependencies", package: "swift-dependencies")
     static let algorithms: Self = .product(name: "Algorithms", package: "swift-algorithms")
