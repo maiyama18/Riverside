@@ -21,14 +21,17 @@ extension FeedClient {
     static func live(serverBaseURL: URL) -> FeedClient {
         @Sendable
         func request(urls: [URL], forceRefresh: Bool) async throws -> FeedsResponseBody {
-            let endpointURL: URL = serverBaseURL.appending(path: "feeds")
-            
-            var request = URLRequest(url: endpointURL)
-            request.httpMethod = "POST"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.httpBody = try jsonEncoder.encode(
-                FeedsRequestBody(urls: urls.map(\.absoluteString), forceRefresh: forceRefresh)
+            let endpointURL: URL = serverBaseURL.appending(path: "riverside").appending(path: "feeds")
+            let requestURL = endpointURL.appending(
+                queryItems: [
+                    .init(name: "urls", value: urls.map(\.absoluteString).joined(separator: ",")),
+                    .init(name: "force", value: "\(forceRefresh)")
+                ]
             )
+            
+            var request = URLRequest(url: requestURL)
+            request.httpMethod = "GET"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             
             let (data, _) = try await urlSession.data(for: request)
             return try jsonDecoder.decode(FeedsResponseBody.self, from: data)
@@ -83,10 +86,10 @@ private enum FeedClientKey: DependencyKey {
             if ProcessInfo.processInfo.environment["USE_LOCAL_SERVER"] == "true" {
                 URL(string: "http://localhost:8080")!
             } else {
-                URL(string: "https://riverside-server-kzf5jitskq-an.a.run.app")!
+                URL(string: "https://rssproxy-6q4koorr7a-an.a.run.app")!
             }
             #else
-                URL(string: "https://riverside-server-kzf5jitskq-an.a.run.app")!
+                URL(string: "https://rssproxy-6q4koorr7a-an.a.run.app")!
             #endif
         }()
     )
