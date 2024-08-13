@@ -13,7 +13,20 @@ extension FeedClient {
     static private let urlSession: URLSession = .shared
     static private let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        let dateFormatter = ISO8601DateFormatter()
+        dateFormatter.formatOptions = [.withInternetDateTime]
+        let dateFormatterWithFractional = ISO8601DateFormatter()
+        dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let string = try container.decode(String.self)
+            
+            if let date = dateFormatter.date(from: string) ?? dateFormatterWithFractional.date(from: string) {
+                return date
+            }
+            
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(string)")
+        }
         return decoder
     }()
     static private let jsonEncoder: JSONEncoder = .init()
