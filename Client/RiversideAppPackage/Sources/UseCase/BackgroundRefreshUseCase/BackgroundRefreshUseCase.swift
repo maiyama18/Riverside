@@ -79,7 +79,7 @@ extension BackgroundRefreshUseCase {
                     }
                 } catch {
                     history.errorMessage = error.localizedDescription
-                    logger.error("failed to execute foreground refresh: \(error, privacy: .public)")
+                    logger.error("failed to execute background refresh: \(error, privacy: .public)")
                 }
             
                 history.finishedAt = .now
