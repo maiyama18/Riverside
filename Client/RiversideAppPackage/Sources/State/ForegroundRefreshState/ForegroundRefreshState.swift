@@ -32,7 +32,7 @@ public final class ForegroundRefreshState {
         force: Bool,
         timeout: Duration,
         retryCount: Int = 1
-    ) async {
+    ) async throws {
         guard !isRefreshing else { return }
         isRefreshing = true
         defer {
@@ -53,12 +53,7 @@ public final class ForegroundRefreshState {
         if !force {
             let history = ForegroundRefreshHistoryModel(context: context)
             history.startedAt = .now
-            do {
-                try context.saveWithRollback()
-                logger.notice("saved background refresh history")
-            } catch {
-                logger.error("failed to save refresh history: \(error, privacy: .public)")
-            }
+            try context.saveWithRollback()
             
             try? await withTimeout(for: .seconds(10)) {
                 try? await cloudSyncState.eventDebouncedPublisher.nextValue()
@@ -71,17 +66,11 @@ public final class ForegroundRefreshState {
         }
         
         logger.notice("starting add new entries")
-        guard let existingFeeds = try? context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled() else {
-            return
-        }
-        do {
-            let fetchedFeeds = try await feedClient.fetchFeeds(existingFeeds.compactMap(\.url), force)
-            for fetchedFeed in fetchedFeeds {
-                guard let existingFeed = existingFeeds.first(where: { $0.url == fetchedFeed.url }) else { continue }
-                _ = existingFeed.addNewEntries(fetchedFeed.entries)
-            }
-        } catch {
-            logger.error("failed to fetch feeds: \(error, privacy: .public)")
+        let existingFeeds = try context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled()
+        let fetchedFeeds = try await feedClient.fetchFeeds(existingFeeds.compactMap(\.url), force)
+        for fetchedFeed in fetchedFeeds {
+            guard let existingFeed = existingFeeds.first(where: { $0.url == fetchedFeed.url }) else { continue }
+            _ = existingFeed.addNewEntries(fetchedFeed.entries)
         }
     }
     

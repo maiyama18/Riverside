@@ -3,6 +3,7 @@ import CloudSyncState
 import CoreData
 import Dependencies
 import Entities
+import FlashClient
 import ForegroundRefreshState
 import NavigationState
 import SwiftUI
@@ -15,6 +16,8 @@ public struct StreamScreen: View {
     @Environment(ForegroundRefreshState.self) private var foregroundRefreshState
     @Environment(NavigationState.self) private var navigationState
     @Environment(\.managedObjectContext) private var context
+
+    @Dependency(\.flashClient) private var flashClient
     
     @FetchRequest(fetchRequest: EntryModel.all) private var entries: FetchedResults<EntryModel>
     @FetchRequest(fetchRequest: FeedModel.all) private var feeds: FetchedResults<FeedModel>
@@ -180,13 +183,20 @@ public struct StreamScreen: View {
     }
     
     private func forceRefresh() async {
-        await foregroundRefreshState.refresh(
-            context: context,
-            cloudSyncState: cloudSyncState,
-            force: true,
-            timeout: .seconds(15),
-            retryCount: 3
-        )
+        do {
+            try await foregroundRefreshState.refresh(
+                context: context,
+                cloudSyncState: cloudSyncState,
+                force: true,
+                timeout: .seconds(15),
+                retryCount: 3
+            )
+        } catch {
+            flashClient.present(
+                type: .error,
+                message: "Failed refresh feed: \(error.localizedDescription)"
+            )
+        }
     }
 }
 
