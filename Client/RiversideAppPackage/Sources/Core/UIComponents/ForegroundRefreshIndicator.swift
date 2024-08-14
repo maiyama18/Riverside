@@ -7,7 +7,7 @@ public struct ForegroundRefreshIndicator: View {
     public init() {}
     
     public var body: some View {
-        if foregroundRefreshState.isRefreshing {
+        if foregroundRefreshState.state == .refreshing {
             ProgressView()
                 .progressViewStyle(.circular)
         } else {

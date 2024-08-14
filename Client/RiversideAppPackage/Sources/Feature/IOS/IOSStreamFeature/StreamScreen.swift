@@ -168,7 +168,11 @@ public struct StreamScreen: View {
                 await forceRefresh()
             }
         } label: {
-            Text("Refresh")
+            if foregroundRefreshState.isRefreshing {
+                Text("Refreshing...")
+            } else {
+                Text("Refresh")
+            }
         }
         .disabled(cloudSyncState.syncing || foregroundRefreshState.isRefreshing)
     }

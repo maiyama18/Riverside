@@ -12,13 +12,27 @@ import WidgetKit
 @Observable
 @MainActor
 public final class ForegroundRefreshState {
+    public enum State {
+        case idle
+        case refreshing
+        case forceRefreshing
+    }
+    
     @ObservationIgnored
     @Dependency(\.feedClient) private var feedClient
 
     @ObservationIgnored
     @Dependency(\.logger[.foregroundRefresh]) private var logger
 
-    public var isRefreshing: Bool = false
+    public var isRefreshing: Bool {
+        switch state {
+        case .refreshing, .forceRefreshing:
+            true
+        case .idle:
+            false
+        }
+    }
+    public var state: State = .idle
     
     private var userDefaults: UserDefaults
     
@@ -34,9 +48,9 @@ public final class ForegroundRefreshState {
         retryCount: Int = 1
     ) async throws {
         guard !isRefreshing else { return }
-        isRefreshing = true
+        state = force ? .forceRefreshing : .refreshing
         defer {
-            isRefreshing = false
+            state = .idle
         }
         
         if force {
