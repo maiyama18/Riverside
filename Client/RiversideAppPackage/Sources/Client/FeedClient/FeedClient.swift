@@ -46,7 +46,13 @@ extension FeedClient {
             request.httpMethod = "GET"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             
-            let (data, _) = try await urlSession.data(for: request)
+            let (data, response) = try await urlSession.data(for: request)
+            guard let response = response as? HTTPURLResponse else {
+                throw NSError(domain: "response not HTTPURLResponse", code: 0)
+            }
+            guard response.statusCode == 200 else {
+                throw NSError(domain: "invalid response code \(response.statusCode)", code: 0)
+            }
             return try jsonDecoder.decode(FeedsResponseBody.self, from: data)
         }
         
