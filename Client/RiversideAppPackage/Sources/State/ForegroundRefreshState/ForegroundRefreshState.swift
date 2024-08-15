@@ -79,12 +79,14 @@ public final class ForegroundRefreshState {
             return
         }
         
-        logger.notice("starting add new entries")
         let existingFeeds = try context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled()
         let fetchedFeeds = try await feedClient.fetchFeeds(existingFeeds.compactMap(\.url), force)
         for fetchedFeed in fetchedFeeds {
             guard let existingFeed = existingFeeds.first(where: { $0.url == fetchedFeed.url }) else { continue }
-            _ = existingFeed.addNewEntries(fetchedFeed.entries)
+            let newEntries = existingFeed.addNewEntries(fetchedFeed.entries)
+            if newEntries.count > 0 {
+                logger.notice("foreground refresh add \(newEntries.count) entries for \(fetchedFeed.title)")
+            }
         }
     }
     

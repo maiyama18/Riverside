@@ -70,18 +70,22 @@ extension BackgroundRefreshUseCase {
                     try? await iCloudEventDebouncedPublisher.nextValue()
                 }
                 
+                var addedEntryTitles: [String] = []
                 do {
                     let existingFeeds = try context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled()
                     let fetchedFeeds = try await feedClient.fetchFeeds(existingFeeds.compactMap(\.url), false)
                     for fetchedFeed in fetchedFeeds {
                         guard let existingFeed = existingFeeds.first(where: { $0.url == fetchedFeed.url }) else { continue }
-                        _ = existingFeed.addNewEntries(fetchedFeed.entries)
+                        let newEntries = existingFeed.addNewEntries(fetchedFeed.entries)
+                        for newEntry in newEntries {
+                            addedEntryTitles.append(newEntry.title)
+                        }
                     }
                 } catch {
                     history.errorMessage = error.localizedDescription
                     logger.error("failed to execute background refresh: \(error, privacy: .public)")
                 }
-            
+                history.addedEntryTitles = addedEntryTitles
                 history.finishedAt = .now
                 do {
                     try context.saveWithRollback()
