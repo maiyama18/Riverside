@@ -1,0 +1,45 @@
+{
+  "configurations" : [
+    {
+      "id" : "BAD28F63-8685-46CD-8DEF-AA95C115565E",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "UtilitiesTests",
+        "name" : "UtilitiesTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "EntitiesTests",
+        "name" : "EntitiesTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "CloudSyncStateTests",
+        "name" : "CloudSyncStateTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "DeleteDuplicatedEntriesUseCaseTests",
+        "name" : "DeleteDuplicatedEntriesUseCaseTests"
+      }
+    }
+  ],
+  "version" : 1
+}
