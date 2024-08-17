@@ -48,9 +48,14 @@ public final class ForegroundRefreshState {
         retryCount: Int = 1
     ) async throws {
         guard !isRefreshing else { return }
+        
+        let startedAt = Date.now
+        logger.notice("foreground refresh started")
+        
         state = force ? .forceRefreshing : .refreshing
         defer {
             state = .idle
+            logger.notice("foreground refresh finished in \(Date.now.timeIntervalSince(startedAt)) s")
         }
         
         if force {
@@ -72,6 +77,7 @@ public final class ForegroundRefreshState {
             try? await withTimeout(for: .seconds(10)) {
                 try? await cloudSyncState.eventDebouncedPublisher.nextValue()
             }
+            logger.notice("foreground refresh iCloud sync debounced event finished in \(Date.now.timeIntervalSince(startedAt)) s")
         }
 
         guard !cloudSyncState.syncing else {
