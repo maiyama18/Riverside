@@ -61,13 +61,20 @@ public struct RootScreen: View {
                         let loading = cloudSyncState.syncing || foregroundRefreshState.isRefreshing
                         Button {
                             Task {
-                                await foregroundRefreshState.refresh(
-                                    context: context,
-                                    cloudSyncState: cloudSyncState,
-                                    force: true,
-                                    timeout: .seconds(15),
-                                    retryCount: 2
-                                )
+                                do {
+                                    try await foregroundRefreshState.refresh(
+                                        context: context,
+                                        cloudSyncState: cloudSyncState,
+                                        force: true,
+                                        timeout: .seconds(15),
+                                        retryCount: 2
+                                    )
+                                } catch {
+                                    flashClient.present(
+                                        type: .error,
+                                        message: "Failed refresh feed: \(error.localizedDescription)"
+                                    )
+                                }
                             }
                         } label: {
                             if loading {
@@ -92,12 +99,19 @@ public struct RootScreen: View {
         }
         .onForeground {
             Task {
-                await foregroundRefreshState.refresh(
-                    context: context,
-                    cloudSyncState: cloudSyncState,
-                    force: true,
-                    timeout: .seconds(10)
-                )
+                do {
+                    try await foregroundRefreshState.refresh(
+                        context: context,
+                        cloudSyncState: cloudSyncState,
+                        force: true,
+                        timeout: .seconds(10)
+                    )
+                } catch {
+                    await flashClient.present(
+                        type: .error,
+                        message: "Failed refresh feed: \(error.localizedDescription)"
+                    )
+                }
             }
         }
         .deleteDuplicatedEntriesOnBackground()
