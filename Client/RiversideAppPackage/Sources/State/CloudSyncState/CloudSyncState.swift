@@ -97,7 +97,7 @@ public final class CloudSyncState {
                 
                 eventDebouncedTask?.cancel()
                 eventDebouncedTask = Task {
-                    try await Task.sleep(for: .seconds(2))
+                    try await Task.sleep(for: .seconds(1))
                     guard !syncing else { return }
                     eventDebouncedSubject.send(())
                     logger.notice("event debounced")
