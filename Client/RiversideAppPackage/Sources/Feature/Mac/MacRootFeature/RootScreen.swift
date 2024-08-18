@@ -77,15 +77,8 @@ public struct RootScreen: View {
                                 }
                             }
                         } label: {
-                            if loading {
-                                Image(systemName: "arrow.clockwise")
-                                    .hidden()
-                                    .overlay {
-                                        ForegroundRefreshIndicator()
-                                    }
-                            } else {
-                                Image(systemName: "arrow.clockwise")
-                            }
+                            Image(systemName: "arrow.clockwise")
+                                .foregroundStyle(loading ? .secondary : .primary)
                         }
                         .disabled(loading)
                     }
