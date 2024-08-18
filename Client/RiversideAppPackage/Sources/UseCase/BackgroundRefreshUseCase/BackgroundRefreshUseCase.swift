@@ -7,6 +7,7 @@ import FeedClient
 import LocalPushNotificationClient
 import RiversideLogging
 import Utilities
+import Payloads
 import WidgetKit
 
 public struct BackgroundRefreshUseCase: Sendable {
@@ -43,10 +44,6 @@ extension BackgroundRefreshUseCase {
             taskIdentifier: taskIdentifier,
             schedule: schedule,
             execute: { task, context, iCloudEventDebouncedPublisher in
-                defer {
-                    WidgetCenter.shared.reloadAllTimelines()
-                }
-                
                 schedule()
                 
                 let history = BackgroundRefreshHistoryModel(context: context)
@@ -70,7 +67,7 @@ extension BackgroundRefreshUseCase {
                     try? await iCloudEventDebouncedPublisher.nextValue()
                 }
                 
-                var addedEntryTitles: [String] = []
+                var addedEntries: [(entry: Entry, feedTitle: String)] = []
                 do {
                     let existingFeeds = try context.fetch(FeedModel.all).uniqued(on: { $0.url }).shuffled()
                     let fetchedFeeds = try await feedClient.fetchFeeds(existingFeeds.compactMap(\.url), false)
@@ -78,20 +75,39 @@ extension BackgroundRefreshUseCase {
                         guard let existingFeed = existingFeeds.first(where: { $0.url == fetchedFeed.url }) else { continue }
                         let newEntries = existingFeed.addNewEntries(fetchedFeed.entries)
                         for newEntry in newEntries {
-                            addedEntryTitles.append(newEntry.title)
+                            addedEntries.append((newEntry, feedTitle: fetchedFeed.title))
                         }
                     }
                 } catch {
                     history.errorMessage = error.localizedDescription
                     logger.error("failed to execute background refresh: \(error, privacy: .public)")
                 }
-                history.addedEntryTitles = addedEntryTitles
+                history.addedEntryTitles = addedEntries.map(\.entry.title)
                 history.finishedAt = .now
                 do {
                     try context.saveWithRollback()
                     logger.notice("saved background refresh history")
                 } catch {
                     logger.error("failed to save refresh history: \(error, privacy: .public)")
+                }
+                if addedEntries.count > 0 {
+                    // send push notification
+                    let visibleEntryCount = 3
+                    var addedEntryStrings = addedEntries.sorted(by: { $0.entry.publishedAt > $1.entry.publishedAt }).prefix(visibleEntryCount).map {
+                        let title = $0.entry.title.count > 20 ? $0.entry.title.prefix(20) + "..." : $0.entry.title
+                        return "\(title) | \($0.feedTitle)"
+                    }
+                    if addedEntries.count > visibleEntryCount {
+                        addedEntryStrings.append("and more!")
+                    }
+                    
+                    localPushNotificationClient.send(
+                        "\(addedEntries.count) new entries published",
+                        addedEntryStrings.joined(separator: "\n")
+                    )
+                    
+                    // reload widget
+                    WidgetCenter.shared.reloadAllTimelines()
                 }
                 task.setTaskCompleted(success: true)
             }
