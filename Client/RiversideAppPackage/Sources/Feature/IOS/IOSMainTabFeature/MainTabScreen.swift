@@ -60,7 +60,7 @@ public struct MainTabScreen: View {
         .onChange(of: appearance, initial: true) { _, appearance in
             appAppearanceClient.apply(appearance)
         }
-        .onChange(of: unreadEntries.map(\.url), initial: false) { _, _ in
+        .onChange(of: unreadEntries.map(\.url), initial: true) { _, _ in
             WidgetCenter.shared.reloadAllTimelines()
         }
         .onForeground {
