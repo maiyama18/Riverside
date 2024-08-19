@@ -32,7 +32,7 @@ struct Provider: TimelineProvider {
 
     public func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         let entry = getEntry()
-        let refreshDate = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date()
+        let refreshDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date()
         let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
         completion(timeline)
     }
